@@ -1,0 +1,20 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/pi/mnt/RPiDrone/rpidrone/src/test.cpp
+rpicomponents/rpicomponents.hpp
+/home/pi/mnt/RPiDrone/rpidrone/src/rpicomponents/rpicomponents.hpp
+thread
+-
+cassert
+-
+iostream
+-
+mutex
+-
+

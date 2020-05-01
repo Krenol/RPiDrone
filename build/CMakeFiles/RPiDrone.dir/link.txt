@@ -1,0 +1,1 @@
+/usr/bin/c++      CMakeFiles/RPiDrone.dir/src/test.cpp.o  -o /home/pi/mnt/RPiDrone/rpidrone/build/RPiDrone -lRPiComponents -lRPiSocket -lwiringPi -lwiringPiDev -lpthread 

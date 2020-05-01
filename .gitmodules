@@ -1,0 +1,6 @@
+[submodule "rpidrone/external/RPiSocket"]
+	path = rpidrone/external/RPiSocket
+	url = git@github.com:Krenol/RPiSocket.git
+[submodule "rpidrone/external/RPiComponents"]
+	path = rpidrone/external/RPiComponents
+	url = git@github.com:Krenol/RPiComponents.git
