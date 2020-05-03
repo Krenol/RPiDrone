@@ -1,1 +1,0 @@
-/usr/bin/c++  -fPIC   -shared -Wl,-soname,librpicomponents_utils.so -o /home/pi/mnt/RPiDrone/rpidrone/build/librpicomponents_utils.so CMakeFiles/rpicomponents_utils.dir/src/waiter.cpp.o CMakeFiles/rpicomponents_utils.dir/src/i2cdev.cpp.o 

@@ -1,8 +1,0 @@
-/home/pi/mnt/RPiDrone/build/CMakeFiles/RPiDrone.dir
-/home/pi/mnt/RPiDrone/build/external/RPiComponents/rpicomponents/utils/CMakeFiles/rpicomponents_utils.dir
-/home/pi/mnt/RPiDrone/build/external/RPiComponents/rpicomponents/test/CMakeFiles/rpicomponents_test_project.dir
-/home/pi/mnt/RPiDrone/build/external/RPiComponents/rpicomponents/test/external/doctest/CMakeFiles/doctest_with_main.dir
-/home/pi/mnt/RPiDrone/build/external/RPiSocket/rpisocket/CMakeFiles/RPiSocket.dir
-/home/pi/mnt/RPiDrone/build/external/RPiSocket/rpisocket/test/CMakeFiles/rpisocket_test_project.dir
-/home/pi/mnt/RPiDrone/build/external/RPiComponents/rpicomponents/CMakeFiles/RPiComponents.dir
-/home/pi/mnt/RPiDrone/build/external/RPiComponents/rpicomponents/pin/CMakeFiles/pin.dir

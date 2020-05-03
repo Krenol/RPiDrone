@@ -1,2 +1,0 @@
-/usr/bin/ar qc /home/pi/mnt/RPiDrone/rpidrone/build/libdoctest_with_main.a  CMakeFiles/doctest_with_main.dir/doctest/parts/doctest.cpp.o
-/usr/bin/ranlib /home/pi/mnt/RPiDrone/rpidrone/build/libdoctest_with_main.a
