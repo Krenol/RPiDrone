@@ -90,6 +90,10 @@ RPiDrone_EXTERNAL_OBJECTS =
 
 /home/pi/mnt/RPiDrone/rpidrone/build/RPiDrone: CMakeFiles/RPiDrone.dir/src/test.cpp.o
 /home/pi/mnt/RPiDrone/rpidrone/build/RPiDrone: CMakeFiles/RPiDrone.dir/build.make
+/home/pi/mnt/RPiDrone/rpidrone/build/RPiDrone: /home/pi/mnt/RPiDrone/rpidrone/build/libRPiComponents.so
+/home/pi/mnt/RPiDrone/rpidrone/build/RPiDrone: /home/pi/mnt/RPiDrone/rpidrone/build/libRPiSocket.so
+/home/pi/mnt/RPiDrone/rpidrone/build/RPiDrone: /home/pi/mnt/RPiDrone/rpidrone/build/libpin.so
+/home/pi/mnt/RPiDrone/rpidrone/build/RPiDrone: /home/pi/mnt/RPiDrone/rpidrone/build/librpicomponents_utils.so
 /home/pi/mnt/RPiDrone/rpidrone/build/RPiDrone: CMakeFiles/RPiDrone.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/pi/mnt/RPiDrone/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable /home/pi/mnt/RPiDrone/rpidrone/build/RPiDrone"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/RPiDrone.dir/link.txt --verbose=$(VERBOSE)

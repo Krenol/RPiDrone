@@ -4,3 +4,6 @@
 [submodule "rpidrone/external/RPiComponents"]
 	path = rpidrone/external/RPiComponents
 	url = git@github.com:Krenol/RPiComponents.git
+[submodule "rpidrone/external/doctest"]
+	path = rpidrone/external/doctest
+	url = https://github.com/onqtam/doctest.git

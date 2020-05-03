@@ -25,15 +25,21 @@ include_directories(${PROJECT_SOURCE_DIR})
 include_directories(${RPISOCKET_INCLUDE_DIR})
 include_directories(${RPICOMP_INCLUDE_DIR})
 
+add_subdirectory (external/RPiSocket/rpisocket)
+add_subdirectory (external/RPiComponents/rpicomponents)
+
 add_executable (RPiDrone ${RPICDRONE_PROJECT_SRCS})
 
-
+find_library(RPiComponents REQUIRED)
+find_library(RPiSocket REQUIRED)
 target_link_libraries(RPiDrone RPiComponents)
 target_link_libraries(RPiDrone RPiSocket)
 
 find_library(wiringPi REQUIRED)
 find_library(wiringPiDev REQUIRED)
 find_library(pthread REQUIRED)
+find_library(bluetooth REQUIRED)
+target_link_libraries(${PROJECT_NAME} bluetooth)
 target_link_libraries(${PROJECT_NAME} wiringPi)
 target_link_libraries(${PROJECT_NAME} wiringPiDev)
 target_link_libraries(${PROJECT_NAME} pthread)

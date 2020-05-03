@@ -63,10 +63,13 @@ CMAKE_BINARY_DIR = /home/pi/mnt/RPiDrone/build
 # Target rules for target CMakeFiles/RPiDrone.dir
 
 # All Build rule for target.
-CMakeFiles/RPiDrone.dir/all:
+CMakeFiles/RPiDrone.dir/all: external/RPiSocket/rpisocket/CMakeFiles/RPiSocket.dir/all
+CMakeFiles/RPiDrone.dir/all: external/RPiComponents/rpicomponents/CMakeFiles/RPiComponents.dir/all
+CMakeFiles/RPiDrone.dir/all: external/RPiComponents/rpicomponents/pin/CMakeFiles/pin.dir/all
+CMakeFiles/RPiDrone.dir/all: external/RPiComponents/rpicomponents/utils/CMakeFiles/rpicomponents_utils.dir/all
 	$(MAKE) -f CMakeFiles/RPiDrone.dir/build.make CMakeFiles/RPiDrone.dir/depend
 	$(MAKE) -f CMakeFiles/RPiDrone.dir/build.make CMakeFiles/RPiDrone.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/pi/mnt/RPiDrone/build/CMakeFiles --progress-num=1,2 "Built target RPiDrone"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/pi/mnt/RPiDrone/build/CMakeFiles --progress-num=26,27 "Built target RPiDrone"
 .PHONY : CMakeFiles/RPiDrone.dir/all
 
 # Include target in all.
@@ -76,7 +79,7 @@ all: CMakeFiles/RPiDrone.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/RPiDrone.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/pi/mnt/RPiDrone/build/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/pi/mnt/RPiDrone/build/CMakeFiles 45
 	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/RPiDrone.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/pi/mnt/RPiDrone/build/CMakeFiles 0
 .PHONY : CMakeFiles/RPiDrone.dir/rule
@@ -93,6 +96,401 @@ CMakeFiles/RPiDrone.dir/clean:
 
 # clean rule for target.
 clean: CMakeFiles/RPiDrone.dir/clean
+
+.PHONY : clean
+
+#=============================================================================
+# Directory level rules for directory external/RPiSocket/rpisocket
+
+# Convenience name for "all" pass in the directory.
+external/RPiSocket/rpisocket/all: external/RPiSocket/rpisocket/CMakeFiles/RPiSocket.dir/all
+external/RPiSocket/rpisocket/all: external/RPiSocket/rpisocket/test/all
+
+.PHONY : external/RPiSocket/rpisocket/all
+
+# Convenience name for "clean" pass in the directory.
+external/RPiSocket/rpisocket/clean: external/RPiSocket/rpisocket/CMakeFiles/RPiSocket.dir/clean
+external/RPiSocket/rpisocket/clean: external/RPiSocket/rpisocket/test/clean
+
+.PHONY : external/RPiSocket/rpisocket/clean
+
+# Convenience name for "preinstall" pass in the directory.
+external/RPiSocket/rpisocket/preinstall: external/RPiSocket/rpisocket/test/preinstall
+
+.PHONY : external/RPiSocket/rpisocket/preinstall
+
+#=============================================================================
+# Target rules for target external/RPiSocket/rpisocket/CMakeFiles/RPiSocket.dir
+
+# All Build rule for target.
+external/RPiSocket/rpisocket/CMakeFiles/RPiSocket.dir/all:
+	$(MAKE) -f external/RPiSocket/rpisocket/CMakeFiles/RPiSocket.dir/build.make external/RPiSocket/rpisocket/CMakeFiles/RPiSocket.dir/depend
+	$(MAKE) -f external/RPiSocket/rpisocket/CMakeFiles/RPiSocket.dir/build.make external/RPiSocket/rpisocket/CMakeFiles/RPiSocket.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/pi/mnt/RPiDrone/build/CMakeFiles --progress-num=28,29,30,31 "Built target RPiSocket"
+.PHONY : external/RPiSocket/rpisocket/CMakeFiles/RPiSocket.dir/all
+
+# Include target in all.
+all: external/RPiSocket/rpisocket/CMakeFiles/RPiSocket.dir/all
+
+.PHONY : all
+
+# Build rule for subdir invocation for target.
+external/RPiSocket/rpisocket/CMakeFiles/RPiSocket.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/pi/mnt/RPiDrone/build/CMakeFiles 4
+	$(MAKE) -f CMakeFiles/Makefile2 external/RPiSocket/rpisocket/CMakeFiles/RPiSocket.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/pi/mnt/RPiDrone/build/CMakeFiles 0
+.PHONY : external/RPiSocket/rpisocket/CMakeFiles/RPiSocket.dir/rule
+
+# Convenience name for target.
+RPiSocket: external/RPiSocket/rpisocket/CMakeFiles/RPiSocket.dir/rule
+
+.PHONY : RPiSocket
+
+# clean rule for target.
+external/RPiSocket/rpisocket/CMakeFiles/RPiSocket.dir/clean:
+	$(MAKE) -f external/RPiSocket/rpisocket/CMakeFiles/RPiSocket.dir/build.make external/RPiSocket/rpisocket/CMakeFiles/RPiSocket.dir/clean
+.PHONY : external/RPiSocket/rpisocket/CMakeFiles/RPiSocket.dir/clean
+
+# clean rule for target.
+clean: external/RPiSocket/rpisocket/CMakeFiles/RPiSocket.dir/clean
+
+.PHONY : clean
+
+#=============================================================================
+# Directory level rules for directory external/RPiSocket/rpisocket/test
+
+# Convenience name for "all" pass in the directory.
+external/RPiSocket/rpisocket/test/all: external/RPiSocket/rpisocket/test/CMakeFiles/rpisocket_test_project.dir/all
+
+.PHONY : external/RPiSocket/rpisocket/test/all
+
+# Convenience name for "clean" pass in the directory.
+external/RPiSocket/rpisocket/test/clean: external/RPiSocket/rpisocket/test/CMakeFiles/rpisocket_test_project.dir/clean
+
+.PHONY : external/RPiSocket/rpisocket/test/clean
+
+# Convenience name for "preinstall" pass in the directory.
+external/RPiSocket/rpisocket/test/preinstall:
+
+.PHONY : external/RPiSocket/rpisocket/test/preinstall
+
+#=============================================================================
+# Target rules for target external/RPiSocket/rpisocket/test/CMakeFiles/rpisocket_test_project.dir
+
+# All Build rule for target.
+external/RPiSocket/rpisocket/test/CMakeFiles/rpisocket_test_project.dir/all: external/RPiSocket/rpisocket/CMakeFiles/RPiSocket.dir/all
+	$(MAKE) -f external/RPiSocket/rpisocket/test/CMakeFiles/rpisocket_test_project.dir/build.make external/RPiSocket/rpisocket/test/CMakeFiles/rpisocket_test_project.dir/depend
+	$(MAKE) -f external/RPiSocket/rpisocket/test/CMakeFiles/rpisocket_test_project.dir/build.make external/RPiSocket/rpisocket/test/CMakeFiles/rpisocket_test_project.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/pi/mnt/RPiDrone/build/CMakeFiles --progress-num=50,51 "Built target rpisocket_test_project"
+.PHONY : external/RPiSocket/rpisocket/test/CMakeFiles/rpisocket_test_project.dir/all
+
+# Include target in all.
+all: external/RPiSocket/rpisocket/test/CMakeFiles/rpisocket_test_project.dir/all
+
+.PHONY : all
+
+# Build rule for subdir invocation for target.
+external/RPiSocket/rpisocket/test/CMakeFiles/rpisocket_test_project.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/pi/mnt/RPiDrone/build/CMakeFiles 6
+	$(MAKE) -f CMakeFiles/Makefile2 external/RPiSocket/rpisocket/test/CMakeFiles/rpisocket_test_project.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/pi/mnt/RPiDrone/build/CMakeFiles 0
+.PHONY : external/RPiSocket/rpisocket/test/CMakeFiles/rpisocket_test_project.dir/rule
+
+# Convenience name for target.
+rpisocket_test_project: external/RPiSocket/rpisocket/test/CMakeFiles/rpisocket_test_project.dir/rule
+
+.PHONY : rpisocket_test_project
+
+# clean rule for target.
+external/RPiSocket/rpisocket/test/CMakeFiles/rpisocket_test_project.dir/clean:
+	$(MAKE) -f external/RPiSocket/rpisocket/test/CMakeFiles/rpisocket_test_project.dir/build.make external/RPiSocket/rpisocket/test/CMakeFiles/rpisocket_test_project.dir/clean
+.PHONY : external/RPiSocket/rpisocket/test/CMakeFiles/rpisocket_test_project.dir/clean
+
+# clean rule for target.
+clean: external/RPiSocket/rpisocket/test/CMakeFiles/rpisocket_test_project.dir/clean
+
+.PHONY : clean
+
+#=============================================================================
+# Directory level rules for directory external/RPiComponents/rpicomponents
+
+# Convenience name for "all" pass in the directory.
+external/RPiComponents/rpicomponents/all: external/RPiComponents/rpicomponents/CMakeFiles/RPiComponents.dir/all
+external/RPiComponents/rpicomponents/all: external/RPiComponents/rpicomponents/pin/all
+external/RPiComponents/rpicomponents/all: external/RPiComponents/rpicomponents/test/all
+external/RPiComponents/rpicomponents/all: external/RPiComponents/rpicomponents/utils/all
+
+.PHONY : external/RPiComponents/rpicomponents/all
+
+# Convenience name for "clean" pass in the directory.
+external/RPiComponents/rpicomponents/clean: external/RPiComponents/rpicomponents/CMakeFiles/RPiComponents.dir/clean
+external/RPiComponents/rpicomponents/clean: external/RPiComponents/rpicomponents/pin/clean
+external/RPiComponents/rpicomponents/clean: external/RPiComponents/rpicomponents/test/clean
+external/RPiComponents/rpicomponents/clean: external/RPiComponents/rpicomponents/utils/clean
+
+.PHONY : external/RPiComponents/rpicomponents/clean
+
+# Convenience name for "preinstall" pass in the directory.
+external/RPiComponents/rpicomponents/preinstall: external/RPiComponents/rpicomponents/pin/preinstall
+external/RPiComponents/rpicomponents/preinstall: external/RPiComponents/rpicomponents/test/preinstall
+external/RPiComponents/rpicomponents/preinstall: external/RPiComponents/rpicomponents/utils/preinstall
+
+.PHONY : external/RPiComponents/rpicomponents/preinstall
+
+#=============================================================================
+# Target rules for target external/RPiComponents/rpicomponents/CMakeFiles/RPiComponents.dir
+
+# All Build rule for target.
+external/RPiComponents/rpicomponents/CMakeFiles/RPiComponents.dir/all: external/RPiComponents/rpicomponents/pin/CMakeFiles/pin.dir/all
+external/RPiComponents/rpicomponents/CMakeFiles/RPiComponents.dir/all: external/RPiComponents/rpicomponents/utils/CMakeFiles/rpicomponents_utils.dir/all
+	$(MAKE) -f external/RPiComponents/rpicomponents/CMakeFiles/RPiComponents.dir/build.make external/RPiComponents/rpicomponents/CMakeFiles/RPiComponents.dir/depend
+	$(MAKE) -f external/RPiComponents/rpicomponents/CMakeFiles/RPiComponents.dir/build.make external/RPiComponents/rpicomponents/CMakeFiles/RPiComponents.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/pi/mnt/RPiDrone/build/CMakeFiles --progress-num=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25 "Built target RPiComponents"
+.PHONY : external/RPiComponents/rpicomponents/CMakeFiles/RPiComponents.dir/all
+
+# Include target in all.
+all: external/RPiComponents/rpicomponents/CMakeFiles/RPiComponents.dir/all
+
+.PHONY : all
+
+# Build rule for subdir invocation for target.
+external/RPiComponents/rpicomponents/CMakeFiles/RPiComponents.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/pi/mnt/RPiDrone/build/CMakeFiles 39
+	$(MAKE) -f CMakeFiles/Makefile2 external/RPiComponents/rpicomponents/CMakeFiles/RPiComponents.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/pi/mnt/RPiDrone/build/CMakeFiles 0
+.PHONY : external/RPiComponents/rpicomponents/CMakeFiles/RPiComponents.dir/rule
+
+# Convenience name for target.
+RPiComponents: external/RPiComponents/rpicomponents/CMakeFiles/RPiComponents.dir/rule
+
+.PHONY : RPiComponents
+
+# clean rule for target.
+external/RPiComponents/rpicomponents/CMakeFiles/RPiComponents.dir/clean:
+	$(MAKE) -f external/RPiComponents/rpicomponents/CMakeFiles/RPiComponents.dir/build.make external/RPiComponents/rpicomponents/CMakeFiles/RPiComponents.dir/clean
+.PHONY : external/RPiComponents/rpicomponents/CMakeFiles/RPiComponents.dir/clean
+
+# clean rule for target.
+clean: external/RPiComponents/rpicomponents/CMakeFiles/RPiComponents.dir/clean
+
+.PHONY : clean
+
+#=============================================================================
+# Directory level rules for directory external/RPiComponents/rpicomponents/pin
+
+# Convenience name for "all" pass in the directory.
+external/RPiComponents/rpicomponents/pin/all: external/RPiComponents/rpicomponents/pin/CMakeFiles/pin.dir/all
+
+.PHONY : external/RPiComponents/rpicomponents/pin/all
+
+# Convenience name for "clean" pass in the directory.
+external/RPiComponents/rpicomponents/pin/clean: external/RPiComponents/rpicomponents/pin/CMakeFiles/pin.dir/clean
+
+.PHONY : external/RPiComponents/rpicomponents/pin/clean
+
+# Convenience name for "preinstall" pass in the directory.
+external/RPiComponents/rpicomponents/pin/preinstall:
+
+.PHONY : external/RPiComponents/rpicomponents/pin/preinstall
+
+#=============================================================================
+# Target rules for target external/RPiComponents/rpicomponents/pin/CMakeFiles/pin.dir
+
+# All Build rule for target.
+external/RPiComponents/rpicomponents/pin/CMakeFiles/pin.dir/all:
+	$(MAKE) -f external/RPiComponents/rpicomponents/pin/CMakeFiles/pin.dir/build.make external/RPiComponents/rpicomponents/pin/CMakeFiles/pin.dir/depend
+	$(MAKE) -f external/RPiComponents/rpicomponents/pin/CMakeFiles/pin.dir/build.make external/RPiComponents/rpicomponents/pin/CMakeFiles/pin.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/pi/mnt/RPiDrone/build/CMakeFiles --progress-num=34,35,36,37,38,39,40,41,42,43,44 "Built target pin"
+.PHONY : external/RPiComponents/rpicomponents/pin/CMakeFiles/pin.dir/all
+
+# Include target in all.
+all: external/RPiComponents/rpicomponents/pin/CMakeFiles/pin.dir/all
+
+.PHONY : all
+
+# Build rule for subdir invocation for target.
+external/RPiComponents/rpicomponents/pin/CMakeFiles/pin.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/pi/mnt/RPiDrone/build/CMakeFiles 11
+	$(MAKE) -f CMakeFiles/Makefile2 external/RPiComponents/rpicomponents/pin/CMakeFiles/pin.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/pi/mnt/RPiDrone/build/CMakeFiles 0
+.PHONY : external/RPiComponents/rpicomponents/pin/CMakeFiles/pin.dir/rule
+
+# Convenience name for target.
+pin: external/RPiComponents/rpicomponents/pin/CMakeFiles/pin.dir/rule
+
+.PHONY : pin
+
+# clean rule for target.
+external/RPiComponents/rpicomponents/pin/CMakeFiles/pin.dir/clean:
+	$(MAKE) -f external/RPiComponents/rpicomponents/pin/CMakeFiles/pin.dir/build.make external/RPiComponents/rpicomponents/pin/CMakeFiles/pin.dir/clean
+.PHONY : external/RPiComponents/rpicomponents/pin/CMakeFiles/pin.dir/clean
+
+# clean rule for target.
+clean: external/RPiComponents/rpicomponents/pin/CMakeFiles/pin.dir/clean
+
+.PHONY : clean
+
+#=============================================================================
+# Directory level rules for directory external/RPiComponents/rpicomponents/test
+
+# Convenience name for "all" pass in the directory.
+external/RPiComponents/rpicomponents/test/all: external/RPiComponents/rpicomponents/test/CMakeFiles/rpicomponents_test_project.dir/all
+external/RPiComponents/rpicomponents/test/all: external/RPiComponents/rpicomponents/test/external/doctest/all
+
+.PHONY : external/RPiComponents/rpicomponents/test/all
+
+# Convenience name for "clean" pass in the directory.
+external/RPiComponents/rpicomponents/test/clean: external/RPiComponents/rpicomponents/test/CMakeFiles/rpicomponents_test_project.dir/clean
+external/RPiComponents/rpicomponents/test/clean: external/RPiComponents/rpicomponents/test/external/doctest/clean
+
+.PHONY : external/RPiComponents/rpicomponents/test/clean
+
+# Convenience name for "preinstall" pass in the directory.
+external/RPiComponents/rpicomponents/test/preinstall: external/RPiComponents/rpicomponents/test/external/doctest/preinstall
+
+.PHONY : external/RPiComponents/rpicomponents/test/preinstall
+
+#=============================================================================
+# Target rules for target external/RPiComponents/rpicomponents/test/CMakeFiles/rpicomponents_test_project.dir
+
+# All Build rule for target.
+external/RPiComponents/rpicomponents/test/CMakeFiles/rpicomponents_test_project.dir/all: external/RPiComponents/rpicomponents/CMakeFiles/RPiComponents.dir/all
+external/RPiComponents/rpicomponents/test/CMakeFiles/rpicomponents_test_project.dir/all: external/RPiComponents/rpicomponents/pin/CMakeFiles/pin.dir/all
+external/RPiComponents/rpicomponents/test/CMakeFiles/rpicomponents_test_project.dir/all: external/RPiComponents/rpicomponents/utils/CMakeFiles/rpicomponents_utils.dir/all
+	$(MAKE) -f external/RPiComponents/rpicomponents/test/CMakeFiles/rpicomponents_test_project.dir/build.make external/RPiComponents/rpicomponents/test/CMakeFiles/rpicomponents_test_project.dir/depend
+	$(MAKE) -f external/RPiComponents/rpicomponents/test/CMakeFiles/rpicomponents_test_project.dir/build.make external/RPiComponents/rpicomponents/test/CMakeFiles/rpicomponents_test_project.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/pi/mnt/RPiDrone/build/CMakeFiles --progress-num=45,46 "Built target rpicomponents_test_project"
+.PHONY : external/RPiComponents/rpicomponents/test/CMakeFiles/rpicomponents_test_project.dir/all
+
+# Include target in all.
+all: external/RPiComponents/rpicomponents/test/CMakeFiles/rpicomponents_test_project.dir/all
+
+.PHONY : all
+
+# Build rule for subdir invocation for target.
+external/RPiComponents/rpicomponents/test/CMakeFiles/rpicomponents_test_project.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/pi/mnt/RPiDrone/build/CMakeFiles 41
+	$(MAKE) -f CMakeFiles/Makefile2 external/RPiComponents/rpicomponents/test/CMakeFiles/rpicomponents_test_project.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/pi/mnt/RPiDrone/build/CMakeFiles 0
+.PHONY : external/RPiComponents/rpicomponents/test/CMakeFiles/rpicomponents_test_project.dir/rule
+
+# Convenience name for target.
+rpicomponents_test_project: external/RPiComponents/rpicomponents/test/CMakeFiles/rpicomponents_test_project.dir/rule
+
+.PHONY : rpicomponents_test_project
+
+# clean rule for target.
+external/RPiComponents/rpicomponents/test/CMakeFiles/rpicomponents_test_project.dir/clean:
+	$(MAKE) -f external/RPiComponents/rpicomponents/test/CMakeFiles/rpicomponents_test_project.dir/build.make external/RPiComponents/rpicomponents/test/CMakeFiles/rpicomponents_test_project.dir/clean
+.PHONY : external/RPiComponents/rpicomponents/test/CMakeFiles/rpicomponents_test_project.dir/clean
+
+# clean rule for target.
+clean: external/RPiComponents/rpicomponents/test/CMakeFiles/rpicomponents_test_project.dir/clean
+
+.PHONY : clean
+
+#=============================================================================
+# Directory level rules for directory external/RPiComponents/rpicomponents/test/external/doctest
+
+# Convenience name for "all" pass in the directory.
+external/RPiComponents/rpicomponents/test/external/doctest/all:
+
+.PHONY : external/RPiComponents/rpicomponents/test/external/doctest/all
+
+# Convenience name for "clean" pass in the directory.
+external/RPiComponents/rpicomponents/test/external/doctest/clean: external/RPiComponents/rpicomponents/test/external/doctest/CMakeFiles/doctest_with_main.dir/clean
+
+.PHONY : external/RPiComponents/rpicomponents/test/external/doctest/clean
+
+# Convenience name for "preinstall" pass in the directory.
+external/RPiComponents/rpicomponents/test/external/doctest/preinstall:
+
+.PHONY : external/RPiComponents/rpicomponents/test/external/doctest/preinstall
+
+#=============================================================================
+# Target rules for target external/RPiComponents/rpicomponents/test/external/doctest/CMakeFiles/doctest_with_main.dir
+
+# All Build rule for target.
+external/RPiComponents/rpicomponents/test/external/doctest/CMakeFiles/doctest_with_main.dir/all:
+	$(MAKE) -f external/RPiComponents/rpicomponents/test/external/doctest/CMakeFiles/doctest_with_main.dir/build.make external/RPiComponents/rpicomponents/test/external/doctest/CMakeFiles/doctest_with_main.dir/depend
+	$(MAKE) -f external/RPiComponents/rpicomponents/test/external/doctest/CMakeFiles/doctest_with_main.dir/build.make external/RPiComponents/rpicomponents/test/external/doctest/CMakeFiles/doctest_with_main.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/pi/mnt/RPiDrone/build/CMakeFiles --progress-num=32,33 "Built target doctest_with_main"
+.PHONY : external/RPiComponents/rpicomponents/test/external/doctest/CMakeFiles/doctest_with_main.dir/all
+
+# Build rule for subdir invocation for target.
+external/RPiComponents/rpicomponents/test/external/doctest/CMakeFiles/doctest_with_main.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/pi/mnt/RPiDrone/build/CMakeFiles 2
+	$(MAKE) -f CMakeFiles/Makefile2 external/RPiComponents/rpicomponents/test/external/doctest/CMakeFiles/doctest_with_main.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/pi/mnt/RPiDrone/build/CMakeFiles 0
+.PHONY : external/RPiComponents/rpicomponents/test/external/doctest/CMakeFiles/doctest_with_main.dir/rule
+
+# Convenience name for target.
+doctest_with_main: external/RPiComponents/rpicomponents/test/external/doctest/CMakeFiles/doctest_with_main.dir/rule
+
+.PHONY : doctest_with_main
+
+# clean rule for target.
+external/RPiComponents/rpicomponents/test/external/doctest/CMakeFiles/doctest_with_main.dir/clean:
+	$(MAKE) -f external/RPiComponents/rpicomponents/test/external/doctest/CMakeFiles/doctest_with_main.dir/build.make external/RPiComponents/rpicomponents/test/external/doctest/CMakeFiles/doctest_with_main.dir/clean
+.PHONY : external/RPiComponents/rpicomponents/test/external/doctest/CMakeFiles/doctest_with_main.dir/clean
+
+# clean rule for target.
+clean: external/RPiComponents/rpicomponents/test/external/doctest/CMakeFiles/doctest_with_main.dir/clean
+
+.PHONY : clean
+
+#=============================================================================
+# Directory level rules for directory external/RPiComponents/rpicomponents/utils
+
+# Convenience name for "all" pass in the directory.
+external/RPiComponents/rpicomponents/utils/all: external/RPiComponents/rpicomponents/utils/CMakeFiles/rpicomponents_utils.dir/all
+
+.PHONY : external/RPiComponents/rpicomponents/utils/all
+
+# Convenience name for "clean" pass in the directory.
+external/RPiComponents/rpicomponents/utils/clean: external/RPiComponents/rpicomponents/utils/CMakeFiles/rpicomponents_utils.dir/clean
+
+.PHONY : external/RPiComponents/rpicomponents/utils/clean
+
+# Convenience name for "preinstall" pass in the directory.
+external/RPiComponents/rpicomponents/utils/preinstall:
+
+.PHONY : external/RPiComponents/rpicomponents/utils/preinstall
+
+#=============================================================================
+# Target rules for target external/RPiComponents/rpicomponents/utils/CMakeFiles/rpicomponents_utils.dir
+
+# All Build rule for target.
+external/RPiComponents/rpicomponents/utils/CMakeFiles/rpicomponents_utils.dir/all:
+	$(MAKE) -f external/RPiComponents/rpicomponents/utils/CMakeFiles/rpicomponents_utils.dir/build.make external/RPiComponents/rpicomponents/utils/CMakeFiles/rpicomponents_utils.dir/depend
+	$(MAKE) -f external/RPiComponents/rpicomponents/utils/CMakeFiles/rpicomponents_utils.dir/build.make external/RPiComponents/rpicomponents/utils/CMakeFiles/rpicomponents_utils.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/pi/mnt/RPiDrone/build/CMakeFiles --progress-num=47,48,49 "Built target rpicomponents_utils"
+.PHONY : external/RPiComponents/rpicomponents/utils/CMakeFiles/rpicomponents_utils.dir/all
+
+# Include target in all.
+all: external/RPiComponents/rpicomponents/utils/CMakeFiles/rpicomponents_utils.dir/all
+
+.PHONY : all
+
+# Build rule for subdir invocation for target.
+external/RPiComponents/rpicomponents/utils/CMakeFiles/rpicomponents_utils.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/pi/mnt/RPiDrone/build/CMakeFiles 3
+	$(MAKE) -f CMakeFiles/Makefile2 external/RPiComponents/rpicomponents/utils/CMakeFiles/rpicomponents_utils.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/pi/mnt/RPiDrone/build/CMakeFiles 0
+.PHONY : external/RPiComponents/rpicomponents/utils/CMakeFiles/rpicomponents_utils.dir/rule
+
+# Convenience name for target.
+rpicomponents_utils: external/RPiComponents/rpicomponents/utils/CMakeFiles/rpicomponents_utils.dir/rule
+
+.PHONY : rpicomponents_utils
+
+# clean rule for target.
+external/RPiComponents/rpicomponents/utils/CMakeFiles/rpicomponents_utils.dir/clean:
+	$(MAKE) -f external/RPiComponents/rpicomponents/utils/CMakeFiles/rpicomponents_utils.dir/build.make external/RPiComponents/rpicomponents/utils/CMakeFiles/rpicomponents_utils.dir/clean
+.PHONY : external/RPiComponents/rpicomponents/utils/CMakeFiles/rpicomponents_utils.dir/clean
+
+# clean rule for target.
+clean: external/RPiComponents/rpicomponents/utils/CMakeFiles/rpicomponents_utils.dir/clean
 
 .PHONY : clean
 

@@ -1,0 +1,1 @@
+/usr/bin/c++  -fPIC   -shared -Wl,-soname,libRPiSocket.so -o /home/pi/mnt/RPiDrone/rpidrone/build/libRPiSocket.so CMakeFiles/RPiSocket.dir/src/btserver.cpp.o CMakeFiles/RPiSocket.dir/src/server.cpp.o CMakeFiles/RPiSocket.dir/src/wifiserver.cpp.o 

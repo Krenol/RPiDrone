@@ -56,16 +56,27 @@ CMAKE_BINARY_DIR = /home/pi/mnt/RPiDrone/build
 #=============================================================================
 # Targets provided globally by CMake.
 
-# Special rule for the target edit_cache
-edit_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "No interactive CMake dialog available..."
-	/usr/local/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
-.PHONY : edit_cache
+# Special rule for the target install
+install: preinstall
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Install the project..."
+	/usr/local/bin/cmake -P cmake_install.cmake
+.PHONY : install
 
-# Special rule for the target edit_cache
-edit_cache/fast: edit_cache
+# Special rule for the target install
+install/fast: preinstall/fast
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Install the project..."
+	/usr/local/bin/cmake -P cmake_install.cmake
+.PHONY : install/fast
 
-.PHONY : edit_cache/fast
+# Special rule for the target list_install_components
+list_install_components:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Available install components are: \"Unspecified\""
+.PHONY : list_install_components
+
+# Special rule for the target list_install_components
+list_install_components/fast: list_install_components
+
+.PHONY : list_install_components/fast
 
 # Special rule for the target rebuild_cache
 rebuild_cache:
@@ -77,6 +88,39 @@ rebuild_cache:
 rebuild_cache/fast: rebuild_cache
 
 .PHONY : rebuild_cache/fast
+
+# Special rule for the target install/local
+install/local: preinstall
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing only the local directory..."
+	/usr/local/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
+.PHONY : install/local
+
+# Special rule for the target install/local
+install/local/fast: install/local
+
+.PHONY : install/local/fast
+
+# Special rule for the target install/strip
+install/strip: preinstall
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing the project stripped..."
+	/usr/local/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
+.PHONY : install/strip
+
+# Special rule for the target install/strip
+install/strip/fast: install/strip
+
+.PHONY : install/strip/fast
+
+# Special rule for the target edit_cache
+edit_cache:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "No interactive CMake dialog available..."
+	/usr/local/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
+.PHONY : edit_cache
+
+# Special rule for the target edit_cache
+edit_cache/fast: edit_cache
+
+.PHONY : edit_cache/fast
 
 # The main all target
 all: cmake_check_build_system
@@ -123,6 +167,97 @@ RPiDrone/fast:
 	$(MAKE) -f CMakeFiles/RPiDrone.dir/build.make CMakeFiles/RPiDrone.dir/build
 .PHONY : RPiDrone/fast
 
+#=============================================================================
+# Target rules for targets named RPiSocket
+
+# Build rule for target.
+RPiSocket: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 RPiSocket
+.PHONY : RPiSocket
+
+# fast build rule for target.
+RPiSocket/fast:
+	$(MAKE) -f external/RPiSocket/rpisocket/CMakeFiles/RPiSocket.dir/build.make external/RPiSocket/rpisocket/CMakeFiles/RPiSocket.dir/build
+.PHONY : RPiSocket/fast
+
+#=============================================================================
+# Target rules for targets named rpisocket_test_project
+
+# Build rule for target.
+rpisocket_test_project: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 rpisocket_test_project
+.PHONY : rpisocket_test_project
+
+# fast build rule for target.
+rpisocket_test_project/fast:
+	$(MAKE) -f external/RPiSocket/rpisocket/test/CMakeFiles/rpisocket_test_project.dir/build.make external/RPiSocket/rpisocket/test/CMakeFiles/rpisocket_test_project.dir/build
+.PHONY : rpisocket_test_project/fast
+
+#=============================================================================
+# Target rules for targets named RPiComponents
+
+# Build rule for target.
+RPiComponents: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 RPiComponents
+.PHONY : RPiComponents
+
+# fast build rule for target.
+RPiComponents/fast:
+	$(MAKE) -f external/RPiComponents/rpicomponents/CMakeFiles/RPiComponents.dir/build.make external/RPiComponents/rpicomponents/CMakeFiles/RPiComponents.dir/build
+.PHONY : RPiComponents/fast
+
+#=============================================================================
+# Target rules for targets named pin
+
+# Build rule for target.
+pin: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 pin
+.PHONY : pin
+
+# fast build rule for target.
+pin/fast:
+	$(MAKE) -f external/RPiComponents/rpicomponents/pin/CMakeFiles/pin.dir/build.make external/RPiComponents/rpicomponents/pin/CMakeFiles/pin.dir/build
+.PHONY : pin/fast
+
+#=============================================================================
+# Target rules for targets named rpicomponents_test_project
+
+# Build rule for target.
+rpicomponents_test_project: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 rpicomponents_test_project
+.PHONY : rpicomponents_test_project
+
+# fast build rule for target.
+rpicomponents_test_project/fast:
+	$(MAKE) -f external/RPiComponents/rpicomponents/test/CMakeFiles/rpicomponents_test_project.dir/build.make external/RPiComponents/rpicomponents/test/CMakeFiles/rpicomponents_test_project.dir/build
+.PHONY : rpicomponents_test_project/fast
+
+#=============================================================================
+# Target rules for targets named doctest_with_main
+
+# Build rule for target.
+doctest_with_main: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 doctest_with_main
+.PHONY : doctest_with_main
+
+# fast build rule for target.
+doctest_with_main/fast:
+	$(MAKE) -f external/RPiComponents/rpicomponents/test/external/doctest/CMakeFiles/doctest_with_main.dir/build.make external/RPiComponents/rpicomponents/test/external/doctest/CMakeFiles/doctest_with_main.dir/build
+.PHONY : doctest_with_main/fast
+
+#=============================================================================
+# Target rules for targets named rpicomponents_utils
+
+# Build rule for target.
+rpicomponents_utils: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 rpicomponents_utils
+.PHONY : rpicomponents_utils
+
+# fast build rule for target.
+rpicomponents_utils/fast:
+	$(MAKE) -f external/RPiComponents/rpicomponents/utils/CMakeFiles/rpicomponents_utils.dir/build.make external/RPiComponents/rpicomponents/utils/CMakeFiles/rpicomponents_utils.dir/build
+.PHONY : rpicomponents_utils/fast
+
 src/test.o: src/test.cpp.o
 
 .PHONY : src/test.o
@@ -156,9 +291,20 @@ help:
 	@echo "... all (the default if no target is provided)"
 	@echo "... clean"
 	@echo "... depend"
-	@echo "... edit_cache"
+	@echo "... install"
+	@echo "... list_install_components"
 	@echo "... rebuild_cache"
 	@echo "... RPiDrone"
+	@echo "... install/local"
+	@echo "... install/strip"
+	@echo "... edit_cache"
+	@echo "... RPiSocket"
+	@echo "... rpisocket_test_project"
+	@echo "... RPiComponents"
+	@echo "... pin"
+	@echo "... rpicomponents_test_project"
+	@echo "... doctest_with_main"
+	@echo "... rpicomponents_utils"
 	@echo "... src/test.o"
 	@echo "... src/test.i"
 	@echo "... src/test.s"

@@ -14,10 +14,18 @@ set(CMAKE_CXX_TARGET_INCLUDE_PATH
   "/home/pi/mnt/RPiDrone/rpidrone/src"
   "/home/pi/mnt/RPiDrone/rpidrone/src/external/RPiSocket"
   "/home/pi/mnt/RPiDrone/rpidrone/src/external/RPiComponents"
+  "/home/pi/mnt/RPiDrone/rpidrone/external/RPiComponents/rpicomponents/include"
+  "/home/pi/mnt/RPiDrone/rpidrone/external/RPiComponents/rpicomponents/pin/include"
+  "/home/pi/mnt/RPiDrone/rpidrone/external/RPiComponents/rpicomponents/utils/include"
+  "/home/pi/mnt/RPiDrone/rpidrone/external/RPiSocket/rpisocket/include"
   )
 
 # Targets to which this target links.
 set(CMAKE_TARGET_LINKED_INFO_FILES
+  "/home/pi/mnt/RPiDrone/build/external/RPiComponents/rpicomponents/CMakeFiles/RPiComponents.dir/DependInfo.cmake"
+  "/home/pi/mnt/RPiDrone/build/external/RPiSocket/rpisocket/CMakeFiles/RPiSocket.dir/DependInfo.cmake"
+  "/home/pi/mnt/RPiDrone/build/external/RPiComponents/rpicomponents/pin/CMakeFiles/pin.dir/DependInfo.cmake"
+  "/home/pi/mnt/RPiDrone/build/external/RPiComponents/rpicomponents/utils/CMakeFiles/rpicomponents_utils.dir/DependInfo.cmake"
   )
 
 # Fortran module output directory.
