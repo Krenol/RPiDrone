@@ -1,0 +1,8 @@
+version: '3'
+services:
+    rpidrone:
+        build: '.'
+        privileged: true
+        volumes: 
+            - '/dev/ttyAMA0:/dev/ttyAMA0'
+            - '/dev/mem:/dev/mem'
