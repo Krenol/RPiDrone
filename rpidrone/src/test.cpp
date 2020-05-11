@@ -4,15 +4,14 @@
 
 
 int main() {
-    rpicomponents::Pcf8574 pcf(0x48);
-    auto p1 = rpicomponents::pin::PinCreator::CreatePin(1);
-    auto p2 = rpicomponents::pin::PinCreator::CreatePin(2);
-    rpicomponents::UltrasonicSensor uss (p1, p2);
+    auto pin = rpicomponents::pin::PinCreator::CreatePin(rpicomponents::pin::GPIO17);
+    rpicomponents::Led led(pin);
 
-  
-	std::cout << "500 mm are " << uss.UnitConverter(500, rpicomponents::UNIT_MM, rpicomponents::UNIT_M) << " m\n";
-    std::cout << pcf.ToString() << std::endl;
+    led.TurnOn();
 
+    rpicomponents::utils::Waiter::SleepSecs(2);
+    led.TurnOff();
+     
 
 	std::cin.get();
 
