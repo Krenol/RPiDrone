@@ -1,5 +1,7 @@
 FROM raspbian/stretch:041518
 
+ENV PROJECT_NAME rpidrone
+
 WORKDIR /data
 
 # Update image and get cmake
@@ -15,10 +17,10 @@ RUN apt-get update \
         wiringpi
 
 # copy files
-COPY ./rpidrone ./rpidrone
+COPY ./${PROJECT_NAME} ./${PROJECT_NAME}
 
 #prepare build
-RUN mkdir build && cd build && cmake ../rpidrone 
+RUN mkdir build && cd build && cmake ../${PROJECT_NAME} 
 
 #build
 RUN cd build && cmake --build .

@@ -1,9 +1,8 @@
-version: '3'
+version: '3.7'
 services:
     rpidrone:
         build: '.'
         privileged: true
-        command: "sudo /data/rpidrone/build/RPiDrone"
         volumes: 
             - '/dev/ttyAMA0:/dev/ttyAMA0'
             - '/dev/mem:/dev/mem'
