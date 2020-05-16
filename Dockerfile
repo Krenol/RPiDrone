@@ -1,26 +1,16 @@
-FROM raspbian/stretch:041518
+ARG IMG_VERSION=20200516
 
-ENV PROJECT_NAME rpidrone
+FROM krenol/cpp_raspbian:${IMG_VERSION}
+
+ARG PROJECT_DIR=rpidrone
 
 WORKDIR /data
 
-# Update image and get cmake
-RUN apt-get update \
-    && apt-get install -y \
-        build-essential \
-        cmake \
-        git \
-        wget \
-        #for bluez
-        bluez bluez-tools python-dev python-pip libglib2.0-dev libboost-python-dev libboost-thread-dev libbluetooth-dev \
-        #wiringpi
-        wiringpi
-
 # copy files
-COPY ./${PROJECT_NAME} ./${PROJECT_NAME}
+COPY ./${PROJECT_DIR} ./${PROJECT_DIR}
 
 #prepare build
-RUN mkdir build && cd build && cmake ../${PROJECT_NAME} 
+RUN mkdir build && cd build && cmake ../${PROJECT_DIR} 
 
 #build
 RUN cd build && cmake --build .
