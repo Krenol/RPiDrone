@@ -19,6 +19,7 @@ set(CONTROLLERS_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/external/CppControllers CACHE 
 
 set(RPICDRONE_PROJECT_SRCS 
 ${PROJECT_SOURCE_DIR}/test.cpp
+${PROJECT_SOURCE_DIR}/queue.cpp
 )
 
 include_directories(${PROJECT_INCLUDE_DIR})
