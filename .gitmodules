@@ -7,3 +7,6 @@
 [submodule "rpidrone/external/doctest"]
 	path = rpidrone/external/doctest
 	url = https://github.com/onqtam/doctest.git
+[submodule "rpidrone/external/CppControllers"]
+	path = rpidrone/external/CppControllers
+	url = git@github.com:Krenol/CppControllers.git

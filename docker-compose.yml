@@ -3,7 +3,6 @@ services:
     rpidrone:
         build: '.'
         privileged: true
-        env_file: env_file
         volumes: 
             - '/dev/ttyAMA0:/dev/ttyAMA0'
             - '/dev/mem:/dev/mem'
