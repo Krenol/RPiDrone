@@ -28,19 +28,19 @@ include_directories(${RPISOCKET_INCLUDE_DIR})
 include_directories(${RPICOMP_INCLUDE_DIR})
 include_directories(${CONTROLLERS_INCLUDE_DIR})
 
-add_subdirectory (external/RPiSocket/rpisocket)
-add_subdirectory (external/RPiComponents/rpicomponents)
-add_subdirectory (external/CppControllers/controllers)
+#add_subdirectory (external/RPiSocket/rpisocket)
+#add_subdirectory (external/RPiComponents/rpicomponents)
+#add_subdirectory (external/CppControllers/controllers)
 
 add_executable (RPiDrone ${RPICDRONE_PROJECT_SRCS})
 
 # Own libs
-find_library(RPiComponents REQUIRED)
-find_library(RPiSocket REQUIRED)
-find_library(Controllers REQUIRED)
-target_link_libraries(RPiDrone RPiComponents)
-target_link_libraries(RPiDrone RPiSocket)
-target_link_libraries(RPiDrone Controllers)
+#find_library(RPiComponents REQUIRED)
+#find_library(RPiSocket REQUIRED)
+#find_library(Controllers REQUIRED)
+#target_link_libraries(RPiDrone RPiComponents)
+#target_link_libraries(RPiDrone RPiSocket)
+#target_link_libraries(RPiDrone Controllers)
 
 #System libs
 find_library(wiringPi REQUIRED)

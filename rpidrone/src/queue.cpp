@@ -13,21 +13,15 @@ namespace rpidrone
     template<class T>
     void Queue<T>::push(const T& item) 
     {
-        std::unique_lock<std::mutex> mlock(mutex_);
+        std::lock_guard<std::mutex> guard(mtx_);
         queue_.push(item);
-        mlock.unlock();
-        cond_.notify_one();
     }
     
     template<class T>
     T Queue<T>::pop() 
     {
-        std::unique_lock<std::mutex> mlock(mutex_);
+        std::lock_guard<std::mutex> guard(mtx_);
         T val;
-        while (queue_.empty())
-        {
-            cond_.wait(mlock);
-        }
         intern_pop(val);
         return val;
     }
@@ -35,7 +29,7 @@ namespace rpidrone
     template<class T>
     T Queue<T>::pop_or_last() 
     {
-        std::unique_lock<std::mutex> mlock(mutex_);
+        std::lock_guard<std::mutex> guard(mtx_);
         T val;
         if(queue_.empty()){
             val = last_value_;
@@ -48,7 +42,7 @@ namespace rpidrone
     template<class T>
     void Queue<T>::pop_or_last(T& item) 
     {
-        std::unique_lock<std::mutex> mlock(mutex_);
+        std::lock_guard<std::mutex> guard(mtx_);
         if(queue_.empty()){
             item = last_value_;
         } else {
@@ -60,22 +54,14 @@ namespace rpidrone
     template<class T>
     void Queue<T>::pop(T& item) 
     {
-        std::unique_lock<std::mutex> mlock(mutex_);
-        
-        while (queue_.empty())
-        {
-            cond_.wait(mlock);
-        }
-
+        std::lock_guard<std::mutex> guard(mtx_);
         intern_pop(item);
     }
     
     template<class T>
     void Queue<T>::push(T&& item) 
     {
-        std::unique_lock<std::mutex> mlock(mutex_);
+        std::lock_guard<std::mutex> guard(mtx_);
         queue_.push(std::move(item));
-        mlock.unlock();
-        cond_.notify_one();
     }
 }

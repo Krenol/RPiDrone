@@ -1,7 +1,5 @@
 #include <queue>
-#include <thread>
 #include <mutex>
-#include <condition_variable>
 
 /*see https://github.com/juanchopanza/cppblog/blob/master/Concurrency/Queue/Queue.h */
 #ifndef RPIDRONE_QUEUE_H
@@ -62,8 +60,7 @@ namespace rpidrone
         
         T last_value_;
         std::queue<T> queue_;
-        std::mutex mutex_;
-        std::condition_variable cond_;
+        std::mutex mtx_;
         
     };
 }
