@@ -2,7 +2,7 @@
 # project specific logic here.
 #
 cmake_minimum_required (VERSION 3.4)
-set(CMAKE_CXX_STANDARD 11)  # enable C++11 standard
+set(CMAKE_CXX_STANDARD 14)  # enable C++14 standard
 
 project (RPiDrone)
 
@@ -19,7 +19,6 @@ set(CONTROLLERS_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/external/CppControllers CACHE 
 
 set(RPICDRONE_PROJECT_SRCS 
 ${PROJECT_SOURCE_DIR}/test.cpp
-${PROJECT_SOURCE_DIR}/queue.cpp
 )
 
 include_directories(${PROJECT_INCLUDE_DIR})

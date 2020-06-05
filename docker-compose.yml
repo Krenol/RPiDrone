@@ -2,6 +2,8 @@ version: '3.7'
 services:
     rpidrone:
         build: '.'
+        environment:
+            - BUILD_TEST=OFF
         privileged: true
         volumes: 
             - '/dev/ttyAMA0:/dev/ttyAMA0'
