@@ -3,8 +3,11 @@ services:
     rpidrone:
         build: '.'
         environment:
+            - SOCKET_PORT=${SOCKET_PORT}
             - BUILD_TEST=OFF
         privileged: true
+        ports: 
+            - "${SOCKET_PORT}:${SOCKET_PORT}"
         volumes: 
             - '/dev/ttyAMA0:/dev/ttyAMA0'
             - '/dev/mem:/dev/mem'

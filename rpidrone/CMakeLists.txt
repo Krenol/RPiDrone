@@ -16,6 +16,7 @@ set(PROJECT_SOURCE_DIR ${PROJECT_SOURCE_DIR}/src)
 set(RPISOCKET_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/external/RPiSocket CACHE INTERNAL "Path to include folder for RPiSocket")
 set(RPICOMP_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/external/RPiComponents CACHE INTERNAL "Path to include folder for RPiComponents")
 set(CONTROLLERS_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/external/CppControllers CACHE INTERNAL "Path to include folder for CppControllers")
+set(DESIGN_PATTERNS_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/external/CppDesignPatterns CACHE INTERNAL "Path to include folder for CppDesignPatterns")
 
 set(RPICDRONE_PROJECT_SRCS 
 ${PROJECT_SOURCE_DIR}/test.cpp
@@ -26,20 +27,24 @@ include_directories(${PROJECT_SOURCE_DIR})
 include_directories(${RPISOCKET_INCLUDE_DIR})
 include_directories(${RPICOMP_INCLUDE_DIR})
 include_directories(${CONTROLLERS_INCLUDE_DIR})
+include_directories(${DESIGN_PATTERNS_INCLUDE_DIR})
 
-#add_subdirectory (external/RPiSocket/rpisocket)
-#add_subdirectory (external/RPiComponents/rpicomponents)
-#add_subdirectory (external/CppControllers/controllers)
+add_subdirectory (external/RPiSocket/rpisocket)
+add_subdirectory (external/RPiComponents/rpicomponents)
+add_subdirectory (external/CppControllers/controllers)
+add_subdirectory (external/CppDesignPatterns/design_patterns)
 
 add_executable (RPiDrone ${RPICDRONE_PROJECT_SRCS})
 
 # Own libs
-#find_library(RPiComponents REQUIRED)
-#find_library(RPiSocket REQUIRED)
-#find_library(Controllers REQUIRED)
-#target_link_libraries(RPiDrone RPiComponents)
-#target_link_libraries(RPiDrone RPiSocket)
-#target_link_libraries(RPiDrone Controllers)
+find_library(RPiComponents REQUIRED)
+find_library(RPiSocket REQUIRED)
+find_library(Controllers REQUIRED)
+find_library(design_patterns REQUIRED)
+target_link_libraries(RPiDrone RPiComponents)
+target_link_libraries(RPiDrone RPiSocket)
+target_link_libraries(RPiDrone Controllers)
+target_link_libraries(RPiDrone design_patterns)
 
 #System libs
 find_library(wiringPi REQUIRED)

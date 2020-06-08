@@ -10,3 +10,6 @@
 [submodule "rpidrone/external/CppControllers"]
 	path = rpidrone/external/CppControllers
 	url = git@github.com:Krenol/CppControllers.git
+[submodule "rpidrone/external/CppDesignPatterns"]
+	path = rpidrone/external/CppDesignPatterns
+	url = git@github.com:Krenol/CppDesignPatterns.git
