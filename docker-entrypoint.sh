@@ -10,12 +10,14 @@ if [ "$BUILD_TEST" != 'ON' ] && [ "$BUILD_TEST" != 'OFF' ]; then
     BUILD_TEST=ON
 fi
 
+echo "BUILD_TEST=$BUILD_TEST"
 # RUN INPUT
-if [ "$1" = 'start' ]; then
-    cmake --build $BUILD_DIR 
-    $EXEC
-elif [ "$1" = 'build' ]; then
-    cmake --build $BUILD_DIR 
+if [ "$1" = 'start' ] || [ "$1" = 'build' ]; then
+    cmake -D BUILD_TEST=$BUILD_TEST --build $BUILD_DIR
+    cmake --build $BUILD_DIR
+    if [ "$1" = 'start' ]; then
+        $EXEC
+    fi
+else 
+    exec "$@"
 fi
-
-exec "$@"
