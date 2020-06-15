@@ -19,7 +19,8 @@ set(CONTROLLERS_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/external/CppControllers CACHE 
 set(DESIGN_PATTERNS_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/external/CppDesignPatterns CACHE INTERNAL "Path to include folder for CppDesignPatterns")
 
 set(RPICDRONE_PROJECT_SRCS 
-${PROJECT_SOURCE_DIR}/test.cpp
+${PROJECT_SOURCE_DIR}/main.cpp
+${PROJECT_SOURCE_DIR}/sensorics.cpp
 )
 
 include_directories(${PROJECT_INCLUDE_DIR})
@@ -38,13 +39,15 @@ add_executable (RPiDrone ${RPICDRONE_PROJECT_SRCS})
 
 # Own libs
 find_library(RPiComponents REQUIRED)
+find_library(RPiPins REQUIRED)
 find_library(RPiSocket REQUIRED)
 find_library(Controllers REQUIRED)
 find_library(design_patterns REQUIRED)
-target_link_libraries(RPiDrone RPiComponents)
-target_link_libraries(RPiDrone RPiSocket)
-target_link_libraries(RPiDrone Controllers)
-target_link_libraries(RPiDrone design_patterns)
+target_link_libraries(${PROJECT_NAME} RPiComponents)
+target_link_libraries(${PROJECT_NAME} RPiSocket)
+target_link_libraries(${PROJECT_NAME} RPiPins)
+target_link_libraries(${PROJECT_NAME} Controllers)
+target_link_libraries(${PROJECT_NAME} design_patterns)
 
 #System libs
 find_library(wiringPi REQUIRED)

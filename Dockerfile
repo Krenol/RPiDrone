@@ -13,6 +13,9 @@ COPY ./${PROJECT_DIR} ./${PROJECT_DIR}
 #prepare build
 RUN mkdir build && cd build && cmake ../${PROJECT_DIR} 
 
+#build
+RUN cmake --build ./build
+
 COPY ./docker-entrypoint.sh /
 ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["start"]

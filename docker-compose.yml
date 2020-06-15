@@ -1,11 +1,19 @@
 version: '3.7'
 services:
     rpidrone:
-        build: '.'
-        environment:
+        build: 
+            context: '.'
+            args:
+                - SOCKET_PORT=${SOCKET_PORT}
+                - BUILD_TEST=OFF
+                - TRIGGER_PIN=${TRIGGER_PIN}
+                - ECHO_PIN_FRONT=${ECHO_PIN_FRONT}
+        privileged: true
+        environment: 
             - SOCKET_PORT=${SOCKET_PORT}
             - BUILD_TEST=OFF
-        privileged: true
+            - TRIGGER_PIN=${TRIGGER_PIN}
+            - ECHO_PIN_FRONT=${ECHO_PIN_FRONT}
         ports: 
             - "${SOCKET_PORT}:${SOCKET_PORT}"
         volumes: 
