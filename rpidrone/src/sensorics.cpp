@@ -25,4 +25,19 @@ namespace drone
         dist.dist_front = uss_front_->MeasureDistance(rpicomponents::UNIT_M);
         return dist;
     }
+
+    bool Sensorics::calibrate() 
+    {
+        
+    }
+    
+    bool Sensorics::loadCalibration(const std::string& path) 
+    {
+        
+    }
+    
+    bool Sensorics::storeCalibration(const std::string& path) 
+    {
+        
+    }
 }

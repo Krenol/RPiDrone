@@ -63,6 +63,7 @@
         "xtree": "cpp",
         "xutility": "cpp",
         "resumable": "cpp",
-        "future": "cpp"
+        "future": "cpp",
+        "numeric": "cpp"
     }
 }

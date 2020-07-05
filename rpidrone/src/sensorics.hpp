@@ -14,6 +14,30 @@ namespace drone {
             Sensorics();
             Sensorics(rpicomponents::DISTANCE_UNIT unit);
 
+            /*
+            Method to calibrate all sensors that can be calibrated
+            @returns true if calibration was successful; else false
+            */
+            bool calibrate();
+
+            /* 
+            Method to laod a calibration file to restore previous calibration
+            @param path: The path to the file
+            @returns true if loading of calibration was successful, esle false
+            */
+            bool loadCalibration(const std::string& path);
+
+            /* 
+            Method to store calibration file to given path
+            @param path: The path where file ist o be stored
+            @returns true if storing was successful, else false
+            */
+            bool storeCalibration(const std::string& path);
+
+            /*
+            Method to get all distances measured by the USS
+            @returns struct containing measured istances
+            */
             Distances getDistances() const;         
         
         private:
