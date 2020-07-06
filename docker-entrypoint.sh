@@ -2,7 +2,7 @@
 set -e
 
 #set vars
-EXEC=/data/rpidrone/build/RPiDrone
+EXEC=/data/build/lib/rpidrone
 
 
 # RUN INPUT
