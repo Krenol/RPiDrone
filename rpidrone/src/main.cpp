@@ -24,7 +24,7 @@ class SubQ : public design_patterns::SubscriberQueue<std::string> {
 
 int getPort(){
     auto env_var = std::getenv("SOCKET_PORT");
-    int port = 8888;
+    int port = -1;
     try {
         if(env_var){
             port = std::stoi(env_var); 
@@ -39,7 +39,7 @@ int main() {
     drone::Sensorics sensorics(rpicomponents::UNIT_M);
     rpisocket::WiFiServer server(getPort());
     std::string data;
-    auto s = std::make_shared<SubQ>();
+    auto s = std::make_shared< >();
     server.subscribe(s);
     while(1){
         std::cout << "waiting for connection..." << std::endl;
