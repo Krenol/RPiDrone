@@ -37,6 +37,10 @@ if (NOT TARGET utils)
   add_subdirectory (external/CppUtils)
 endif ()
 
+if (NOT TARGET nlohmann_json::nlohmann_json)
+    add_subdirectory (external/json)
+endif ()
+
 add_executable (rpidrone ${RPICDRONE_PROJECT_SRCS})
 
 # Own libs
@@ -46,12 +50,14 @@ find_library(rpisocket REQUIRED)
 find_library(controlelrs REQUIRED)
 find_library(design_patterns REQUIRED)
 find_library(utils REQUIRED)
+find_library(nlohmann_json::nlohmann_json REQUIRED)
 target_link_libraries(${PROJECT_NAME} rpicomponents)
 target_link_libraries(${PROJECT_NAME} rpisocket)
 target_link_libraries(${PROJECT_NAME} rpipins)
 target_link_libraries(${PROJECT_NAME} controllers)
 target_link_libraries(${PROJECT_NAME} design_patterns)
 target_link_libraries(${PROJECT_NAME} utils)
+target_link_libraries(${PROJECT_NAME} nlohmann_json::nlohmann_json)
 
 #System libs
 find_library(wiringPi REQUIRED)

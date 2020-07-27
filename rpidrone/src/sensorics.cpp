@@ -13,9 +13,9 @@ namespace drone
     Sensorics::Sensorics(rpicomponents::DISTANCE_UNIT unit) : unit_{unit}
     {
         auto trigger_pin = pin::GET_PIN_ID(std::getenv("TRIGGER_PIN"));  
-        auto trigger = pin::PinCreator::CreateDigitalPin(trigger_pin, 1);
+        std::shared_ptr<pin::Pin> trigger = std::move(pin::PinCreator::CreateDigitalPin(trigger_pin, 1));
         auto echo_pin_front = pin::GET_PIN_ID(std::getenv("ECHO_PIN_FRONT"));
-        auto echo_front = pin::PinCreator::CreateInputPin(echo_pin_front, 1);
+        std::shared_ptr<pin::Pin> echo_front = std::move(pin::PinCreator::CreateInputPin(echo_pin_front, 1));
         uss_front_ = std::make_unique<rpicomponents::UltrasonicSensor>(trigger, echo_front);
     }
 

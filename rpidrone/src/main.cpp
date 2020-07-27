@@ -39,7 +39,7 @@ int main() {
     drone::Sensorics sensorics(rpicomponents::UNIT_M);
     rpisocket::WiFiServer server(getPort());
     std::string data;
-    auto s = std::make_shared< >();
+    auto s = std::make_shared<SubQ>();
     server.subscribe(s);
     while(1){
         std::cout << "waiting for connection..." << std::endl;
