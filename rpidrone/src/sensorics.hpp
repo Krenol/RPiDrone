@@ -42,7 +42,8 @@ namespace drone {
         
         private:
             const rpicomponents::DISTANCE_UNIT unit_;
-            std::unique_ptr<rpicomponents::UltrasonicSensor> uss_left_, uss_right_, uss_top_, uss_bottom_, uss_front_, uss_back_;
+            //std::unique_ptr<rpicomponents::UltrasonicSensor> uss_left_, uss_right_, uss_top_, uss_bottom_, uss_front_, uss_back_;
+            std::unique_ptr<rpicomponents::MPU6050> mpu_;
             
 
     };
