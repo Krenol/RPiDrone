@@ -12,7 +12,7 @@ namespace drone {
     class Sensorics {
         public:
             Sensorics();
-            Sensorics(rpicomponents::DISTANCE_UNIT unit);
+            Sensorics(rpicomponents::DISTANCE_UNIT unit, int mpu_addr);
 
             /*
             Method to calibrate all sensors that can be calibrated

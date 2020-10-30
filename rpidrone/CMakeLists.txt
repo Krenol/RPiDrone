@@ -11,6 +11,7 @@ set(UTILS_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/external/CppUtils CACHE INTERNAL "Pa
 set(RPICDRONE_PROJECT_SRCS 
 ${PROJECT_SOURCE_DIR}/main.cpp
 ${PROJECT_SOURCE_DIR}/sensorics.cpp
+${PROJECT_SOURCE_DIR}/controls.cpp
 )
 
 include_directories(${PROJECT_INCLUDE_DIR})
@@ -60,11 +61,9 @@ target_link_libraries(${PROJECT_NAME} utils)
 target_link_libraries(${PROJECT_NAME} nlohmann_json::nlohmann_json)
 
 #System libs
-find_library(wiringPi REQUIRED)
-find_library(wiringPiDev REQUIRED)
+find_library(pigpio REQUIRED)
 find_library(pthread REQUIRED)
 find_library(bluetooth REQUIRED)
 target_link_libraries(${PROJECT_NAME} bluetooth)
-target_link_libraries(${PROJECT_NAME} wiringPi)
-target_link_libraries(${PROJECT_NAME} wiringPiDev)
+target_link_libraries(${PROJECT_NAME} pigpio)
 target_link_libraries(${PROJECT_NAME} pthread)

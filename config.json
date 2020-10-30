@@ -1,0 +1,26 @@
+{
+    "escs":{
+        "min": 700,
+        "max": 2000,
+        "idle": 950,
+        "pins":[
+            {
+                "pos": "lf",
+                "pin":"GPIO26"
+            },
+            {
+                "pos": "rf",
+                "pin":"GPIO21"
+            },
+            {
+                "pos": "lb",
+                "pin":"GPIO13"
+            },
+            {
+                "pos": "rb",
+                "pin":"GPIO19"
+            }
+        ]
+    },
+    "mpu": 104
+}
