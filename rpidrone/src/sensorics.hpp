@@ -1,8 +1,11 @@
 #include "rpicomponents/rpicomponents.hpp"
 #include <memory>
+#include <nlohmann/json.hpp>
 
 #ifndef DRONE_SENSORICS_H
 #define DRONE_SENSORICS_H
+
+using json = nlohmann::json;
 
 namespace drone {
     struct Distances {
@@ -11,8 +14,12 @@ namespace drone {
 
     class Sensorics {
         public:
-            Sensorics();
-            Sensorics(rpicomponents::DISTANCE_UNIT unit, int mpu_addr);
+            /**
+             * Constructor
+             * @param sensorics JSON holding the sensorics values
+             * @param unit Unit for everything handled inside the sensorics
+             */
+            Sensorics(const json& sensors, rpicomponents::DISTANCE_UNIT unit = rpicomponents::UNIT_MM);
 
             /*
             Method to calibrate all sensors that can be calibrated
@@ -39,6 +46,8 @@ namespace drone {
             @returns struct containing measured istances
             */
             Distances getDistances() const;         
+
+            void getKalmanAngles(rpicomponents::mpu_angles& angles);
         
         private:
             const rpicomponents::DISTANCE_UNIT unit_;

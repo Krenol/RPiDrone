@@ -1,26 +1,46 @@
 {
-    "escs":{
-        "min": 700,
-        "max": 2000,
-        "idle": 950,
-        "pins":[
-            {
-                "pos": "lf",
-                "pin":"GPIO26"
-            },
-            {
-                "pos": "rf",
-                "pin":"GPIO21"
-            },
-            {
-                "pos": "lb",
-                "pin":"GPIO13"
-            },
-            {
-                "pos": "rb",
-                "pin":"GPIO19"
-            }
-        ]
+    "server": {
+        "port": 8889,
+        "bytes": 150
     },
-    "mpu": 104
+    "misc": {
+        "on_btn": 20,
+        "on_led": 16,
+        "status_led": 6
+    },
+    "sensorics": {
+        "mpu": 104
+    },
+    "controls": {
+        "gamma_max": 20.0,
+        "beta_max": 20.0,
+        "escs": {
+            "controllers": {
+                "k_i": 1,
+                "k_p": 1,
+                "k_d": 1
+            },
+            "min": 700,
+            "max": 2000,
+            "idle": 950,
+            "pins": [
+                {
+                    "pos": "lf",
+                    "pin": 26
+                },
+                {
+                    "pos": "rf",
+                    "pin": 21
+                },
+                {
+                    "pos": "lb",
+                    "pin": 13
+                },
+                {
+                    "pos": "rb",
+                    "pin": 19
+                }
+            ]
+        }
+    }
 }

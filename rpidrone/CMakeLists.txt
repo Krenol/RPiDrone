@@ -9,6 +9,7 @@ set(DESIGN_PATTERNS_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/external/CppDesignPatterns
 set(UTILS_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/external/CppUtils CACHE INTERNAL "Path to include folder for CppUtils")
 
 set(RPICDRONE_PROJECT_SRCS 
+${PROJECT_SOURCE_DIR}/loop.cpp
 ${PROJECT_SOURCE_DIR}/main.cpp
 ${PROJECT_SOURCE_DIR}/sensorics.cpp
 ${PROJECT_SOURCE_DIR}/controls.cpp
