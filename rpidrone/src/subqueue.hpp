@@ -18,6 +18,10 @@ namespace drone
         void update(const T& msg) {
             design_patterns::Queue<T>::push(msg);
         }
+
+        void clear() {
+            design_patterns::Queue<T>::clear();
+        }
     
     };
 }

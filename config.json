@@ -1,7 +1,8 @@
 {
     "server": {
         "port": 8889,
-        "bytes": 150
+        "bytes": 150,
+        "delimiter": "\n\n"
     },
     "misc": {
         "on_btn": 20,
@@ -16,9 +17,11 @@
         "beta_max": 20.0,
         "escs": {
             "controllers": {
-                "k_i": 1,
-                "k_p": 1,
-                "k_d": 1
+                "k_i": 0.007,
+                "k_p": 7.7,
+                "k_d": 1.1,
+                "k_aw": 5,
+                "max_diff": 100
             },
             "min": 700,
             "max": 2000,
