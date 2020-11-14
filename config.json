@@ -18,10 +18,10 @@
         "escs": {
             "controllers": {
                 "k_i": 0.0007,
-                "k_p": 12,
-                "k_d": 3.1,
+                "k_p": 5,
+                "k_d": 2.1,
                 "k_aw": 5,
-                "max_diff": 100
+                "max_diff": 50
             },
             "min": 800,
             "max": 2200,

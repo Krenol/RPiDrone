@@ -13,6 +13,7 @@ ${PROJECT_SOURCE_DIR}/loop.cpp
 ${PROJECT_SOURCE_DIR}/main.cpp
 ${PROJECT_SOURCE_DIR}/sensorics.cpp
 ${PROJECT_SOURCE_DIR}/controls.cpp
+external/easyloggingpp/src/easylogging++.cc
 )
 
 include_directories(${PROJECT_INCLUDE_DIR})
@@ -60,7 +61,6 @@ target_link_libraries(${PROJECT_NAME} controllers)
 target_link_libraries(${PROJECT_NAME} design_patterns)
 target_link_libraries(${PROJECT_NAME} utils)
 target_link_libraries(${PROJECT_NAME} nlohmann_json::nlohmann_json)
-
 #System libs
 find_library(pigpio REQUIRED)
 find_library(pthread REQUIRED)

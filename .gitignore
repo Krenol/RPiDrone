@@ -54,3 +54,6 @@ CTestTestfile.cmake
 _deps
 
 .vscode/
+
+# log
+myeasylog.log

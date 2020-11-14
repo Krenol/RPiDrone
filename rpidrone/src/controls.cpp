@@ -2,6 +2,9 @@
 #include <future>
 #include <cmath> 
 #include <stdio.h> 
+#include <Eigen/Dense>
+#include <unistd.h>
+#include "easylogging++.h"
 
 namespace drone
 {
@@ -15,13 +18,18 @@ namespace drone
 
     void Controls::initControllers(const json& controls){
         auto vals = controls.at("escs").at("controllers");
-        pid_lb_ = std::make_unique<controllers::PD>(vals.at("k_p"), vals.at("k_d"), -max_diff_, max_diff_);
-        pid_rb_ = std::make_unique<controllers::PD>(vals.at("k_p"), vals.at("k_d"), -max_diff_, max_diff_);
-        pid_lf_ = std::make_unique<controllers::PD>(vals.at("k_p"), vals.at("k_d"), -max_diff_, max_diff_);
-        pid_rf_ = std::make_unique<controllers::PD>(vals.at("k_p"), vals.at("k_d"), -max_diff_, max_diff_);
-        //pid_rf_ = std::make_unique<controllers::PID_AW>(vals.at("k_p"), vals.at("k_d"), vals.at("k_i"), vals.at("k_aw"), -max_diff_, max_diff_);
+        Eigen::MatrixXd p(2, 1), d(2,1);
+        Eigen::VectorXd max(1), min(1);
+        p << vals.at("k_p"), vals.at("k_p");
+        d << vals.at("k_d"), vals.at("k_d");
+        min << -max_diff_;
+        max << max_diff_;
+        pid_lf_ = std::make_unique<controllers::PD>(p, d, min, max);
+        pid_lb_ = std::make_unique<controllers::PD>(p, d, min, max);
+        pid_rf_ = std::make_unique<controllers::PD>(p, d, min, max);
+        pid_rb_ = std::make_unique<controllers::PD>(p, d, min, max);
     }
-    
+
     void Controls::initEscs(const json& controls) 
     {
         auto esc_pins = controls.at("escs").at("pins");
@@ -73,29 +81,35 @@ namespace drone
     void Controls::control() 
     {
         const std::lock_guard<std::mutex> lock(mtx_);
-        std::cout << "\n\n---------------\n";
         rpicomponents::mpu_angles angles;
         sensorics_->getKalmanAngles(angles);
-        std::cout << "beta_s: " << beta_s_ << "\tis: " << angles.beta << "\terror: " << beta_s_ - angles.beta << std::endl;
-        std::cout << "gamma_s: " << gamma_s_ << "\tis: " << angles.gamma << "\terror: " << gamma_s_ - angles.gamma << std::endl;
-        int lb =  pid_lb_->calculate(-angles.beta, -beta_s_);
-        int rb =  pid_rb_->calculate(angles.beta, beta_s_);
-        int rf =  pid_rf_->calculate(angles.beta, beta_s_);
-        int lf =  pid_lf_->calculate(-angles.beta, -beta_s_);
-        std::cout << "lb: " << lb << "\trb: " << rb << "\trf: " << rf << "\tlf: " << lf <<  std::endl;
-        lf_->SetOutputSpeed(throttle_ + lf);
-        rf_->SetOutputSpeed(throttle_ + rf);
-        lb_->SetOutputSpeed(throttle_ + lb);
-        rb_->SetOutputSpeed(throttle_ + rb);
-        std::cout << "---------------\n\n";
+        LOG(INFO) << "beta_s: " << beta_s_ << "\tis: " << angles.beta << "\terror: " << beta_s_ - angles.beta << std::endl;
+        LOG(INFO) << "gamma_s: " << gamma_s_ << "\tis: " << angles.gamma << "\terror: " << gamma_s_ - angles.gamma << std::endl;
+        Eigen::VectorXd is(2), shld(2), lb, rb, lf, rf;
+        is << angles.gamma, -angles.beta;
+        shld << gamma_s_, -beta_s_;
+        pid_lb_->calculate(is, shld, lb);
+        is << -angles.gamma, -angles.beta;
+        shld << -gamma_s_, -beta_s_;
+        pid_rb_->calculate(is, shld, rb);
+        is << angles.gamma, angles.beta;
+        shld << gamma_s_, beta_s_;
+        pid_rf_->calculate(is, shld, rf);
+        is << -angles.gamma, angles.beta;
+        shld << -gamma_s_, beta_s_;
+        pid_lf_->calculate(is, shld, lf);
+        LOG(INFO) << "lb: " << lb << "\trb: " << rb << "\trf: " << rf << "\tlf: " << lf <<  std::endl;
+        lf_->SetOutputSpeed(throttle_ + lf(0));
+        rf_->SetOutputSpeed(throttle_ + rf(0));
+        lb_->SetOutputSpeed(throttle_ + lb(0));
+        rb_->SetOutputSpeed(throttle_ + rb(0));
     }
     
     void Controls::startEsc(const std::unique_ptr<rpicomponents::Esc>& esc) 
     {
-        //esc->Calibrate(false);
         esc->Arm();
         esc->SetOutputSpeed(0);
-        utils::Waiter::SleepMillis(100);
+        sleep(1);
     }
 
     void Controls::idle() 
