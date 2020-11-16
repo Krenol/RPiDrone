@@ -3,6 +3,8 @@
 #include <unistd.h>
 #include <fstream> 
 #include "easylogging++.h"
+
+#define NETWORK_LOG(LEVEL) CLOG(LEVEL, "network") //define network log
 //#include <filesystem>
 
 namespace drone
@@ -33,9 +35,9 @@ namespace drone
     {
         std::string read, write;
         // connect to app
-        LOG(INFO) << "waiting for connection on " << server_->getServerIp() << ":" << server_->getPort() << std::endl;
+        NETWORK_LOG(INFO) << "waiting for connection on " << server_->getServerIp() << ":" << server_->getPort();
         server_->connect();
-        LOG(INFO) << "connected to " << server_->getConnectedClient() << std::endl;
+        NETWORK_LOG(INFO) << "connected to " << server_->getConnectedClient();
         // while we are connected run read thread
         server_->readThreadOn();
         while(server_->hasConnection()){
@@ -48,9 +50,10 @@ namespace drone
                 server_->writeBytes("");
             } catch(const std::exception &exc) {
                 //connection lost!
-                LOG(ERROR) << exc.what() << std::endl;
+                LOG(ERROR) << exc.what();
                 break;
             }
+            usleep(10000); // sleep 10ms
         }
         server_->readThreadOff(); //not connected anymore; stop thread
         subq_->clear();
@@ -83,11 +86,11 @@ namespace drone
             size_t pos =  r.find_first_of("{");
             r.erase(0, pos);
             j = json::parse(r);
-            LOG(DEBUG) << "read: " << j << std::endl;
+            NETWORK_LOG(INFO) << j;
             controls_->process_input(j);
         } catch(const std::exception &exc){
             //we return old json
-            LOG(ERROR) << exc.what() << std::endl;
+            NETWORK_LOG(ERROR) << exc.what() << std::endl;
         }
         
     }

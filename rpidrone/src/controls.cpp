@@ -6,6 +6,8 @@
 #include <unistd.h>
 #include "easylogging++.h"
 
+#define CONTROL_LOG(LEVEL) CLOG(LEVEL, "controls") //define controls log
+#define PID_LOG(LEVEL) CLOG(LEVEL, "pid") //define controls log
 namespace drone
 {
     Controls::Controls(const json& controls, const json& sensorics) : idle_ {controls.at("escs").at("idle")}, esc_max_ {controls.at("escs").at("max")}, esc_min_ {controls.at("escs").at("min")}, max_diff_{controls.at("escs").at("controllers").at("max_diff")}, beta_max_{controls.at("beta_max")}, gamma_max_{controls.at("gamma_max")}
@@ -14,6 +16,7 @@ namespace drone
         initControllers(controls);
         throttle_ = idle_;
         sensorics_ = std::make_unique<Sensorics>(sensorics);
+        PID_LOG(DEBUG) << "datetime;level;beta_s;beta_is;err_b;gamma_s;gamma_is;err_g;lb;rb;lf;rf;";
     }
 
     void Controls::initControllers(const json& controls){
@@ -83,8 +86,6 @@ namespace drone
         const std::lock_guard<std::mutex> lock(mtx_);
         rpicomponents::mpu_angles angles;
         sensorics_->getKalmanAngles(angles);
-        LOG(INFO) << "beta_s: " << beta_s_ << "\tis: " << angles.beta << "\terror: " << beta_s_ - angles.beta << std::endl;
-        LOG(INFO) << "gamma_s: " << gamma_s_ << "\tis: " << angles.gamma << "\terror: " << gamma_s_ - angles.gamma << std::endl;
         Eigen::VectorXd is(2), shld(2), lb, rb, lf, rf;
         is << angles.gamma, -angles.beta;
         shld << gamma_s_, -beta_s_;
@@ -98,7 +99,8 @@ namespace drone
         is << -angles.gamma, angles.beta;
         shld << -gamma_s_, beta_s_;
         pid_lf_->calculate(is, shld, lf);
-        LOG(INFO) << "lb: " << lb << "\trb: " << rb << "\trf: " << rf << "\tlf: " << lf <<  std::endl;
+
+        PID_LOG(INFO) << beta_s_ << ";" << angles.beta << ";" << beta_s_ - angles.beta << ";" << gamma_s_ << ";" << angles.gamma << ";" << gamma_s_ - angles.gamma << ";" << lb << ";" << rb << ";" << lf << ";" << rf << ";";
         lf_->SetOutputSpeed(throttle_ + lf(0));
         rf_->SetOutputSpeed(throttle_ + rf(0));
         lb_->SetOutputSpeed(throttle_ + lb(0));

@@ -2,6 +2,9 @@
 #include "utils/utils.hpp"
 #include <iostream>
 #include <nlohmann/json.hpp>
+#include "easylogging++.h"
+
+#define SENSOR_LOG(LEVEL) CLOG(LEVEL, "sensorics")   //define sensor log
 
 namespace drone
 {

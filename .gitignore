@@ -56,4 +56,5 @@ _deps
 .vscode/
 
 # log
-myeasylog.log
+*.log
+*.csv
