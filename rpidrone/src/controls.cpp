@@ -16,7 +16,7 @@ namespace drone
         initControllers(controls);
         throttle_ = idle_;
         sensorics_ = std::make_unique<Sensorics>(sensorics);
-        PID_LOG(DEBUG) << "datetime;level;beta_s;beta_is;err_b;gamma_s;gamma_is;err_g;lb;rb;lf;rf;";
+        PID_LOG(DEBUG) << "datetime;level;beta_s;beta_is;err_b;gamma_s;gamma_is;err_g;lb;rb;lf;rf";
     }
 
     void Controls::initControllers(const json& controls){
@@ -100,7 +100,7 @@ namespace drone
         shld << -gamma_s_, beta_s_;
         pid_lf_->calculate(is, shld, lf);
 
-        PID_LOG(INFO) << beta_s_ << ";" << angles.beta << ";" << beta_s_ - angles.beta << ";" << gamma_s_ << ";" << angles.gamma << ";" << gamma_s_ - angles.gamma << ";" << lb << ";" << rb << ";" << lf << ";" << rf << ";";
+        PID_LOG(INFO) << beta_s_ << ";" << angles.beta << ";" << beta_s_ - angles.beta << ";" << gamma_s_ << ";" << angles.gamma << ";" << gamma_s_ - angles.gamma << ";" << lb << ";" << rb << ";" << lf << ";" << rf;
         lf_->SetOutputSpeed(throttle_ + lf(0));
         rf_->SetOutputSpeed(throttle_ + rf(0));
         lb_->SetOutputSpeed(throttle_ + lb(0));
