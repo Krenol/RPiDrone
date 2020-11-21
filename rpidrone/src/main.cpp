@@ -3,7 +3,6 @@
 
 INITIALIZE_EASYLOGGINGPP
 
-
 static void initLogging()
 {
     //enable multi loggers
@@ -24,4 +23,3 @@ int main() {
     }
     return 0;
 }
-

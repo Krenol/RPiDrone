@@ -38,6 +38,12 @@ namespace drone {
              * Await button press and startup everything
              */
             void startupDrone();
+
+            /**
+             * Method to check whether socket is connected
+             * @returns true if connected else false
+             */
+            bool hasConnection();
             
         private:
             std::unique_ptr<rpicomponents::Led> on_led_, status_led_;

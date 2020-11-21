@@ -1,7 +1,7 @@
 #include "loop.hpp"
 #include <iostream>
 #include <unistd.h>
-#include <fstream> 
+#include <fstream>
 #include "easylogging++.h"
 
 #define NETWORK_LOG(LEVEL) CLOG(LEVEL, "network") //define network log
@@ -50,7 +50,7 @@ namespace drone
                 server_->writeBytes("");
             } catch(const std::exception &exc) {
                 //connection lost!
-                LOG(ERROR) << exc.what();
+                NETWORK_LOG(ERROR) << exc.what();
                 break;
             }
             usleep(10000); // sleep 10ms
@@ -71,6 +71,11 @@ namespace drone
         on_led_->TurnOn();
         controls_->startMotors(true);
         status_led_->TurnOn();
+    }
+    
+    bool Loop::hasConnection() 
+    {
+        return server_->hasConnection();
     }
 
     void Loop::loadConfig(const std::string& file) {

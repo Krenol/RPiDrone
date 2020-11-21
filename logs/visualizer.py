@@ -2,7 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 def plotPID(file, pltName="pid_plot"):
-    df = pd.read_csv(file, sep=";", header=0)
+    df = pd.read_csv(file, sep=";", header=0, error_bad_lines=False)
     df['datetime'] =  pd.to_datetime(df['datetime'])
 
     plt.subplot(311)
@@ -25,3 +25,4 @@ def plotPID(file, pltName="pid_plot"):
     plt.ylabel('PID control value', fontsize=14)
 
     plt.savefig(pltName + ".png", dpi=300)
+    plt.show()
