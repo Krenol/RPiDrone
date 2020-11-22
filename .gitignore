@@ -59,3 +59,5 @@ _deps
 *.log
 *.csv
 *.png
+
+__pycache__/

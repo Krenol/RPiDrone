@@ -13,7 +13,7 @@ ${PROJECT_SOURCE_DIR}/loop.cpp
 ${PROJECT_SOURCE_DIR}/main.cpp
 ${PROJECT_SOURCE_DIR}/sensorics.cpp
 ${PROJECT_SOURCE_DIR}/controls.cpp
-external/easyloggingpp/src/easylogging++.cc
+${PROJECT_SOURCE_DIR}/easylogging++.cc
 )
 
 include_directories(${PROJECT_INCLUDE_DIR})

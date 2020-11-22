@@ -21,16 +21,18 @@ namespace drone
 
     void Controls::initControllers(const json& controls){
         auto vals = controls.at("escs").at("controllers");
-        Eigen::MatrixXd p(2, 1), d(2,1);
-        Eigen::VectorXd max(1), min(1);
+        Eigen::MatrixXd p(2, 1), d(2,1), i(2,1);
+        Eigen::VectorXd max(1), min(1), aw(1);
         p << vals.at("k_p"), vals.at("k_p");
         d << vals.at("k_d"), vals.at("k_d");
+        i << vals.at("k_i"), vals.at("k_i");
+        aw << vals.at("k_aw");
         min << -max_diff_;
         max << max_diff_;
-        pid_lf_ = std::make_unique<controllers::PD>(p, d, min, max);
-        pid_lb_ = std::make_unique<controllers::PD>(p, d, min, max);
-        pid_rf_ = std::make_unique<controllers::PD>(p, d, min, max);
-        pid_rb_ = std::make_unique<controllers::PD>(p, d, min, max);
+        pid_lf_ = std::make_unique<controllers::PID_AW>(p, d, i, aw, min, max);
+        pid_lb_ = std::make_unique<controllers::PID_AW>(p, d, i, aw, min, max);
+        pid_rf_ = std::make_unique<controllers::PID_AW>(p, d, i, aw, min, max);
+        pid_rb_ = std::make_unique<controllers::PID_AW>(p, d, i, aw, min, max);
     }
 
     void Controls::initEscs(const json& controls) 
@@ -133,5 +135,16 @@ namespace drone
     void Controls::calibrateSensors() 
     {
         sensorics_->calibrate();
+    }
+    
+    
+    void Controls::saveCalibration(const std::string& path) 
+    {
+        sensorics_->storeCalibration(path);
+    }
+    
+    void Controls::loadCalibration(const std::string& path) 
+    {
+        sensorics_->loadCalibration(path);
     }
 }

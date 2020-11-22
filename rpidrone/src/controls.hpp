@@ -60,10 +60,22 @@ namespace drone {
              */
             void calibrateSensors();
 
+            /**
+             * Method to save calibartion to given path
+             * @param path The path calibration file should be stored
+             */
+            void saveCalibration(const std::string& path);
+
+            /**
+             * Load calibration from file
+             * @param path The path to the calibration file
+             */
+            void loadCalibration(const std::string& path);
+
         private:
             std::unique_ptr<rpicomponents::Esc> lf_, rf_, lb_, rb_;
             std::mutex mtx_; 
-            std::unique_ptr<controllers::PD> pid_lf_, pid_rf_, pid_rb_, pid_lb_;
+            std::unique_ptr<controllers::PID_AW> pid_lf_, pid_rf_, pid_rb_, pid_lb_;
             const int idle_, esc_max_, esc_min_, max_diff_;
             const float beta_max_{20}, gamma_max_{20};
             std::atomic_int throttle_{0};

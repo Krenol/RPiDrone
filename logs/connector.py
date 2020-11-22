@@ -11,7 +11,7 @@ with open('../conf/config.json') as json_file:
 
 delim = data["server"]["delimiter"]
 cntls = data['controls']["escs"]["controllers"]
-pltName = "kp_" + str(cntls['k_p']) + "-kd_" + str(cntls['k_d']) + "-ki_" + str(cntls['k_i'])
+pltName = "kp_" + str(cntls['k_p']) + "-kd_" + str(cntls['k_d']) + "-ki_" + str(cntls['k_i']) + "-kaw_" + str(cntls['k_aw'])
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect(("raspberrypi", 8889))
