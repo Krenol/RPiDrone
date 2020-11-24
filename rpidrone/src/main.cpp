@@ -2,26 +2,34 @@
 #include "easylogging++.h"
 #include "globals.hpp"
 #include <cstdio>
+#include <fstream>
+#include <iostream>
+#include <ios>
+#include <cstdio>
+#include <ctime>
 
 INITIALIZE_EASYLOGGINGPP
 
 static void initLogging()
 {
+    mvFile(LOG_DIR + "/pid.csv", LOG_DIR + "/pid_" + std::to_string(std::time(0)) + ".csv")
     //enable multi loggers
     el::Loggers::addFlag(el::LoggingFlag::MultiLoggerSupport);
     // configure all loggers
     el::Loggers::configureFromGlobal((CONF_DIR + "/log.conf").c_str());
 }
 
-static void removeLogs() {
-    std::remove((LOG_DIR + "/pid.csv").c_str());
-    std::remove((LOG_DIR + "/network.log").c_str());
-    std::remove((LOG_DIR + "/default.log").c_str());
-    std::remove((LOG_DIR + "/controls.log").c_str());
+static void mvFile(const std::string& file, const std::string& newFile){
+    std::ifstream in(file.c_str(), std::ios::in | std::ios::binary);
+    if(in.good()) {
+        std::ofstream out(newFile.c_str(), std::ios::out | std::ios::binary);
+        out << in.rdbuf();
+        std::remove(file.c_str());
+    }
 }
 
+
 int main() {
-    removeLogs();
     initLogging();
     LOG(INFO) << "Loading config.json";
     drone::Loop l (CONF_DIR + "/config.json");
