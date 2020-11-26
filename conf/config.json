@@ -2,7 +2,7 @@
     "server": {
         "port": 8889,
         "bytes": 150,
-        "delimiter": "\n\n"
+        "delimiter": "\r\n"
     },
     "misc": {
         "on_btn": 20,
@@ -18,14 +18,14 @@
         "escs": {
             "controllers": {
                 "k_i": 0.00000004,
-                "k_p": 0.17,
-                "k_d": 1.75,
-                "k_aw": 1.5,
+                "k_p": 2.5,
+                "k_d": 10.5,
+                "k_aw": 1,
                 "max_diff": 50
             },
             "min": 800,
             "max": 2200,
-            "idle": 950,
+            "idle": 900,
             "pins": [
                 {
                     "pos": "lf",

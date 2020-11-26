@@ -10,15 +10,6 @@
 
 INITIALIZE_EASYLOGGINGPP
 
-static void initLogging()
-{
-    mvFile(LOG_DIR + "/pid.csv", LOG_DIR + "/pid_" + std::to_string(std::time(0)) + ".csv")
-    //enable multi loggers
-    el::Loggers::addFlag(el::LoggingFlag::MultiLoggerSupport);
-    // configure all loggers
-    el::Loggers::configureFromGlobal((CONF_DIR + "/log.conf").c_str());
-}
-
 static void mvFile(const std::string& file, const std::string& newFile){
     std::ifstream in(file.c_str(), std::ios::in | std::ios::binary);
     if(in.good()) {
@@ -26,6 +17,15 @@ static void mvFile(const std::string& file, const std::string& newFile){
         out << in.rdbuf();
         std::remove(file.c_str());
     }
+}
+
+static void initLogging()
+{
+    mvFile(LOG_DIR + "/pid.csv", LOG_DIR + "/pid_" + std::to_string(std::time(0)) + ".csv");
+    //enable multi loggers
+    el::Loggers::addFlag(el::LoggingFlag::MultiLoggerSupport);
+    // configure all loggers
+    el::Loggers::configureFromGlobal((CONF_DIR + "/log.conf").c_str());
 }
 
 
