@@ -28,3 +28,6 @@ def plotPID(file, pltName="pid_plot"):
 
     plt.savefig(pltName + ".png", dpi=300)
     plt.show()
+
+if __name__ == "__main__":
+    plotPID("pid.csv", "pid")

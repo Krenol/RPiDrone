@@ -5,12 +5,13 @@
 #include <Eigen/Dense>
 #include <unistd.h>
 #include "easylogging++.h"
+#include "globals.hpp"
 
 #define CONTROL_LOG(LEVEL) CLOG(LEVEL, "controls") //define controls log
 #define PID_LOG(LEVEL) CLOG(LEVEL, "pid") //define controls log
 namespace drone
 {
-    Controls::Controls(const json& controls, const json& sensorics) : idle_ {controls.at("escs").at("idle")}, esc_max_ {controls.at("escs").at("max")}, esc_min_ {controls.at("escs").at("min")}, max_diff_{controls.at("escs").at("controllers").at("max_diff")}, beta_max_{controls.at("beta_max")}, gamma_max_{controls.at("gamma_max")}
+    Controls::Controls(const json& controls, const json& sensorics) : idle_ {controls.at("escs").at("idle")}, esc_max_ {controls.at("escs").at("max")}, esc_min_ {controls.at("escs").at("min")}, max_diff_{controls.at("escs").at("controllers").at("max_diff")}, beta_max_{controls.at("beta_max")}, gamma_max_{controls.at("gamma_max")}, calibrate_escs_{controls.at("escs").at("calibrate")}, calibrate_sensors_{sensorics.at("calibrate")}
     {
         initEscs(controls);
         initControllers(controls);
@@ -55,16 +56,28 @@ namespace drone
         }
     }
     
-    void Controls::startMotors(bool calibrate) 
+    void Controls::startMotors() 
     {
-        if(calibrate){
+        if(calibrate_sensors_) {
             calibrateSensors();
+            saveCalibration(CONF_DIR + "/" + MPU_CONF);
+        } else {
+            loadCalibration(CONF_DIR + "/" + MPU_CONF);
         }
-        std::async(std::launch::async, [this](){this->startEsc(rb_);});
-        std::async(std::launch::async, [this](){this->startEsc(rf_);});
-        std::async(std::launch::async, [this](){this->startEsc(lb_);});
-        auto h = std::async(std::launch::async, [this](){this->startEsc(lf_);});
-        h.get(); // we wait for the last motor to finish it's startup
+        if(calibrate_escs_) {
+            std::async(std::launch::async, [this](){this->calibrateEsc(rb_);});
+            std::async(std::launch::async, [this](){this->calibrateEsc(rf_);});
+            std::async(std::launch::async, [this](){this->calibrateEsc(lb_);});
+            auto h = std::async(std::launch::async, [this](){this->calibrateEsc(lf_);});
+            h.get(); // we wait for the last motor to finish it's startup
+        } else {
+            
+            std::async(std::launch::async, [this](){this->startEsc(rb_);});
+            std::async(std::launch::async, [this](){this->startEsc(rf_);});
+            std::async(std::launch::async, [this](){this->startEsc(lb_);});
+            auto h = std::async(std::launch::async, [this](){this->startEsc(lf_);});
+            h.get(); // we wait for the last motor to finish it's startup
+        }
     }
     
     void Controls::process_input(const json& input) 
@@ -112,6 +125,13 @@ namespace drone
     void Controls::startEsc(const std::unique_ptr<rpicomponents::Esc>& esc) 
     {
         esc->Arm();
+        esc->SetOutputSpeed(0);
+        sleep(1);
+    }
+    
+    void Controls::calibrateEsc(const std::unique_ptr<rpicomponents::Esc>& esc) 
+    {
+        esc->Calibrate(false);
         esc->SetOutputSpeed(0);
         sleep(1);
     }

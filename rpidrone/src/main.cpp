@@ -25,14 +25,14 @@ static void initLogging()
     //enable multi loggers
     el::Loggers::addFlag(el::LoggingFlag::MultiLoggerSupport);
     // configure all loggers
-    el::Loggers::configureFromGlobal((CONF_DIR + "/log.conf").c_str());
+    el::Loggers::configureFromGlobal((CONF_DIR + "/" + LOG_CONF).c_str());
 }
 
 
 int main() {
     initLogging();
-    LOG(INFO) << "Loading config.json";
-    drone::Loop l (CONF_DIR + "/config.json");
+    LOG(INFO) << "Loading " << CONF_FILE;
+    drone::Loop l (CONF_DIR + "/" + CONF_FILE);
     LOG(INFO) << "Drone startup";
     l.startupDrone();
     LOG(INFO) << "Drone startup completed; starting main loop";

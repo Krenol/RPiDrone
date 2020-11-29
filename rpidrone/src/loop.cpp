@@ -9,7 +9,7 @@
 
 namespace drone
 {
-    Loop::Loop(const std::string& config_path) 
+    Loop::Loop(const std::string& config_path)
     {
         loadConfig(config_path);
         pin::initGPIOs();
@@ -69,7 +69,7 @@ namespace drone
     void Loop::startupDrone() {
         awaitBtnPress();
         on_led_->TurnOn();
-        controls_->startMotors(true);
+        controls_->startMotors();
         status_led_->TurnOn();
     }
     

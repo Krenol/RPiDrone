@@ -17,16 +17,15 @@ namespace drone {
         public:
             /**
              * Constructor
-             * @param controls JSON containing the controls array from the config.json
-             * @param sensorics JSON containing the sensorics part from the config.json
+             * @param controls JSON containing the controls array from the CONF_FILE
+             * @param sensorics JSON containing the sensorics part from the CONF_FILE
              */
             Controls(const json& controls, const json& sensorics);
 
             /**
              * Method to fire up all motors
-             * @param calibrate Flag to turn on/off sensor calibration on motor start
              */
-            void startMotors(bool calibrate = false);
+            void startMotors();
 
             /**
              * Method that set motor speeds and angles based on control input;
@@ -81,8 +80,10 @@ namespace drone {
             std::atomic_int throttle_{0};
             std::atomic<float> beta_s_{0}, gamma_s_{0};
             std::unique_ptr<Sensorics> sensorics_;
+            const bool calibrate_escs_, calibrate_sensors_;
 
             void startEsc(const std::unique_ptr<rpicomponents::Esc>& esc);
+            void calibrateEsc(const std::unique_ptr<rpicomponents::Esc>& esc);
             void initControllers(const json& controls);
             void initEscs(const json& controls);
     };
