@@ -61,3 +61,5 @@ _deps
 *.png
 
 __pycache__/
+
+globals.hpp

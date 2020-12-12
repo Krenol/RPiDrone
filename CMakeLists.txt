@@ -24,7 +24,7 @@ if (NOT "$ENV{BUILD_TEST}" STREQUAL "")
     set(BUILD_TEST "$ENV{BUILD_TEST}" CACHE INTERNAL "Copied from environment variable")
 endif()
 
-#configure_file(
-#    ${CMAKE_SOURCE_DIR}/globals.hpp.in
-#    ${CMAKE_SOURCE_DIR}/rpidrone/src/globals.hpp
-#)
+configure_file(
+    ${CMAKE_SOURCE_DIR}/globals.hpp.in
+    ${CMAKE_SOURCE_DIR}/rpidrone/src/globals.hpp
+)

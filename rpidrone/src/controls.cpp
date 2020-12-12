@@ -159,7 +159,7 @@ namespace drone
         shld << gamma_s_, -beta_s_;
         pid_lf_->calculate(is, shld, lf);
 
-        PID_LOG(INFO) << beta_s_ << ";" << angles.beta << ";" << beta_s_ - angles.beta << ";" << gamma_s_ << ";" << angles.gamma << ";" << gamma_s_ - angles.gamma << ";" << lb << ";" << rb << ";" << lf << ";" << rf;
+        PID_LOG(INFO) << beta_s_ << ";" << angles.beta << ";" << beta_s_ - angles.beta << ";" << gamma_s_ << ";" << angles.gamma << ";" << gamma_s_ - angles.gamma << ";" << (int)lb(0) << ";" << (int)rb(0) << ";" << (int)lf(0) << ";" << (int)rf(0);
         lf_->SetOutputSpeed(throttle_ + lf(0));
         rf_->SetOutputSpeed(throttle_ + rf(0));
         lb_->SetOutputSpeed(throttle_ + lb(0));
