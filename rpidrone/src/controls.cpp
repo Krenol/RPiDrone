@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include "easylogging++.h"
 #include "globals.hpp"
+#include "json_extension.hpp"
 
 #define CONTROL_LOG(LEVEL) CLOG(LEVEL, "controls") //define controls log
 #define PID_LOG(LEVEL) CLOG(LEVEL, "pid") //define controls log
@@ -83,12 +84,46 @@ namespace drone
     void Controls::process_input(const json& input) 
     {
         const std::lock_guard<std::mutex> lock(mtx_);
-        throttle_ = input.at("throttle");
-        throttle_ =  (throttle_ * (esc_max_ - idle_ - max_diff_) / 100) + idle_ + max_diff_;
-        float offset = input.at("joystick").at("offset");
-        float degrees = input.at("joystick").at("degrees");
-        beta_s_ = offset * cos(degrees * M_PI / 180.0) * beta_max_;
-        gamma_s_ = offset * sin(degrees * M_PI / 180.0) * gamma_max_;
+        parseThrottle(input);
+        parseJoystick(input);
+        parseGPS(input);
+    }
+
+    void Controls::parseThrottle(const json& input) 
+    {
+        if(JSON_EXISTS(input, "throttle")){
+            int t = input.at("throttle");
+            throttle_ =  (t * (esc_max_ - idle_ - max_diff_) / 100) + idle_ + max_diff_;
+        }
+    }
+    
+    void Controls::parseJoystick(const json& input) 
+    {
+        if(JSON_EXISTS(input, "joystick")){
+            auto j = input.at("joystick");
+            if(JSON_EXISTS(j, "offset") && JSON_EXISTS(j, "degrees")){
+                float offset = input.at("joystick").at("offset");
+                float degrees = input.at("joystick").at("degrees");
+                beta_s_ = offset * cos(degrees * M_PI / 180.0) * beta_max_;
+                gamma_s_ = offset * sin(degrees * M_PI / 180.0) * gamma_max_;
+            }
+        }
+    }
+    
+    void Controls::parseGPS(const json& input) 
+    {
+         if(JSON_EXISTS(input, "gps")){
+            auto j = input.at("gps");
+            if(JSON_EXISTS(j, "altitude")){
+                client_pos_.altitude = j.at("altitude");
+            }
+            if(JSON_EXISTS(j, "latitude")){
+                client_pos_.latitude = j.at("latitude");
+            }
+            if(JSON_EXISTS(j, "longitude")){
+                client_pos_.longitude = j.at("longitude");
+            }
+        }
     }
     
     int Controls::getThrottle() 

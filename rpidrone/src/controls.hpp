@@ -81,11 +81,18 @@ namespace drone {
             std::atomic<float> beta_s_{0}, gamma_s_{0};
             std::unique_ptr<Sensorics> sensorics_;
             const bool calibrate_escs_, calibrate_sensors_;
+            rpicomponents::GPSCoordinates client_pos_;
 
             void startEsc(const std::unique_ptr<rpicomponents::Esc>& esc);
             void calibrateEsc(const std::unique_ptr<rpicomponents::Esc>& esc);
             void initControllers(const json& controls);
             void initEscs(const json& controls);
+
+            void parseThrottle(const json& input);
+
+            void parseJoystick(const json& input);
+
+            void parseGPS(const json& input);
     };
 }
 

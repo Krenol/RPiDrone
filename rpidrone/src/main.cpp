@@ -36,8 +36,8 @@ int main() {
     LOG(INFO) << "Drone startup";
     l.startupDrone();
     LOG(INFO) << "Drone startup completed; starting main loop";
-    while(1) {
-        l.loop();
-    }
+
+    l.loop();
+    
     return 0;
 }

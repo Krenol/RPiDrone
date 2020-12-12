@@ -3,6 +3,7 @@
 #include "controls.hpp"
 #include <memory>
 #include <string>
+#include <atomic>
 
 
 #ifndef DRONE_LOOP_H
@@ -68,7 +69,10 @@ namespace drone {
             std::unique_ptr<rpisocket::WiFiServer> server_;
             std::unique_ptr<Controls> controls_;
             json config_;
-            std::shared_ptr<drone::SubscriberQueue<std::string>> subq_;
+            std::unique_ptr<drone::SubscriberQueue<std::string>> readq_, writeq_;
+            std::thread conn_thread_;
+            std::atomic_bool thread_on_;
+            
 
             /**
              * Method to load the config file
@@ -81,6 +85,14 @@ namespace drone {
              * @param read The read string
              */
             void processInput(const std::string& read);
+
+            /**
+             * Loop maintianing the connection to clients
+             */
+            void connectionHandler();
+
+
+            void processServerRead(std::string& buf, const std::string& delimiter);
 
     };
 }

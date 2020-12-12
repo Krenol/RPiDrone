@@ -10,17 +10,17 @@
         "status_led": 6
     },
     "sensorics": {
-        "calibrate": true,
+        "calibrate": false,
         "mpu": {
             "address": 104,
             "kalman": {
                 "c1": 1,
                 "c2": 0,
-                "r": 0.005,
-                "q11": 2,
+                "r": 0.05,
+                "q11": 0.1,
                 "q12": 0,
                 "q21": 0,
-                "q22": 6
+                "q22": 0.3
             }
         }
     },
@@ -30,10 +30,10 @@
         "escs": {
             "calibrate": false,
             "controllers": {
-                "k_i": 0.00000005,
+                "k_i": 0.0,
                 "k_p": 2.5,
-                "k_d": 1.5,
-                "k_aw": 1,
+                "k_d": 10,
+                "k_aw": 0,
                 "max_diff": 50
             },
             "min": 700,
