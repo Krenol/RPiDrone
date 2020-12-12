@@ -102,17 +102,26 @@ namespace drone
         rpicomponents::mpu_angles angles;
         sensorics_->getKalmanAngles(angles);
         Eigen::VectorXd is(2), shld(2), lb, rb, lf, rf;
-        is << angles.gamma, -angles.beta;
-        shld << gamma_s_, -beta_s_;
-        pid_lb_->calculate(is, shld, lb);
-        is << -angles.gamma, -angles.beta;
-        shld << -gamma_s_, -beta_s_;
+        // pos gamma is when back is higher than front (drone flies forward)
+        // pos beta is when right side is higher than left side (drone flies left)
+        // right side 
+        // right back
+        is << -angles.gamma, angles.beta;
+        shld << -gamma_s_, beta_s_;
         pid_rb_->calculate(is, shld, rb);
+        // right front
         is << angles.gamma, angles.beta;
         shld << gamma_s_, beta_s_;
         pid_rf_->calculate(is, shld, rf);
-        is << -angles.gamma, angles.beta;
-        shld << -gamma_s_, beta_s_;
+
+        // left side
+        // left back
+        is << -angles.gamma, -angles.beta;
+        shld << -gamma_s_, -beta_s_;
+        pid_lb_->calculate(is, shld, lb);
+        // left front
+        is << angles.gamma, -angles.beta;
+        shld << gamma_s_, -beta_s_;
         pid_lf_->calculate(is, shld, lf);
 
         PID_LOG(INFO) << beta_s_ << ";" << angles.beta << ";" << beta_s_ - angles.beta << ";" << gamma_s_ << ";" << angles.gamma << ";" << gamma_s_ - angles.gamma << ";" << lb << ";" << rb << ";" << lf << ";" << rf;
