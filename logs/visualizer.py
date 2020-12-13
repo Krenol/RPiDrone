@@ -8,8 +8,9 @@ def plotPID(file, pltName="pid_plot"):
     df['t'] = (df.datetime - t_0).dt.total_seconds()
 
     plt.subplot(311)
-    plt.plot(df.t, df.err_b, label="err_b")
-    plt.plot(df.t, df.err_g, label="err_g")
+    plt.plot(df.t, df.err_roll, label="err_roll")
+    plt.plot(df.t, df.err_pitch, label="err_pitch")
+    plt.plot(df.t, df.err_yawn, label="err_yawn")
     plt.ylabel('angle error', fontsize=14)
     plt.legend()
 

@@ -21,18 +21,32 @@
                 "q12": 0,
                 "q21": 0,
                 "q22": 0.3
-            }
+            },
+            "exp_filter": 0.75
         }
     },
     "controls": {
-        "gamma_max": 20.0,
-        "beta_max": 20.0,
+        "max_pitch_angle": 20.0,
+        "max_roll_angle": 20.0,
+        "may_yawn_velocity": 50.0,
         "escs": {
             "calibrate": false,
             "controllers": {
-                "k_i": 0.0,
-                "k_p": 2.5,
-                "k_d": 10,
+                "k_i": {
+                    "roll": 0.0,
+                    "pitch": 0.0,
+                    "yawn": 0.0
+                },
+                "k_p": {
+                    "roll": 2.5,
+                    "pitch": 2.5,
+                    "yawn": 1.0
+                },
+                "k_d": {
+                    "roll": 10,
+                    "pitch": 10,
+                    "yawn": 20.0
+                },
                 "k_aw": 0,
                 "max_diff": 50
             },

@@ -76,9 +76,9 @@ namespace drone {
             std::mutex mtx_; 
             std::unique_ptr<controllers::PID_AW> pid_lf_, pid_rf_, pid_rb_, pid_lb_;
             const int idle_, esc_max_, esc_min_, max_diff_;
-            const float beta_max_{20}, gamma_max_{20};
+            const float max_roll_angle_{20}, max_pitch_angle_{20}, max_yawn_vel_ {5};
             std::atomic_int throttle_{0};
-            std::atomic<float> beta_s_{0}, gamma_s_{0};
+            std::atomic<float> roll_angle_s_{0}, pitch_angle_s_{0}, yawn_vel_s_{0};
             std::unique_ptr<Sensorics> sensorics_;
             const bool calibrate_escs_, calibrate_sensors_;
             rpicomponents::GPSCoordinates client_pos_;

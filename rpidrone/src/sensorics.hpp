@@ -12,6 +12,10 @@ namespace drone {
         float dist_left {0}, dist_right {0}, dist_top {0}, dist_bottom {0}, dist_front {0}, dist_back {0};
     };
 
+    struct control_values {
+        float roll_angle, pitch_angle, z_vel;
+    };
+
     class Sensorics {
         public:
             /**
@@ -47,12 +51,14 @@ namespace drone {
             */
             Distances getDistances() const;         
 
-            void getKalmanAngles(rpicomponents::mpu_angles& angles);
+            void getControlValues(control_values& vals);
         
         private:
             const rpicomponents::DISTANCE_UNIT unit_;
             //std::unique_ptr<rpicomponents::UltrasonicSensor> uss_left_, uss_right_, uss_top_, uss_bottom_, uss_front_, uss_back_;
             std::unique_ptr<rpicomponents::MPU6050> mpu_;
+            std::unique_ptr<MPU6050_Kalman> kalman_roll_angle_, kalman_pitch_angle_;
+            std::unique_ptr<utils::ExponentialFilter> mpu_filter_;
             
 
     };

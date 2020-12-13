@@ -4,6 +4,8 @@
 #include <nlohmann/json.hpp>
 #include "easylogging++.h"
 #include <fstream>
+#include <Eigen/Dense>
+#include "misc.hpp"
 
 #define SENSOR_LOG(LEVEL) CLOG(LEVEL, "sensorics")   //define sensor log
 
@@ -15,7 +17,10 @@ namespace drone
         mpu_ = std::make_unique<rpicomponents::MPU6050>(sensorics.at("mpu").at("address"), rpicomponents::G_4, rpicomponents::DPS_500);
         auto data = sensorics.at("mpu").at("kalman");
         mpu_kalman_conf c(data.at("c1"), data.at("c2"), data.at("r"), data.at("q11"), data.at("q12"), data.at("q21"), data.at("q22"));
-        mpu_->SetKalmanConfig(c);
+        kalman_roll_angle_ = std::make_unique<MPU6050_Kalman>(c);
+		kalman_pitch_angle_ = std::make_unique<MPU6050_Kalman>(c);
+
+        mpu_filter_ = std::make_unique<utils::ExponentialFilter>(sensorics.at("mpu").at("exp_filter"), Eigen::VectorXd::Zero(5));
     }
 
 
@@ -26,9 +31,25 @@ namespace drone
         return dist;
     }
     
-    void Sensorics::getKalmanAngles(rpicomponents::mpu_angles& angles) 
+    void Sensorics::getControlValues(control_values& vals) 
     {
-        mpu_->GetKalmanAngles(angles);
+        rpicomponents::mpu_angles angles;
+        mpu_->GetAccelerationAngles(angles);
+		rpicomponents::mpu_data vel;
+		mpu_->GetAngularVelocity(vel);
+		Eigen::VectorXd u(1), z(1), filter_vals(5);
+        filter_vals << vel.x, vel.y, vel.z, angles.roll_angle, angles.pitch_angle;
+        mpu_filter_->predict(filter_vals);
+		z << filter_vals[3];
+		u << filter_vals[0];
+		angles.roll_angle = kalman_roll_angle_->predict(z, u)[0];
+		z << filter_vals[4];
+		u << filter_vals[1];
+		angles.pitch_angle = kalman_pitch_angle_->predict(z, u)[0];
+        
+        vals.z_vel = ROUND<float>(filter_vals[2], 1);
+        vals.pitch_angle = ROUND<float>(angles.pitch_angle, 1);
+        vals.roll_angle = ROUND<float>(angles.roll_angle, 1);
     }
 
     bool Sensorics::calibrate() 
