@@ -72,6 +72,12 @@ namespace drone {
              */
             void loadCalibration(const std::string& path);
 
+            /**
+             * Get the current location of the Drone via the GPS Sensor
+             * @param c The struct to store the GPS coords
+             */
+            void getDroneCoordinates(rpicomponents::GPSCoordinates& c);
+
         private:
             std::unique_ptr<rpicomponents::Esc> lf_, rf_, lb_, rb_;
             std::mutex mtx_; 

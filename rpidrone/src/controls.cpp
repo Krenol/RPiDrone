@@ -157,6 +157,11 @@ namespace drone
         return throttle_;
     }
 
+    void Controls::getDroneCoordinates(rpicomponents::GPSCoordinates& c) 
+    {
+        sensorics_->getCoordinates(c);
+    }
+
     void Controls::control(control_values& vals)
     {
         const std::lock_guard<std::mutex> lock(mtx_);

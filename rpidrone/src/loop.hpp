@@ -91,7 +91,7 @@ namespace drone {
              */
             void connectionHandler();
 
-            void createOutputJson(control_values& vals, json& j);
+            void createOutputJson(const control_values& vals, const rpicomponents::GPSCoordinates& c, json& j);
 
 
             void processServerRead(std::string& buf, const std::string& delimiter);

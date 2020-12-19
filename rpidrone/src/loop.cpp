@@ -81,6 +81,7 @@ namespace drone
     {
         std::string read;
         control_values vals;
+        rpicomponents::GPSCoordinates c;
         json j;
         conn_thread_ = std::thread(&Loop::connectionHandler, this);
         // connect to app
@@ -90,16 +91,26 @@ namespace drone
                 processInput(read);
             }
             controls_->control(vals);
-            createOutputJson(vals, j);
+            controls_->getDroneCoordinates(c);
+            createOutputJson(vals, c, j);
             writeq_->update(j.dump());
 
             usleep(10000); // sleep 10ms
         }
     }
 
-    void Loop::createOutputJson(control_values& vals, json& j) {
-        j = {"angles", {{"yaw", 0}, {"pitch", vals.pitch_angle}, {"roll", vals.roll_angle}},
-             "position": {}
+    void Loop::createOutputJson(const control_values& vals, const rpicomponents::GPSCoordinates& c, json& j) {
+        j = {
+                {"angles", {
+                    {"yaw", 0}, 
+                    {"pitch", vals.pitch_angle}, 
+                    {"roll", vals.roll_angle}}
+                },
+                {"position", {
+                    {"latitude", c.latitude}, 
+                    {"longitude", c.longitude}, 
+                    {"altitude", c.altitude}}
+                }
             };
     }
     
