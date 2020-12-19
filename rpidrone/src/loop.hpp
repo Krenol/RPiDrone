@@ -91,6 +91,8 @@ namespace drone {
              */
             void connectionHandler();
 
+            void createOutputJson(control_values& vals, json& j);
+
 
             void processServerRead(std::string& buf, const std::string& delimiter);
 

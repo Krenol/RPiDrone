@@ -80,6 +80,8 @@ namespace drone
     void Loop::loop() 
     {
         std::string read;
+        control_values vals;
+        json j;
         conn_thread_ = std::thread(&Loop::connectionHandler, this);
         // connect to app
         while(1){
@@ -87,11 +89,18 @@ namespace drone
                 readq_->pop(read);
                 processInput(read);
             }
-            controls_->control();
-            writeq_->update("");
+            controls_->control(vals);
+            createOutputJson(vals, j);
+            writeq_->update(j.dump());
 
             usleep(10000); // sleep 10ms
         }
+    }
+
+    void Loop::createOutputJson(control_values& vals, json& j) {
+        j = {"angles", {{"yaw", 0}, {"pitch", vals.pitch_angle}, {"roll", vals.roll_angle}},
+             "position": {}
+            };
     }
     
     void Loop::awaitBtnPress() 

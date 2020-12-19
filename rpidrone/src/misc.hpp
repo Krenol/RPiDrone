@@ -14,3 +14,14 @@ T ROUND(T number, int decimals)
     int fac = pow(10, decimals);
     return round(number * fac) / fac;
 }
+
+template<typename T>
+T BOUND(T number, T lower, T upper)
+{
+    if(number > upper){
+        return upper;
+    } else if(number < lower){
+        return lower;
+    }
+    return number;
+}

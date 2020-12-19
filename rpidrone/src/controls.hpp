@@ -41,8 +41,9 @@ namespace drone {
 
             /**
              * Control method to control ESCs etc based on sensorics and input
+             * @param vals The control values struct
              */
-            void control();
+            void control(control_values& vals);
 
             /**
              * Method to idle motors

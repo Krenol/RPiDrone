@@ -51,7 +51,17 @@ namespace drone {
             */
             Distances getDistances() const;         
 
+            /**
+             * Method to get all values needed for the controllers
+             * @param vals: The struct to store the control values
+             */
             void getControlValues(control_values& vals);
+
+            /**
+             * Get the current location of the Drone via the GPS Sensor
+             * @param c The struct to store the GPS coords
+             */
+            void getDroneCoordinates(rpicomponents::GPSCoordinates& c);
         
         private:
             const rpicomponents::DISTANCE_UNIT unit_;
@@ -59,6 +69,7 @@ namespace drone {
             std::unique_ptr<rpicomponents::MPU6050> mpu_;
             std::unique_ptr<MPU6050_Kalman> kalman_roll_angle_, kalman_pitch_angle_;
             std::unique_ptr<utils::ExponentialFilter> mpu_filter_;
+            std::unique_ptr<rpicomponents::GpsNeo6MV2> gps_;
             
 
     };

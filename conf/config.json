@@ -23,6 +23,10 @@
                 "q22": 0.3
             },
             "exp_filter": 0.75
+        },
+        "gps": {
+            "port": "/dev/serial0",
+            "baudrate": 9600
         }
     },
     "controls": {

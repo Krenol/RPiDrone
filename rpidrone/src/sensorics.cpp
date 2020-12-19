@@ -19,7 +19,7 @@ namespace drone
         mpu_kalman_conf c(data.at("c1"), data.at("c2"), data.at("r"), data.at("q11"), data.at("q12"), data.at("q21"), data.at("q22"));
         kalman_roll_angle_ = std::make_unique<MPU6050_Kalman>(c);
 		kalman_pitch_angle_ = std::make_unique<MPU6050_Kalman>(c);
-
+        gps_ = std::make_unique<rpicomponents::GpsNeo6MV2>(sensorics.at("gps").at("port"), sensorics.at("gps").at("baudrate"));
         mpu_filter_ = std::make_unique<utils::ExponentialFilter>(sensorics.at("mpu").at("exp_filter"), Eigen::VectorXd::Zero(5));
     }
 
@@ -50,6 +50,11 @@ namespace drone
         vals.z_vel = ROUND<float>(filter_vals[2], 1);
         vals.pitch_angle = ROUND<float>(angles.pitch_angle, 1);
         vals.roll_angle = ROUND<float>(angles.roll_angle, 1);
+    }
+    
+    void Sensorics::getDroneCoordinates(rpicomponents::GPSCoordinates& c) 
+    {
+        gps_->getCoordinates(c);
     }
 
     bool Sensorics::calibrate() 

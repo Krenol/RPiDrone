@@ -108,7 +108,7 @@ namespace drone
     {
         if (JSON_EXISTS(input, "throttle"))
         {
-            int t = input.at("throttle");
+            int t = BOUND<int>(input.at("throttle"), 0, 100);
             throttle_ = (t * (esc_max_ - idle_ - max_diff_) / 100) + idle_ + max_diff_;
         }
     }
@@ -120,13 +120,14 @@ namespace drone
             auto j = input.at("joystick");
             if (JSON_EXISTS(j, "offset") && JSON_EXISTS(j, "degrees"))
             {
-                float offset = j.at("offset");
-                float degrees = j.at("degrees");
+                float offset = BOUND<float>(j.at("offset"), 0, 1.0);
+                float degrees = BOUND<float>(j.at("degrees"), -360.0, 360.0);
                 roll_angle_s_ = offset * cos(degrees * M_PI / 180.0) * max_roll_angle_;
                 pitch_angle_s_ = offset * sin(degrees * M_PI / 180.0) * max_pitch_angle_;
             }
             if (JSON_EXISTS(j, "rotation")) {
-                yawn_vel_s_ = max_yawn_vel_ * (float)j.at("rotation");
+                float rot = BOUND<float>(j.at("rotation"), -100.0, 100.0);
+                yawn_vel_s_ = max_yawn_vel_ * rot / 100.0;
             }
         }
     }
@@ -156,10 +157,9 @@ namespace drone
         return throttle_;
     }
 
-    void Controls::control()
+    void Controls::control(control_values& vals)
     {
         const std::lock_guard<std::mutex> lock(mtx_);
-        control_values vals;
         sensorics_->getControlValues(vals);
         Eigen::VectorXd is(3), shld(3), lb, rb, lf, rf;
         // pos pitch_angle is when back is higher than front (drone flies forward)
