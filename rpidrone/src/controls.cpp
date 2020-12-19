@@ -159,7 +159,7 @@ namespace drone
 
     void Controls::getDroneCoordinates(rpicomponents::GPSCoordinates& c) 
     {
-        sensorics_->getCoordinates(c);
+        sensorics_->getDroneCoordinates(c);
     }
 
     void Controls::control(control_values& vals)
