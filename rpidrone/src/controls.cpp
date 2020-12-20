@@ -157,9 +157,9 @@ namespace drone
         return throttle_;
     }
 
-    void Controls::getDroneCoordinates(rpicomponents::GPSCoordinates& c) 
+    void Controls::getDroneCoordinates(rpicomponents::GPSCoordinates& c, int retires) 
     {
-        sensorics_->getDroneCoordinates(c);
+        sensorics_->getDroneCoordinates(c, retires);
     }
 
     void Controls::control(control_values& vals)

@@ -69,9 +69,10 @@ namespace drone {
             std::unique_ptr<rpisocket::WiFiServer> server_;
             std::unique_ptr<Controls> controls_;
             json config_;
-            std::unique_ptr<drone::SubscriberQueue<std::string>> readq_, writeq_;
+            std::unique_ptr<drone::SubscriberQueue<std::string>> readq_;
             std::thread conn_thread_;
             std::atomic_bool thread_on_;
+            design_patterns::ThreadPoolExecutor tpe_;
             
 
             /**

@@ -75,8 +75,9 @@ namespace drone {
             /**
              * Get the current location of the Drone via the GPS Sensor
              * @param c The struct to store the GPS coords
+             * @param retries The amount of retries to try reading the GPS pos from serial
              */
-            void getDroneCoordinates(rpicomponents::GPSCoordinates& c);
+            void getDroneCoordinates(rpicomponents::GPSCoordinates& c, int retires = 100);
 
         private:
             std::unique_ptr<rpicomponents::Esc> lf_, rf_, lb_, rb_;

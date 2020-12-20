@@ -52,9 +52,9 @@ namespace drone
         vals.roll_angle = ROUND<float>(angles.roll_angle, 1);
     }
     
-    void Sensorics::getDroneCoordinates(rpicomponents::GPSCoordinates& c) 
+    void Sensorics::getDroneCoordinates(rpicomponents::GPSCoordinates& c, int retires) 
     {
-        gps_->getCoordinates(c);
+        gps_->getCoordinates(c, retires);
     }
 
     bool Sensorics::calibrate() 

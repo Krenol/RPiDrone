@@ -22,12 +22,29 @@ static void mvFile(const std::string& file, const std::string& newFile){
 static void initLogging()
 {
     mvFile(LOG_DIR + "/pid.csv", LOG_DIR + "/pid_" + std::to_string(std::time(0)) + ".csv");
+    mvFile(LOG_DIR + "/network.log", LOG_DIR + "/network_" + std::to_string(std::time(0)) + ".log");
     //enable multi loggers
     el::Loggers::addFlag(el::LoggingFlag::MultiLoggerSupport);
     // configure all loggers
     el::Loggers::configureFromGlobal((CONF_DIR + "/" + LOG_CONF).c_str());
 }
 
+// void sig_handler(int s){
+//     printf("Caught signal %d\n",s);
+//     for(int i < 0; i < 53; i++){
+        
+//     }
+//     pin::terminateGPIOs();
+//     exit(0); 
+// }
+
+// void catchSigActions(){
+//     struct sigaction sigIntHandler;
+//     sigIntHandler.sa_handler = sig_handler;
+//     sigemptyset(&sigIntHandler.sa_mask);
+//     sigIntHandler.sa_flags = 0;
+//     sigaction(SIGINT, &sigIntHandler, NULL);
+// }
 
 int main() {
     initLogging();
@@ -36,7 +53,7 @@ int main() {
     LOG(INFO) << "Drone startup";
     l.startupDrone();
     LOG(INFO) << "Drone startup completed; starting main loop";
-
+    //catchSigActions();
     l.loop();
     
     return 0;
