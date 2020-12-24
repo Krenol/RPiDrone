@@ -14,7 +14,7 @@ cntls = data['controls']["escs"]["controllers"]
 pltName = "kp_" + str(cntls['k_p']) + "-kd_" + str(cntls['k_d']) + "-ki_" + str(cntls['k_i']) + "-kaw_" + str(cntls['k_aw'])
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-s.connect(("raspberrypi", 8889))
+s.connect(("localhost", 8888))
 
 while True:
     data = {"gps":{"altitude":0,"latitude":0,"longitude":0},"joystick":{"degrees":0,"offset":0, "rotation": 0.0},"throttle":0}

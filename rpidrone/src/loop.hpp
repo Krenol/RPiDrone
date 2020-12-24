@@ -73,6 +73,7 @@ namespace drone {
             std::thread conn_thread_;
             std::atomic_bool thread_on_;
             design_patterns::ThreadPoolExecutor tpe_;
+            int sleep_{0};
             
 
             /**

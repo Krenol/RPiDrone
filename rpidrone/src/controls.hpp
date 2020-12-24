@@ -79,6 +79,11 @@ namespace drone {
              */
             void getDroneCoordinates(rpicomponents::GPSCoordinates& c, int retires = 100);
 
+            /**
+             * Method to get the barometric alitude based upon the start level
+             * @returns the altitude in m
+             */
+            float getAltitude();
         private:
             std::unique_ptr<rpicomponents::Esc> lf_, rf_, lb_, rb_;
             std::mutex mtx_; 
@@ -90,6 +95,7 @@ namespace drone {
             std::unique_ptr<Sensorics> sensorics_;
             const bool calibrate_escs_, calibrate_sensors_;
             rpicomponents::GPSCoordinates client_pos_;
+            float altitude_0_;
 
             void startEsc(const std::unique_ptr<rpicomponents::Esc>& esc);
             void calibrateEsc(const std::unique_ptr<rpicomponents::Esc>& esc);

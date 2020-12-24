@@ -18,6 +18,7 @@ namespace drone
         initControllers(controls);
         throttle_ = idle_;
         sensorics_ = std::make_unique<Sensorics>(sensorics);
+        altitude_0_ = (sensorics_->getBarometricHeight() + sensorics_->getBarometricHeight() + sensorics_->getBarometricHeight()) / 3;
         PID_LOG(DEBUG) << "datetime;level;roll_s;roll_is;err_roll;pitch_s;pitch_is;err_pitch;yawn_s;yawn_is;err_yawn;lb;rb;lf;rf";
     }
 
@@ -161,7 +162,12 @@ namespace drone
     {
         sensorics_->getDroneCoordinates(c, retires);
     }
-
+    
+    float Controls::getAltitude() 
+    {
+        return sensorics_->getBarometricHeight() - altitude_0_;
+    }
+    
     void Controls::control(control_values& vals)
     {
         const std::lock_guard<std::mutex> lock(mtx_);

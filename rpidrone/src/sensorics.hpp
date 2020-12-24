@@ -62,15 +62,23 @@ namespace drone {
              * @param c The struct to store the GPS coords
              * @param retries The amount of retries to try reading the GPS pos from serial
              */
-            void getDroneCoordinates(rpicomponents::GPSCoordinates& c, int retires = 100);
+            void getDroneCoordinates(rpicomponents::GPSCoordinates& c, int retires = 10);
+
+            /**
+             * Method to get the barometric height above sea level from the BPM180
+             * @returns the barometric height in m
+             */
+            float getBarometricHeight();
         
         private:
             const rpicomponents::DISTANCE_UNIT unit_;
             //std::unique_ptr<rpicomponents::UltrasonicSensor> uss_left_, uss_right_, uss_top_, uss_bottom_, uss_front_, uss_back_;
             std::unique_ptr<rpicomponents::MPU6050> mpu_;
             std::unique_ptr<MPU6050_Kalman> kalman_roll_angle_, kalman_pitch_angle_;
-            std::unique_ptr<utils::ExponentialFilter> mpu_filter_;
+            std::unique_ptr<utils::ExponentialFilter> mpu_filter_, bpm_filter_;
             std::unique_ptr<rpicomponents::GpsNeo6MV2> gps_;
+            std::unique_ptr<rpicomponents::Bmp180> bpm_;
+            int decimal_places_ = 1;
             
 
     };

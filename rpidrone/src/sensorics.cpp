@@ -21,6 +21,11 @@ namespace drone
 		kalman_pitch_angle_ = std::make_unique<MPU6050_Kalman>(c);
         gps_ = std::make_unique<rpicomponents::GpsNeo6MV2>(sensorics.at("gps").at("port"), sensorics.at("gps").at("baudrate"));
         mpu_filter_ = std::make_unique<utils::ExponentialFilter>(sensorics.at("mpu").at("exp_filter"), Eigen::VectorXd::Zero(5));
+        bpm_ = std::make_unique<rpicomponents::Bmp180>(sensorics.at("bpm").at("address"), sensorics.at("bpm").at("accuracy"));
+        Eigen::VectorXd h(1);
+        h << bpm_->getAltitude();
+        bpm_filter_ = std::make_unique<utils::ExponentialFilter>(sensorics.at("bpm").at("exp_filter"), h);
+        decimal_places_ = sensorics.at("decimal_places");
     }
 
 
@@ -47,14 +52,22 @@ namespace drone
 		u << filter_vals[1];
 		angles.pitch_angle = kalman_pitch_angle_->predict(z, u)[0];
         
-        vals.z_vel = ROUND<float>(filter_vals[2], 1);
-        vals.pitch_angle = ROUND<float>(angles.pitch_angle, 1);
-        vals.roll_angle = ROUND<float>(angles.roll_angle, 1);
+        vals.z_vel = ROUND<float>(filter_vals[2], decimal_places_);
+        vals.pitch_angle = ROUND<float>(angles.pitch_angle, decimal_places_);
+        vals.roll_angle = ROUND<float>(angles.roll_angle, decimal_places_);
     }
     
     void Sensorics::getDroneCoordinates(rpicomponents::GPSCoordinates& c, int retires) 
     {
         gps_->getCoordinates(c, retires);
+    }
+    
+    float Sensorics::getBarometricHeight() 
+    {
+        Eigen::VectorXd h(1);
+        h << bpm_->getAltitude();
+        bpm_filter_->predict(h);
+        return ROUND<float>(h[0], decimal_places_);
     }
 
     bool Sensorics::calibrate() 

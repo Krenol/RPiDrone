@@ -19,6 +19,7 @@ namespace drone
         status_led_ = std::make_unique<rpicomponents::Led>(config_.at("misc").at("status_led"), pin::DIGITAL_MODE, pin::DIGITAL_MODE_MAX_VAL);
         readq_ = std::make_unique<drone::SubscriberQueue<std::string>>();
         controls_ = std::make_unique<Controls>(config_.at("controls"), config_.at("sensorics"));
+        sleep_ = config_.at("main_loop_sleep");
     }
 
 
@@ -95,7 +96,7 @@ namespace drone
                     server_->writeBytes(msg);
                 }
             });
-            usleep(10000); // sleep 10ms
+            usleep(sleep_); 
         }
     }
 
@@ -110,6 +111,9 @@ namespace drone
                     {"latitude", c.latitude}, 
                     {"longitude", c.longitude}, 
                     {"altitude", c.altitude}}
+                },
+                { "sensors",{
+                    {"barometric_height", controls_->getAltitude()}}
                 }
             };
     }
