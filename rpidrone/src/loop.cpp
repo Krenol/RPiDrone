@@ -87,7 +87,7 @@ namespace drone
             }
             controls_->control(vals);
   
-            controls_->getDroneCoordinates(c, 20); 
+            //controls_->getDroneCoordinates(c, 20); 
             createOutputJson(vals, c, j);
             tpe_.enqueue([this, j](){
                 if(server_->hasConnection()) {

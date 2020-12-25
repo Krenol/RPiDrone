@@ -32,8 +32,15 @@
         },
         "bpm":{
             "address": 119,
-            "accuracy": 2,
-            "exp_filter": 0.75
+            "accuracy": 1,
+            "kalman": {
+                "c1": 1,
+                "c2": 0,
+                "q11": 0.001,
+                "q12": 0,
+                "q21": 0,
+                "q22": 0.001
+            }
         }
     },
     "controls": {
