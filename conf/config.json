@@ -11,20 +11,33 @@
         "status_led": 6
     },
     "sensorics": {
-        "calibrate": false,
+        "calibration": {
+            "calibrate": true,
+            "measurements": 1000
+        },
         "decimal_places": 1,
         "mpu": {
             "address": 104,
             "kalman": {
-                "c1": 1,
-                "c2": 0,
-                "r": 0.05,
-                "q11": 0.1,
-                "q12": 0,
-                "q21": 0,
-                "q22": 0.3
-            },
-            "exp_filter": 0.75
+                "angles":{
+                    "c1": 1,
+                    "c2": 0,
+                    "r": 0.05,
+                    "q11": 0.1,
+                    "q12": 0,
+                    "q21": 0,
+                    "q22": 0.1
+                }, 
+                "velcoity": {
+                    "r": 0.05,
+                    "q11": 0.1,
+                    "q22": 0.1,
+                    "q33": 0.1,
+                    "q44": 0.1,
+                    "q55": 0.1,
+                    "q66": 0.1
+                }
+            }
         },
         "gps": {
             "port": "/dev/serial0",

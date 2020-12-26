@@ -25,11 +25,11 @@ namespace drone {
              */
             Sensorics(const json& sensors, rpicomponents::DISTANCE_UNIT unit = rpicomponents::UNIT_MM);
 
-            /*
-            Method to calibrate all sensors that can be calibrated
-            @returns true if calibration was successful; else false
+            /**
+             * Method to calibrate all sensors that can be calibrated
+             * @param measurements Amount of measurements for calibration
             */
-            bool calibrate();
+            void calibrate(int measurements);
 
             /* 
             Method to laod a calibration file to restore previous calibration
@@ -74,9 +74,8 @@ namespace drone {
             const rpicomponents::DISTANCE_UNIT unit_;
             //std::unique_ptr<rpicomponents::UltrasonicSensor> uss_left_, uss_right_, uss_top_, uss_bottom_, uss_front_, uss_back_;
             std::unique_ptr<rpicomponents::MPU6050> mpu_;
-            std::unique_ptr<utils::ExponentialFilter> mpu_filter_;
             std::unique_ptr<rpicomponents::GpsNeo6MV2> gps_;
-            std::unique_ptr<rpicomponents::Bmp180> bpm_;
+            std::unique_ptr<rpicomponents::Bmp180> bmp_;
             int decimal_places_ = 1;
             
 

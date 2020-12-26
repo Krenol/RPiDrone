@@ -155,16 +155,4 @@ namespace drone
         }
         
     }
-
-    void Loop::calibrate() {
-        controls_->calibrateSensors();
-    }
-
-    void Loop::saveCalibration(const std::string& path) {
-        controls_->saveCalibration(path);
-    }
-
-    void Loop::loadCalibration(const std::string& path) {
-        controls_->loadCalibration(path);
-    }
 }

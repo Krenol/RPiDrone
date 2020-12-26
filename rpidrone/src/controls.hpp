@@ -56,23 +56,6 @@ namespace drone {
             void motorsOff();
 
             /**
-             * Method to calibrate all sensors
-             */
-            void calibrateSensors();
-
-            /**
-             * Method to save calibartion to given path
-             * @param path The path calibration file should be stored
-             */
-            void saveCalibration(const std::string& path);
-
-            /**
-             * Load calibration from file
-             * @param path The path to the calibration file
-             */
-            void loadCalibration(const std::string& path);
-
-            /**
              * Get the current location of the Drone via the GPS Sensor
              * @param c The struct to store the GPS coords
              * @param retries The amount of retries to try reading the GPS pos from serial
@@ -93,7 +76,7 @@ namespace drone {
             std::atomic_int throttle_{0};
             std::atomic<float> roll_angle_s_{0}, pitch_angle_s_{0}, yawn_vel_s_{0};
             std::unique_ptr<Sensorics> sensorics_;
-            const bool calibrate_escs_, calibrate_sensors_;
+            const bool calibrate_escs_;
             rpicomponents::GPSCoordinates client_pos_;
             float altitude_0_;
 
@@ -101,6 +84,8 @@ namespace drone {
             void calibrateEsc(const std::unique_ptr<rpicomponents::Esc>& esc);
             void initControllers(const json& controls);
             void initEscs(const json& controls);
+
+            void zeroAltitude(int measurements = 100);
 
             void parseThrottle(const json& input);
 

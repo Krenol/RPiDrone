@@ -12,15 +12,18 @@
 #define PID_LOG(LEVEL) CLOG(LEVEL, "pid")          //define controls log
 namespace drone
 {
-    Controls::Controls(const json &controls, const json &sensorics) : idle_{controls.at("escs").at("idle")}, esc_max_{controls.at("escs").at("max")}, esc_min_{controls.at("escs").at("min")}, max_diff_{controls.at("escs").at("controllers").at("max_diff")}, max_roll_angle_{controls.at("max_roll_angle")}, max_pitch_angle_{controls.at("max_pitch_angle")}, max_yawn_vel_{controls.at("may_yawn_velocity")}, calibrate_escs_{controls.at("escs").at("calibrate")}, calibrate_sensors_{sensorics.at("calibrate")}
+    Controls::Controls(const json &controls, const json &sensorics) : idle_{controls.at("escs").at("idle")}, esc_max_{controls.at("escs").at("max")}, esc_min_{controls.at("escs").at("min")}, max_diff_{controls.at("escs").at("controllers").at("max_diff")}, max_roll_angle_{controls.at("max_roll_angle")}, max_pitch_angle_{controls.at("max_pitch_angle")}, max_yawn_vel_{controls.at("may_yawn_velocity")}, calibrate_escs_{controls.at("escs").at("calibrate")}
     {
         initEscs(controls);
         initControllers(controls);
         throttle_ = idle_;
         sensorics_ = std::make_unique<Sensorics>(sensorics);
-        altitude_0_ = (sensorics_->getBarometricHeight() + sensorics_->getBarometricHeight() + sensorics_->getBarometricHeight()) / 3;
+        
+        std::async(std::launch::async, [this]() { this->zeroAltitude(); });
         PID_LOG(DEBUG) << "datetime;level;roll_s;roll_is;err_roll;pitch_s;pitch_is;err_pitch;yawn_s;yawn_is;err_yawn;lb;rb;lf;rf";
     }
+
+    
 
     void Controls::initControllers(const json &controls)
     {
@@ -66,18 +69,22 @@ namespace drone
             }
         }
     }
+    
+    void Controls::zeroAltitude(int measurements) 
+    {
+        int runs = measurements;
+        altitude_0_ = 0;
+        while(runs > 0) {
+            altitude_0_ += sensorics_->getBarometricHeight();
+            --runs;
+            usleep(100);
+        }
+        altitude_0_ /= measurements;
+    }
 
     void Controls::startMotors()
     {
-        if (calibrate_sensors_)
-        {
-            calibrateSensors();
-            saveCalibration(CONF_DIR + "/" + MPU_CONF);
-        }
-        else
-        {
-            loadCalibration(CONF_DIR + "/" + MPU_CONF);
-        }
+        
         if (calibrate_escs_)
         {
             std::async(std::launch::async, [this]() { this->calibrateEsc(rb_); });
@@ -233,20 +240,5 @@ namespace drone
         rf_->SetOutputSpeed(0);
         lb_->SetOutputSpeed(0);
         rb_->SetOutputSpeed(0);
-    }
-
-    void Controls::calibrateSensors()
-    {
-        sensorics_->calibrate();
-    }
-
-    void Controls::saveCalibration(const std::string &path)
-    {
-        sensorics_->storeCalibration(path);
-    }
-
-    void Controls::loadCalibration(const std::string &path)
-    {
-        sensorics_->loadCalibration(path);
     }
 } // namespace drone

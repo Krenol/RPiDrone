@@ -5,6 +5,7 @@
 #include "easylogging++.h"
 #include <fstream>
 #include <Eigen/Dense>
+#include "globals.hpp"
 #include "misc.hpp"
 
 #define SENSOR_LOG(LEVEL) CLOG(LEVEL, "sensorics")   //define sensor log
@@ -13,17 +14,32 @@ namespace drone
 {
     Sensorics::Sensorics(const json& sensorics, rpicomponents::DISTANCE_UNIT unit)  : unit_{unit}
     {
-        
+        json kals, data;
         mpu_ = std::make_unique<rpicomponents::MPU6050>(sensorics.at("mpu").at("address"), rpicomponents::G_4, rpicomponents::DPS_500);
-        auto data = sensorics.at("mpu").at("kalman");
-        mpu_kalman_conf mpu_conf(data.at("c1"), data.at("c2"), data.at("r"), data.at("q11"), data.at("q12"), data.at("q21"), data.at("q22"));
-        mpu_->SetKalmanConfig(mpu_conf);
+        bmp_ = std::make_unique<rpicomponents::Bmp180>(sensorics.at("bpm").at("address"), sensorics.at("bpm").at("accuracy"));
         gps_ = std::make_unique<rpicomponents::GpsNeo6MV2>(sensorics.at("gps").at("port"), sensorics.at("gps").at("baudrate"));
-        mpu_filter_ = std::make_unique<utils::ExponentialFilter>(sensorics.at("mpu").at("exp_filter"), Eigen::VectorXd::Zero(1));
-        bpm_ = std::make_unique<rpicomponents::Bmp180>(sensorics.at("bpm").at("address"), sensorics.at("bpm").at("accuracy"));
+        data = sensorics.at("calibration");
+        bool calibrate_sensors = data.at("calibrate");
+        if (calibrate_sensors)
+        {
+            int runs = data.at("measurements");
+            calibrate(runs);
+            storeCalibration(CONF_DIR + "/" + MPU_CONF);
+        }
+        else
+        {
+            loadCalibration(CONF_DIR + "/" + MPU_CONF);
+        }
+        kals = sensorics.at("mpu").at("kalman");
+        data = kals.at("angles");
+        rpicomponents::mpu_kalman_angles_conf a_conf(data.at("c1"), data.at("c2"), data.at("r"), data.at("q11"), data.at("q12"), data.at("q21"), data.at("q22"));
+        mpu_->SetKalmanConfig(a_conf);
+        data = kals.at("velcoity");
+        rpicomponents::mpu_kalman_vel_conf v_conf(data.at("r"), data.at("q11"), data.at("q22"), data.at("q33"), data.at("q44"), data.at("q55"), data.at("q66"));
+        mpu_->SetKalmanConfig(v_conf);
         data = sensorics.at("bpm").at("kalman");
-        bmp_kalman_conf bpm_conf(data.at("c1"), data.at("c2"), data.at("q11"), data.at("q12"), data.at("q21"), data.at("q22"), sensorics.at("bpm").at("accuracy"));
-        bpm_->SetKalmanConfig(bpm_conf);
+        rpicomponents::bmp_kalman_conf bmp_conf(data.at("c1"), data.at("c2"), data.at("q11"), data.at("q12"), data.at("q21"), data.at("q22"), sensorics.at("bpm").at("accuracy"));
+        bmp_->SetKalmanConfig(bmp_conf);
         decimal_places_ = sensorics.at("decimal_places");
     }
 
@@ -41,12 +57,8 @@ namespace drone
         mpu_->GetKalmanAngles(angles);
 
         rpicomponents::mpu_data vel;
-        mpu_->GetAngularVelocity(vel);
-
-		Eigen::VectorXd filter_vals(1);
-        filter_vals << vel.z;
-        mpu_filter_->predict(filter_vals);
-        vals.z_vel = ROUND<float>(filter_vals[0], decimal_places_);
+        mpu_->GetKalmanVelocity(vel);
+        vals.z_vel = ROUND<float>(vel.z, decimal_places_);
         vals.pitch_angle = ROUND<float>(angles.pitch_angle, decimal_places_);
         vals.roll_angle = ROUND<float>(angles.roll_angle, decimal_places_);
     }
@@ -58,14 +70,13 @@ namespace drone
     
     float Sensorics::getBarometricHeight() 
     {
-        return ROUND<float>(bpm_->getAltitudeKalman(), decimal_places_);
+        return ROUND<float>(bmp_->getAltitudeKalman(), decimal_places_);
     }
 
-    bool Sensorics::calibrate() 
+    void Sensorics::calibrate(int measurements) 
     {
-        mpu_->CalibrateAcceleration();
-        mpu_->CalibrateGyro();
-        return true;
+        mpu_->CalibrateAcceleration(measurements);
+        mpu_->CalibrateGyro(measurements);
     }
     
     bool Sensorics::loadCalibration(const std::string& path) 

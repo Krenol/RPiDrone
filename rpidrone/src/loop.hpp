@@ -45,23 +45,6 @@ namespace drone {
              * @returns true if connected else false
              */
             bool hasConnection();
-
-            /**
-             * Method to calibrate all sensors
-             */
-            void calibrate();
-
-            /**
-             * Method to save calibartion to given path
-             * @param path The path calibration file should be stored
-             */
-            void saveCalibration(const std::string& path);
-
-            /**
-             * Load calibration from file
-             * @param path The path to the calibration file
-             */
-            void loadCalibration(const std::string& path);
             
         private:
             std::unique_ptr<rpicomponents::Led> on_led_, status_led_;
