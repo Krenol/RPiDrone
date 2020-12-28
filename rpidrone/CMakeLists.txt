@@ -11,7 +11,7 @@ set(UTILS_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/external/CppUtils CACHE INTERNAL "Pa
 set(RPICDRONE_PROJECT_SRCS 
 ${PROJECT_SOURCE_DIR}/loop.cpp
 ${PROJECT_SOURCE_DIR}/main.cpp
-${PROJECT_SOURCE_DIR}/sensorics.cpp
+${PROJECT_SOURCE_DIR}/sensors.cpp
 ${PROJECT_SOURCE_DIR}/controls.cpp
 ${PROJECT_SOURCE_DIR}/easylogging++.cc
 )

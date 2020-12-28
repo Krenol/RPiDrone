@@ -16,14 +16,14 @@ namespace drone {
         float roll_angle, pitch_angle, z_vel;
     };
 
-    class Sensorics {
+    class Sensors {
         public:
             /**
              * Constructor
-             * @param sensorics JSON holding the sensorics values
-             * @param unit Unit for everything handled inside the sensorics
+             * @param sensors JSON holding the sensors values
+             * @param unit Unit for everything handled inside the sensors
              */
-            Sensorics(const json& sensors, rpicomponents::DISTANCE_UNIT unit = rpicomponents::UNIT_MM);
+            Sensors(const json& sensors, rpicomponents::DISTANCE_UNIT unit = rpicomponents::UNIT_MM);
 
             /**
              * Method to calibrate all sensors that can be calibrated

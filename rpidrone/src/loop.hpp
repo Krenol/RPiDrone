@@ -31,11 +31,6 @@ namespace drone {
             void loop();
 
             /**
-             * Method that is processing the btn press
-             */
-            void awaitBtnPress();
-
-            /**
              * Await button press and startup everything
              */
             void startupDrone();
@@ -48,14 +43,13 @@ namespace drone {
             
         private:
             std::unique_ptr<rpicomponents::Led> on_led_, status_led_;
-            std::unique_ptr<rpicomponents::Button> on_btn_;
             std::unique_ptr<rpisocket::WiFiServer> server_;
             std::unique_ptr<Controls> controls_;
             json config_;
             std::unique_ptr<drone::SubscriberQueue<std::string>> readq_;
             std::thread conn_thread_;
             std::atomic_bool thread_on_;
-            design_patterns::ThreadPoolExecutor tpe_;
+            std::unique_ptr<design_patterns::ThreadPoolExecutor> tpe_;
             int sleep_{0};
             
 

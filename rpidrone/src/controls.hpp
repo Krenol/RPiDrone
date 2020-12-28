@@ -5,7 +5,7 @@
 #include <string>
 #include "controllers/controllers.hpp"
 #include <atomic>
-#include "sensorics.hpp"
+#include "sensors.hpp"
 
 #ifndef DRONE_CONTROLS_H
 #define DRONE_CONTROLS_H
@@ -18,9 +18,9 @@ namespace drone {
             /**
              * Constructor
              * @param controls JSON containing the controls array from the CONF_FILE
-             * @param sensorics JSON containing the sensorics part from the CONF_FILE
+             * @param sensors JSON containing the sensors part from the CONF_FILE
              */
-            Controls(const json& controls, const json& sensorics);
+            Controls(const json& controls, const json& sensors);
 
             /**
              * Method to fire up all motors
@@ -40,7 +40,7 @@ namespace drone {
             int getThrottle();
 
             /**
-             * Control method to control ESCs etc based on sensorics and input
+             * Control method to control ESCs etc based on sensors and input
              * @param vals The control values struct
              */
             void control(control_values& vals);
@@ -75,7 +75,7 @@ namespace drone {
             const float max_roll_angle_{20}, max_pitch_angle_{20}, max_yawn_vel_ {5};
             std::atomic_int throttle_{0};
             std::atomic<float> roll_angle_s_{0}, pitch_angle_s_{0}, yawn_vel_s_{0};
-            std::unique_ptr<Sensorics> sensorics_;
+            std::unique_ptr<Sensors> sensors_;
             const bool calibrate_escs_;
             rpicomponents::GPSCoordinates client_pos_;
             float altitude_0_;

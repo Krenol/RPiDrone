@@ -5,6 +5,7 @@
 #include "easylogging++.h"
 
 #define NETWORK_LOG(LEVEL) CLOG(LEVEL, "network") //define network log
+#define CONTROL_LOG(LEVEL) CLOG(LEVEL, "controls") //define control log
 //#include <filesystem>
 
 namespace drone
@@ -14,11 +15,11 @@ namespace drone
         loadConfig(config_path);
         pin::initGPIOs();
         server_ = std::make_unique<rpisocket::WiFiServer>(config_.at("server").at("port"), config_.at("server").at("bytes"));
-        on_btn_ = std::make_unique<rpicomponents::Button>(config_.at("misc").at("on_btn"));
-        on_led_ = std::make_unique<rpicomponents::Led>(config_.at("misc").at("on_led"), pin::DIGITAL_MODE, pin::DIGITAL_MODE_MAX_VAL);
-        status_led_ = std::make_unique<rpicomponents::Led>(config_.at("misc").at("status_led"), pin::DIGITAL_MODE, pin::DIGITAL_MODE_MAX_VAL);
-        readq_ = std::make_unique<drone::SubscriberQueue<std::string>>();
-        controls_ = std::make_unique<Controls>(config_.at("controls"), config_.at("sensorics"));
+        on_led_ = std::make_unique<rpicomponents::Led>(config_.at("leds").at("on_led"), pin::DIGITAL_MODE, pin::DIGITAL_MODE_MAX_VAL);
+        status_led_ = std::make_unique<rpicomponents::Led>(config_.at("leds").at("status_led"), pin::DIGITAL_MODE, pin::DIGITAL_MODE_MAX_VAL);
+        readq_ = std::make_unique<drone::SubscriberQueue<std::string>>(config_.at("queues").at("read_size"));
+        controls_ = std::make_unique<Controls>(config_.at("controls"), config_.at("sensors"));
+        tpe_ = std::make_unique<design_patterns::ThreadPoolExecutor>(1, config_.at("queues").at("write_size"));
         sleep_ = config_.at("main_loop_sleep");
     }
 
@@ -37,16 +38,16 @@ namespace drone
         thread_on_ = true;
         std::string msg, buf, delimiter = config_.at("server").at("delimiter");
         while(1) {
-            NETWORK_LOG(INFO) << "waiting for connection on " << server_->getServerIp() << ":" << server_->getPort();
+            NETWORK_LOG(DEBUG) << "waiting for connection on " << server_->getServerIp() << ":" << server_->getPort();
             server_->connect();
-            NETWORK_LOG(INFO) << "connected to " << server_->getConnectedClient();
+            NETWORK_LOG(DEBUG) << "connected to " << server_->getConnectedClient();
             while(server_->hasConnection() && thread_on_){
                 try{
                     server_->readBytes(msg);
                     buf += msg;
                     processServerRead(buf, delimiter);
-                } catch(...) {
-                    // on error stop
+                } catch(const std::exception &exc) {
+                    NETWORK_LOG(ERROR) << exc.what();
                     break;
                 }
             }   
@@ -79,24 +80,29 @@ namespace drone
         rpicomponents::GPSCoordinates c;
         json j;
         conn_thread_ = std::thread(&Loop::connectionHandler, this);
-        // connect to app
+        CONTROL_LOG(INFO) << "starting main control loop";
         while(1){
-            if(readq_->has_item()){
-                readq_->pop(read);
-                processInput(read);
-            }
-            controls_->control(vals);
-  
-            //controls_->getDroneCoordinates(c, 20); 
-            createOutputJson(vals, c, j);
-            tpe_.enqueue([this, j](){
-                if(server_->hasConnection()) {
-                    std::string msg = j.dump();
-                    NETWORK_LOG(INFO) << "writing " << msg;
-                    server_->writeBytes(msg);
+            try{
+                if(readq_->has_item()){
+                    readq_->pop(read);
+                    processInput(read);
                 }
-            });
-            usleep(sleep_); 
+                controls_->control(vals);
+
+                //controls_->getDroneCoordinates(c, 20); 
+                createOutputJson(vals, c, j);
+                tpe_->enqueue([this, j](){
+                    if(server_->hasConnection()) {
+                        std::string msg = j.dump();
+                        NETWORK_LOG(INFO) << "writing " << msg;
+                        server_->writeBytes(msg);
+                    }
+                });
+                usleep(sleep_); 
+            } catch(const std::exception &exc) {
+                CONTROL_LOG(ERROR) << exc.what();
+            }
+            
         }
     }
 
@@ -118,17 +124,11 @@ namespace drone
             };
     }
     
-    void Loop::awaitBtnPress() 
-    {
-        while(!on_btn_->IsPressed()) {
-            usleep(25000);
-        }
-    }
-
     void Loop::startupDrone() {
-        awaitBtnPress();
         on_led_->TurnOn();
+        sleep(5); //give 5s to get away from drone
         controls_->startMotors();
+        sleep(5); //give motors 5s
         status_led_->TurnOn();
     }
     
@@ -151,7 +151,7 @@ namespace drone
             controls_->process_input(j);
         } catch(const std::exception &exc){
             //we return old json
-            NETWORK_LOG(ERROR) << exc.what() << "read string: " << read << std::endl;
+            NETWORK_LOG(ERROR) << exc.what() << "read string: " << read;
         }
         
     }

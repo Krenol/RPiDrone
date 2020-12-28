@@ -5,15 +5,18 @@
         "bytes": 150,
         "delimiter": "\r\n"
     },
-    "misc": {
-        "on_btn": 20,
-        "on_led": 16,
+    "leds": {
+        "on_led": 5,
         "status_led": 6
     },
-    "sensorics": {
+    "queues": {
+        "read_size": 100,
+        "write_size": 100
+    },
+    "sensors": {
         "calibration": {
-            "calibrate": true,
-            "measurements": 1000
+            "calibrate": false,
+            "measurements": 2000
         },
         "decimal_places": 1,
         "mpu": {

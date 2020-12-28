@@ -12,15 +12,17 @@
 #define PID_LOG(LEVEL) CLOG(LEVEL, "pid")          //define controls log
 namespace drone
 {
-    Controls::Controls(const json &controls, const json &sensorics) : idle_{controls.at("escs").at("idle")}, esc_max_{controls.at("escs").at("max")}, esc_min_{controls.at("escs").at("min")}, max_diff_{controls.at("escs").at("controllers").at("max_diff")}, max_roll_angle_{controls.at("max_roll_angle")}, max_pitch_angle_{controls.at("max_pitch_angle")}, max_yawn_vel_{controls.at("may_yawn_velocity")}, calibrate_escs_{controls.at("escs").at("calibrate")}
+    Controls::Controls(const json &controls, const json &sensors) : idle_{controls.at("escs").at("idle")}, esc_max_{controls.at("escs").at("max")}, esc_min_{controls.at("escs").at("min")}, max_diff_{controls.at("escs").at("controllers").at("max_diff")}, max_roll_angle_{controls.at("max_roll_angle")}, max_pitch_angle_{controls.at("max_pitch_angle")}, max_yawn_vel_{controls.at("may_yawn_velocity")}, calibrate_escs_{controls.at("escs").at("calibrate")}
     {
+        CONTROL_LOG(INFO) << "Initializing controls...";
         initEscs(controls);
         initControllers(controls);
         throttle_ = idle_;
-        sensorics_ = std::make_unique<Sensorics>(sensorics);
+        sensors_ = std::make_unique<Sensors>(sensors);
         
         std::async(std::launch::async, [this]() { this->zeroAltitude(); });
         PID_LOG(DEBUG) << "datetime;level;roll_s;roll_is;err_roll;pitch_s;pitch_is;err_pitch;yawn_s;yawn_is;err_yawn;lb;rb;lf;rf";
+        CONTROL_LOG(INFO) << "Initialized controls successfully";
     }
 
     
@@ -75,7 +77,7 @@ namespace drone
         int runs = measurements;
         altitude_0_ = 0;
         while(runs > 0) {
-            altitude_0_ += sensorics_->getBarometricHeight();
+            altitude_0_ += sensors_->getBarometricHeight();
             --runs;
             usleep(100);
         }
@@ -118,6 +120,7 @@ namespace drone
         {
             int t = BOUND<int>(input.at("throttle"), 0, 100);
             throttle_ = (t * (esc_max_ - idle_ - max_diff_) / 100) + idle_ + max_diff_;
+            CONTROL_LOG(INFO) << "set throttle to " << throttle_;
         }
     }
 
@@ -132,10 +135,12 @@ namespace drone
                 float degrees = BOUND<float>(j.at("degrees"), -360.0, 360.0);
                 roll_angle_s_ = offset * cos(degrees * M_PI / 180.0) * max_roll_angle_;
                 pitch_angle_s_ = offset * sin(degrees * M_PI / 180.0) * max_pitch_angle_;
+                CONTROL_LOG(INFO) << "set roll angle to " << roll_angle_s_ << " and pitch angle to " << pitch_angle_s_;
             }
             if (JSON_EXISTS(j, "rotation")) {
                 float rot = BOUND<float>(j.at("rotation"), -100.0, 100.0);
                 yawn_vel_s_ = max_yawn_vel_ * rot / 100.0;
+                CONTROL_LOG(INFO) << "set yawn velocity to " << yawn_vel_s_;
             }
         }
     }
@@ -167,18 +172,18 @@ namespace drone
 
     void Controls::getDroneCoordinates(rpicomponents::GPSCoordinates& c, int retires) 
     {
-        sensorics_->getDroneCoordinates(c, retires);
+        sensors_->getDroneCoordinates(c, retires);
     }
     
     float Controls::getAltitude() 
     {
-        return sensorics_->getBarometricHeight() - altitude_0_;
+        return sensors_->getBarometricHeight() - altitude_0_;
     }
     
     void Controls::control(control_values& vals)
     {
         const std::lock_guard<std::mutex> lock(mtx_);
-        sensorics_->getControlValues(vals);
+        sensors_->getControlValues(vals);
         Eigen::VectorXd is(3), shld(3), lb, rb, lf, rf;
         // pos pitch_angle is when back is higher than front (drone flies forward)
         // pos roll_angle is when right side is higher than left side (drone flies left)
