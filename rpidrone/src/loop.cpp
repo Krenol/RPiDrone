@@ -40,6 +40,7 @@ namespace drone
         while(1) {
             NETWORK_LOG(DEBUG) << "waiting for connection on " << server_->getServerIp() << ":" << server_->getPort();
             server_->connect();
+            tpe_->clear();
             NETWORK_LOG(DEBUG) << "connected to " << server_->getConnectedClient();
             while(server_->hasConnection() && thread_on_){
                 try{
@@ -75,7 +76,7 @@ namespace drone
     
     void Loop::loop() 
     {
-        std::string read;
+        std::string read, delimiter = config_.at("server").at("delimiter");
         control_values vals;
         rpicomponents::GPSCoordinates c;
         json j;
@@ -91,11 +92,11 @@ namespace drone
 
                 //controls_->getDroneCoordinates(c, 20); 
                 createOutputJson(vals, c, j);
-                tpe_->enqueue([this, j](){
+                tpe_->enqueue([this, j, &delimiter](){
                     if(server_->hasConnection()) {
                         std::string msg = j.dump();
                         NETWORK_LOG(INFO) << "writing " << msg;
-                        server_->writeBytes(msg);
+                        server_->writeBytes(msg + delimiter);
                     }
                 });
                 usleep(sleep_); 
