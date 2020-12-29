@@ -17,7 +17,7 @@ namespace drone
         SENSOR_LOG(INFO) << "Initializing sensors...";
         json kals, data;
         mpu_ = std::make_unique<rpicomponents::MPU6050>(sensors.at("mpu").at("address"), rpicomponents::G_4, rpicomponents::DPS_500);
-        bmp_ = std::make_unique<rpicomponents::Bmp180>(sensors.at("bpm").at("address"), sensors.at("bpm").at("accuracy"));
+        bmp_ = std::make_unique<rpicomponents::Bmp180>(sensors.at("bmp").at("address"), sensors.at("bmp").at("accuracy"));
         gps_ = std::make_unique<rpicomponents::GpsNeo6MV2>(sensors.at("gps").at("port"), sensors.at("gps").at("baudrate"));
         data = sensors.at("calibration");
         bool calibrate_sensors = data.at("calibrate");
@@ -38,7 +38,7 @@ namespace drone
         data = kals.at("velcoity");
         rpicomponents::mpu_kalman_vel_conf v_conf(data.at("r"), data.at("q11"), data.at("q22"), data.at("q33"), data.at("q44"), data.at("q55"), data.at("q66"));
         mpu_->SetKalmanConfig(v_conf);
-        data = sensors.at("bpm").at("kalman");
+        data = sensors.at("bmp").at("kalman");
         rpicomponents::bmp_kalman_conf bmp_conf(data.at("c1"), data.at("c2"), data.at("q11"), data.at("q12"), data.at("q21"), data.at("q22"), sensors.at("bpm").at("accuracy"));
         bmp_->SetKalmanConfig(bmp_conf);
         decimal_places_ = sensors.at("decimal_places");

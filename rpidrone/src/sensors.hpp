@@ -65,7 +65,7 @@ namespace drone {
             void getDroneCoordinates(rpicomponents::GPSCoordinates& c, int retires = 10);
 
             /**
-             * Method to get the barometric height above sea level from the BPM180
+             * Method to get the barometric height above sea level from the BMP180
              * @returns the barometric height in m
              */
             float getBarometricHeight();

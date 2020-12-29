@@ -12,7 +12,7 @@
 #define PID_LOG(LEVEL) CLOG(LEVEL, "pid")          //define controls log
 namespace drone
 {
-    Controls::Controls(const json &controls, const json &sensors) : idle_{controls.at("escs").at("idle")}, esc_max_{controls.at("escs").at("max")}, esc_min_{controls.at("escs").at("min")}, max_diff_{controls.at("escs").at("controllers").at("max_diff")}, max_roll_angle_{controls.at("max_roll_angle")}, max_pitch_angle_{controls.at("max_pitch_angle")}, max_yawn_vel_{controls.at("may_yawn_velocity")}, calibrate_escs_{controls.at("escs").at("calibrate")}
+    Controls::Controls(const json &controls, const json &sensors) : idle_{controls.at("escs").at("idle")}, esc_max_{controls.at("escs").at("max")}, esc_min_{controls.at("escs").at("min")}, max_diff_{controls.at("escs").at("controllers").at("max_diff")}, max_roll_angle_{controls.at("max_roll_angle")}, max_pitch_angle_{controls.at("max_pitch_angle")}, max_yawn_vel_{controls.at("max_yawn_velocity")}, calibrate_escs_{controls.at("escs").at("calibrate")}
     {
         CONTROL_LOG(INFO) << "Initializing controls...";
         initEscs(controls);

@@ -1,5 +1,8 @@
 {
-    "main_loop_sleep": 5000,
+    "logic": {
+        "main_loop_sleep": 5000,
+        "motors_off_on_disconnect": false
+    },
     "server": {
         "port": 8889,
         "bytes": 150,
@@ -22,7 +25,7 @@
         "mpu": {
             "address": 104,
             "kalman": {
-                "angles":{
+                "angles": {
                     "c1": 1,
                     "c2": 0,
                     "r": 0.05,
@@ -30,7 +33,7 @@
                     "q12": 0,
                     "q21": 0,
                     "q22": 0.1
-                }, 
+                },
                 "velcoity": {
                     "r": 0.05,
                     "q11": 0.1,
@@ -46,7 +49,7 @@
             "port": "/dev/serial0",
             "baudrate": 9600
         },
-        "bpm":{
+        "bmp": {
             "address": 119,
             "accuracy": 1,
             "kalman": {
@@ -62,7 +65,7 @@
     "controls": {
         "max_pitch_angle": 20.0,
         "max_roll_angle": 20.0,
-        "may_yawn_velocity": 50.0,
+        "max_yawn_velocity": 50.0,
         "escs": {
             "calibrate": false,
             "controllers": {
