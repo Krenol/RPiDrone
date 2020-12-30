@@ -1,6 +1,7 @@
 #include "rpicomponents/rpicomponents.hpp"
 #include <memory>
 #include <nlohmann/json.hpp>
+#include "json_parser.hpp"
 
 #ifndef DRONE_SENSORICS_H
 #define DRONE_SENSORICS_H
@@ -20,10 +21,10 @@ namespace drone {
         public:
             /**
              * Constructor
-             * @param sensors JSON holding the sensors values
+             * @param sensors struct holding the sensors values
              * @param unit Unit for everything handled inside the sensors
              */
-            Sensors(const json& sensors, rpicomponents::DISTANCE_UNIT unit = rpicomponents::UNIT_MM);
+            Sensors(const SensorsStruct &sensors, rpicomponents::DISTANCE_UNIT unit = rpicomponents::UNIT_MM);
 
             /**
              * Method to calibrate all sensors that can be calibrated

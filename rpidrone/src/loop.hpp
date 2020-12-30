@@ -4,6 +4,7 @@
 #include <memory>
 #include <string>
 #include <atomic>
+#include "json_parser.hpp"
 
 
 #ifndef DRONE_LOOP_H
@@ -45,13 +46,11 @@ namespace drone {
             std::unique_ptr<rpicomponents::Led> on_led_, status_led_;
             std::unique_ptr<rpisocket::WiFiServer> server_;
             std::unique_ptr<Controls> controls_;
-            json config_;
+            Config config_;
             std::unique_ptr<drone::SubscriberQueue<std::string>> readq_;
             std::thread conn_thread_;
             std::atomic_bool thread_on_;
-            std::unique_ptr<design_patterns::ThreadPoolExecutor> tpe_;
-            int sleep_{0};
-            
+            std::unique_ptr<design_patterns::ThreadPoolExecutor> tpe_;      
 
             /**
              * Method to load the config file

@@ -12,18 +12,16 @@
 
 namespace drone
 {
-    Sensors::Sensors(const json& sensors, rpicomponents::DISTANCE_UNIT unit)  : unit_{unit}
+    Sensors::Sensors(const SensorsStruct &sensors, rpicomponents::DISTANCE_UNIT unit)  : unit_{unit}
     {
         SENSOR_LOG(INFO) << "Initializing sensors...";
-        json kals, data;
-        mpu_ = std::make_unique<rpicomponents::MPU6050>(sensors.at("mpu").at("address"), rpicomponents::G_4, rpicomponents::DPS_500);
-        bmp_ = std::make_unique<rpicomponents::Bmp180>(sensors.at("bmp").at("address"), sensors.at("bmp").at("accuracy"));
-        gps_ = std::make_unique<rpicomponents::GpsNeo6MV2>(sensors.at("gps").at("port"), sensors.at("gps").at("baudrate"));
-        data = sensors.at("calibration");
-        bool calibrate_sensors = data.at("calibrate");
-        if (calibrate_sensors)
+        rpicomponents::bmp180_pressure_resolution res = (rpicomponents::bmp180_pressure_resolution)sensors.bmp.accuracy;
+        mpu_ = std::make_unique<rpicomponents::MPU6050>(sensors.mpu.address, rpicomponents::G_4, rpicomponents::DPS_500);
+        bmp_ = std::make_unique<rpicomponents::Bmp180>(sensors.bmp.address, res);
+        gps_ = std::make_unique<rpicomponents::GpsNeo6MV2>(sensors.gps.port, sensors.gps.baudrate);
+        if (sensors.sensor_calibration.calibrate)
         {
-            int runs = data.at("measurements");
+            int runs = sensors.sensor_calibration.measurements;
             calibrate(runs);
             storeCalibration(CONF_DIR + "/" + MPU_CONF);
         }
@@ -31,17 +29,13 @@ namespace drone
         {
             loadCalibration(CONF_DIR + "/" + MPU_CONF);
         }
-        kals = sensors.at("mpu").at("kalman");
-        data = kals.at("angles");
-        rpicomponents::mpu_kalman_angles_conf a_conf(data.at("c1"), data.at("c2"), data.at("r"), data.at("q11"), data.at("q12"), data.at("q21"), data.at("q22"));
+        rpicomponents::mpu_kalman_angles_conf a_conf(sensors.mpu.kalman_angles.c1, sensors.mpu.kalman_angles.c2, sensors.mpu.kalman_angles.r, sensors.mpu.kalman_angles.q11, sensors.mpu.kalman_angles.q12, sensors.mpu.kalman_angles.q21, sensors.mpu.kalman_angles.q22);
         mpu_->SetKalmanConfig(a_conf);
-        data = kals.at("velcoity");
-        rpicomponents::mpu_kalman_vel_conf v_conf(data.at("r"), data.at("q11"), data.at("q22"), data.at("q33"), data.at("q44"), data.at("q55"), data.at("q66"));
+        rpicomponents::mpu_kalman_vel_conf v_conf(sensors.mpu.kalman_velocity.r, sensors.mpu.kalman_velocity.q11, sensors.mpu.kalman_velocity.q22, sensors.mpu.kalman_velocity.q33, sensors.mpu.kalman_velocity.q44, sensors.mpu.kalman_velocity.q55, sensors.mpu.kalman_velocity.q66);
         mpu_->SetKalmanConfig(v_conf);
-        data = sensors.at("bmp").at("kalman");
-        rpicomponents::bmp_kalman_conf bmp_conf(data.at("c1"), data.at("c2"), data.at("q11"), data.at("q12"), data.at("q21"), data.at("q22"), sensors.at("bpm").at("accuracy"));
+        rpicomponents::bmp_kalman_conf bmp_conf(sensors.bmp.kalman.c1, sensors.bmp.kalman.c2, sensors.bmp.kalman.q11, sensors.bmp.kalman.q12, sensors.bmp.kalman.q21, sensors.bmp.kalman.q22, sensors.bmp.accuracy);
         bmp_->SetKalmanConfig(bmp_conf);
-        decimal_places_ = sensors.at("decimal_places");
+        decimal_places_ = sensors.decimals;
         SENSOR_LOG(INFO) << "Initialized sensors successfully";
     }
 

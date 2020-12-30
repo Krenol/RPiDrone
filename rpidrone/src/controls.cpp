@@ -12,12 +12,12 @@
 #define PID_LOG(LEVEL) CLOG(LEVEL, "pid")          //define controls log
 namespace drone
 {
-    Controls::Controls(const json &controls, const json &sensors) : idle_{controls.at("escs").at("idle")}, esc_max_{controls.at("escs").at("max")}, esc_min_{controls.at("escs").at("min")}, max_diff_{controls.at("escs").at("controllers").at("max_diff")}, max_roll_angle_{controls.at("max_roll_angle")}, max_pitch_angle_{controls.at("max_pitch_angle")}, max_yawn_vel_{controls.at("max_yawn_velocity")}, calibrate_escs_{controls.at("escs").at("calibrate")}
+    Controls::Controls(const ControlsStruct &controls, const SensorsStruct &sensors) : controls_{controls}
     {
         CONTROL_LOG(INFO) << "Initializing controls...";
-        initEscs(controls);
-        initControllers(controls);
-        throttle_ = idle_;
+        initEscs(controls.escs);
+        initControllers(controls.escs);
+        throttle_ = controls_.escs.idle;
         sensors_ = std::make_unique<Sensors>(sensors);
         
         std::async(std::launch::async, [this]() { this->zeroAltitude(); });
@@ -27,49 +27,28 @@ namespace drone
 
     
 
-    void Controls::initControllers(const json &controls)
+    void Controls::initControllers(const Escs &escs)
     {
-        auto vals = controls.at("escs").at("controllers");
         Eigen::MatrixXd p(3, 1), d(3, 1), i(3, 1);
         Eigen::VectorXd max(1), min(1), aw(1);
-        p << vals.at("k_p").at("roll"), vals.at("k_p").at("pitch"), vals.at("k_p").at("yawn");
-        d << vals.at("k_d").at("roll"), vals.at("k_d").at("pitch"), vals.at("k_d").at("yawn");
-        i << vals.at("k_i").at("roll"), vals.at("k_i").at("pitch"), vals.at("k_i").at("yawn");
-        aw << vals.at("k_aw");
-        min << -max_diff_;
-        max << max_diff_;
+        p << escs.roll.k_p, escs.pitch.k_p, escs.yawn.k_p;
+        d << escs.roll.k_d, escs.pitch.k_d, escs.yawn.k_d;
+        i << escs.roll.k_i, escs.pitch.k_i, escs.yawn.k_i;
+        aw << escs.roll.k_aw;
+        min << -controls_.escs.max_diff;
+        max << controls_.escs.max_diff;
         pid_lf_ = std::make_unique<controllers::PID_AW>(p, d, i, aw, min, max);
         pid_lb_ = std::make_unique<controllers::PID_AW>(p, d, i, aw, min, max);
         pid_rf_ = std::make_unique<controllers::PID_AW>(p, d, i, aw, min, max);
         pid_rb_ = std::make_unique<controllers::PID_AW>(p, d, i, aw, min, max);
     }
 
-    void Controls::initEscs(const json &controls)
+    void Controls::initEscs(const Escs &escs)
     {
-        auto esc_pins = controls.at("escs").at("pins");
-        json val;
-        std::string pos;
-        for (auto esc : esc_pins.items())
-        {
-            val = esc.value();
-            pos = val.at("pos");
-            if (pos == "rb")
-            {
-                rb_ = std::make_unique<rpicomponents::Esc>(val.at("pin"), esc_min_, esc_max_);
-            }
-            else if (pos == "lb")
-            {
-                lb_ = std::make_unique<rpicomponents::Esc>(val.at("pin"), esc_min_, esc_max_);
-            }
-            else if (pos == "rf")
-            {
-                rf_ = std::make_unique<rpicomponents::Esc>(val.at("pin"), esc_min_, esc_max_);
-            }
-            else if (pos == "lf")
-            {
-                lf_ = std::make_unique<rpicomponents::Esc>(val.at("pin"), esc_min_, esc_max_);
-            }
-        }
+        rb_ = std::make_unique<rpicomponents::Esc>(escs.pin_rb, controls_.escs.min, controls_.escs.max);
+        lb_ = std::make_unique<rpicomponents::Esc>(escs.pin_lb, controls_.escs.min, controls_.escs.max);
+        rf_ = std::make_unique<rpicomponents::Esc>(escs.pin_rf, controls_.escs.min, controls_.escs.max);
+        lf_ = std::make_unique<rpicomponents::Esc>(escs.pin_lf, controls_.escs.min, controls_.escs.max);
     }
     
     void Controls::zeroAltitude(int measurements) 
@@ -86,24 +65,22 @@ namespace drone
 
     void Controls::startMotors()
     {
-        
-        if (calibrate_escs_)
+        std::future<void> f;
+        if (controls_.escs.calibrate)
         {
             std::async(std::launch::async, [this]() { this->calibrateEsc(rb_); });
             std::async(std::launch::async, [this]() { this->calibrateEsc(rf_); });
             std::async(std::launch::async, [this]() { this->calibrateEsc(lb_); });
-            auto h = std::async(std::launch::async, [this]() { this->calibrateEsc(lf_); });
-            h.get(); // we wait for the last motor to finish it's startup
+            f = std::async(std::launch::async, [this]() { this->calibrateEsc(lf_); });
         }
         else
         {
-
             std::async(std::launch::async, [this]() { this->startEsc(rb_); });
             std::async(std::launch::async, [this]() { this->startEsc(rf_); });
             std::async(std::launch::async, [this]() { this->startEsc(lb_); });
-            auto h = std::async(std::launch::async, [this]() { this->startEsc(lf_); });
-            h.get(); // we wait for the last motor to finish it's startup
+            f= std::async(std::launch::async, [this]() { this->startEsc(lf_); });
         }
+        f.get();
     }
 
     void Controls::process_input(const json &input)
@@ -119,7 +96,7 @@ namespace drone
         if (JSON_EXISTS(input, "throttle"))
         {
             int t = BOUND<int>(input.at("throttle"), 0, 100);
-            throttle_ = (t * (esc_max_ - idle_ - max_diff_) / 100) + idle_ + max_diff_;
+            throttle_ = (t * (controls_.escs.max - controls_.escs.idle - controls_.escs.max_diff) / 100) + controls_.escs.idle + controls_.escs.max_diff;
             CONTROL_LOG(INFO) << "set throttle to " << throttle_;
         }
     }
@@ -133,13 +110,13 @@ namespace drone
             {
                 float offset = BOUND<float>(j.at("offset"), 0, 1.0);
                 float degrees = BOUND<float>(j.at("degrees"), -360.0, 360.0);
-                roll_angle_s_ = offset * cos(degrees * M_PI / 180.0) * max_roll_angle_;
-                pitch_angle_s_ = offset * sin(degrees * M_PI / 180.0) * max_pitch_angle_;
+                roll_angle_s_ = offset * cos(degrees * M_PI / 180.0) * controls_.max_roll;
+                pitch_angle_s_ = offset * sin(degrees * M_PI / 180.0) * controls_.max_pitch;
                 CONTROL_LOG(INFO) << "set roll angle to " << roll_angle_s_ << " and pitch angle to " << pitch_angle_s_;
             }
             if (JSON_EXISTS(j, "rotation")) {
                 float rot = BOUND<float>(j.at("rotation"), -100.0, 100.0);
-                yawn_vel_s_ = max_yawn_vel_ * rot / 100.0;
+                yawn_vel_s_ = controls_.max_yawn * rot / 100.0;
                 CONTROL_LOG(INFO) << "set yawn velocity to " << yawn_vel_s_;
             }
         }
@@ -233,10 +210,10 @@ namespace drone
 
     void Controls::idle()
     {
-        lf_->SetOutputSpeed(idle_);
-        rf_->SetOutputSpeed(idle_);
-        lb_->SetOutputSpeed(idle_);
-        rb_->SetOutputSpeed(idle_);
+        lf_->SetOutputSpeed(controls_.escs.idle);
+        rf_->SetOutputSpeed(controls_.escs.idle);
+        lb_->SetOutputSpeed(controls_.escs.idle);
+        rb_->SetOutputSpeed(controls_.escs.idle);
     }
 
     void Controls::motorsOff()

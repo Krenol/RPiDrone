@@ -6,6 +6,7 @@
 #include "controllers/controllers.hpp"
 #include <atomic>
 #include "sensors.hpp"
+#include "json_parser.hpp"
 
 #ifndef DRONE_CONTROLS_H
 #define DRONE_CONTROLS_H
@@ -17,10 +18,10 @@ namespace drone {
         public:
             /**
              * Constructor
-             * @param controls JSON containing the controls array from the CONF_FILE
-             * @param sensors JSON containing the sensors part from the CONF_FILE
+             * @param controls struct containing the controls array from the CONF_FILE
+             * @param sensors struct containing the sensors part from the CONF_FILE
              */
-            Controls(const json& controls, const json& sensors);
+            Controls(const ControlsStruct& controls, const SensorsStruct& sensors);
 
             /**
              * Method to fire up all motors
@@ -68,22 +69,20 @@ namespace drone {
              */
             float getAltitude();
         private:
+            const ControlsStruct controls_;
             std::unique_ptr<rpicomponents::Esc> lf_, rf_, lb_, rb_;
             std::mutex mtx_; 
             std::unique_ptr<controllers::PID_AW> pid_lf_, pid_rf_, pid_rb_, pid_lb_;
-            const int idle_, esc_max_, esc_min_, max_diff_;
-            const float max_roll_angle_{20}, max_pitch_angle_{20}, max_yawn_vel_ {5};
             std::atomic_int throttle_{0};
             std::atomic<float> roll_angle_s_{0}, pitch_angle_s_{0}, yawn_vel_s_{0};
             std::unique_ptr<Sensors> sensors_;
-            const bool calibrate_escs_;
             rpicomponents::GPSCoordinates client_pos_;
             float altitude_0_;
 
             void startEsc(const std::unique_ptr<rpicomponents::Esc>& esc);
             void calibrateEsc(const std::unique_ptr<rpicomponents::Esc>& esc);
-            void initControllers(const json& controls);
-            void initEscs(const json& controls);
+            void initControllers(const Escs& escs);
+            void initEscs(const Escs& escs);
 
             void zeroAltitude(int measurements = 100);
 

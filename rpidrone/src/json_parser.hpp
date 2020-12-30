@@ -8,28 +8,15 @@ using json = nlohmann::json;
 
 namespace drone
 {
-    struct Config
-    {
-        Logic logic;
-        Server server;
-        Leds leds;
-        Queues queues;
-        Sensors sensors;
-        Controls controls;
-
-        Config(const Logic& logic, const Server& server, const Leds& leds, const Queues& queues, const Sensors& sensors, const Controls& controls) : logic(logic), server(server), leds(leds), queues(queues), sensors(sensors), controls(controls) {
-
-        }
-
-        Config(const Config& c) : logic(c.logic), server(c.server), leds(c.leds), queues(c.queues), sensors(c.sensors), controls(c.controls) {
-            
-        }
-    };
-
     struct Server
     {
         int port, bytes;
         std::string delimiter;
+
+        Server() {
+
+        }
+
         Server(int port, int bytes, const std::string& delimiter){
             this->port = port;
             this->bytes = bytes;
@@ -46,6 +33,11 @@ namespace drone
     struct Leds
     {
         int on_led, status_led;
+
+        Leds() {
+
+        }
+
         Leds(int on_led, int status_led) {
             this->on_led = on_led;
             this->status_led = status_led;
@@ -60,6 +52,11 @@ namespace drone
     struct Queues
     {
         int read_size, write_size;
+
+        Queues() {
+
+        }
+
         Queues(int read_size, int write_size) {
             this->read_size = read_size;
             this->write_size = write_size;
@@ -71,26 +68,15 @@ namespace drone
         }
     };
 
-    struct Sensors
-    {
-        SensorCalibration sensor_calibration;
-        int decimals;
-        MPU mpu;
-        GPS gps;
-        BMP bmp;
-
-        Sensors(const SensorCalibration& sc, const MPU& m, const GPS& g, const BMP& b, int decimals) : sensor_calibration(sc), mpu(m), gps(g), bmp(b) {
-            this->decimals = decimals;
-        }
-
-        Sensors(const Sensors& s) : sensor_calibration(s.sensor_calibration), mpu(s.mpu), gps(s.gps), bmp(s.bmp) {
-            this->decimals = s.decimals;
-        }
-    };
     struct SensorCalibration
     {
         bool calibrate;
         int measurements;
+
+        SensorCalibration() {
+
+        }
+
         SensorCalibration(bool calibrate, int measurements) {
             this->calibrate = calibrate;
             this->measurements = measurements;
@@ -106,6 +92,11 @@ namespace drone
     {
         std::string port;
         int baudrate;
+
+        GPS() {
+
+        }
+
         GPS(const std::string& port, int baudrate) {
             this->port = port;
             this->baudrate = baudrate;
@@ -117,24 +108,15 @@ namespace drone
         }
     };
 
-    struct MPU
-    {
-        int address;
-        MPUKalmanVelocity kalman_velocity;
-        MPUKalmanAngles kalman_angles;
-        MPU(int address, const MPUKalmanVelocity& kv, const MPUKalmanAngles& ka) : kalman_angles(ka), kalman_velocity(kv) {
-            this->address = address;
-        }
-
-        MPU(const MPU& m) : kalman_angles(m.kalman_angles), kalman_velocity(m.kalman_velocity) {
-            this->address = m.address;
-        }
-    };
-
-    struct MPUKalmanVelocity
+    struct MPUKalmanAngles
     {
         double c1, c2, r, q11, q12, q21, q22;
-        MPUKalmanVelocity(double c1, double c2, double r, double q11, double q12, double q21, double q22) {
+
+        MPUKalmanAngles() {
+
+        }
+
+        MPUKalmanAngles(double c1, double c2, double r, double q11, double q12, double q21, double q22) {
             this->c1 = c1;
             this->c2 = c2;
             this->q11 = q11;
@@ -144,7 +126,7 @@ namespace drone
             this->r = r;
         }
 
-        MPUKalmanVelocity(const MPUKalmanVelocity& m) {
+        MPUKalmanAngles(const MPUKalmanAngles& m) {
             this->c1 = m.c1;
             this->c2 = m.c2;
             this->q11 = m.q11;
@@ -155,10 +137,15 @@ namespace drone
         }
     };
 
-    struct MPUKalmanAngles
+    struct MPUKalmanVelocity
     {
         double q11, q22, q33, q44, q55, q66, r;
-        MPUKalmanAngles(double r, double q11, double q22, double q33, double q44, double q55, double q66) {
+
+        MPUKalmanVelocity() {
+
+        }
+
+        MPUKalmanVelocity(double r, double q11, double q22, double q33, double q44, double q55, double q66) {
             this->r = r;
             this->q11 = q11;
             this->q22 = q22;
@@ -168,7 +155,7 @@ namespace drone
             this->q66 = q66;
         }
 
-        MPUKalmanAngles(const MPUKalmanAngles& m) {
+        MPUKalmanVelocity(const MPUKalmanVelocity& m) {
             this->r = m.r;
             this->q11 = m.q11;
             this->q22 = m.q22;
@@ -179,24 +166,32 @@ namespace drone
         }
     };
 
-    struct BMP
+    struct MPU
     {
-        int address, accuracy;
-        BMPKalman kalman;
-        BMP(int address, int accuracy, const BMPKalman& k) : kalman{k} {
-            this->accuracy = accuracy;
+        int address;
+        MPUKalmanVelocity kalman_velocity;
+        MPUKalmanAngles kalman_angles;
+
+        MPU() {
+
+        }
+
+        MPU(int address, const MPUKalmanVelocity& kv, const MPUKalmanAngles& ka) : kalman_angles(ka), kalman_velocity(kv) {
             this->address = address;
         }
 
-        BMP(const BMP& b) : kalman{b.kalman} {
-            this->accuracy = b.accuracy;
-            this->address = b.address;
+        MPU(const MPU& m) : kalman_angles(m.kalman_angles), kalman_velocity(m.kalman_velocity) {
+            this->address = m.address;
         }
     };
 
     struct BMPKalman
     {
         double c1, c2, q11, q12, q21, q22;
+
+        BMPKalman() {
+
+        }
 
         BMPKalman(double c1, double c2, double q11, double q12, double q21, double q22) {
             this->c1 = c1;
@@ -217,31 +212,59 @@ namespace drone
         }
     };
 
-    struct Controls
+    struct BMP
     {
-        double max_pitch, max_roll, max_yawn;
-        Escs escs;
+        int address, accuracy;
+        BMPKalman kalman;
 
-        Controls(const Escs& esc, double max_pitch, double max_roll, double max_yawn) : escs(esc) {
-            this->max_pitch = max_pitch;
-            this->max_roll = max_roll;
-            this->max_yawn = max_yawn;
+        BMP() {
+
         }
 
-        Controls(const Controls& c) : escs(c.escs) {
-            this->max_pitch = c.max_pitch;
-            this->max_roll = c.max_roll;
-            this->max_yawn = c.max_yawn;
+        BMP(int address, int accuracy, const BMPKalman& k) : kalman{k} {
+            this->accuracy = accuracy;
+            this->address = address;
+        }
+
+        BMP(const BMP& b) : kalman{b.kalman} {
+            this->accuracy = b.accuracy;
+            this->address = b.address;
+        }
+    };
+
+    struct PIDControl
+    {
+        double k_p, k_d, k_i, k_aw;
+
+        PIDControl() {
+
+        }
+
+        PIDControl(double k_p, double k_d, double k_i, double k_aw) {
+            this->k_aw = k_aw;
+            this->k_d = k_d;
+            this->k_i = k_i;
+            
+        }
+
+        PIDControl(const PIDControl& p) {
+            this->k_aw = p.k_aw;
+            this->k_d = p.k_d;
+            this->k_i = p.k_i;
         }
     };
 
     struct Escs
     {
         bool calibrate;
-        int min, max, idle, pin_lf, pin_rf, pin_lb, pin_rb;
+        int min, max, idle, pin_lf, pin_rf, pin_lb, pin_rb, max_diff;
         PIDControl roll, pitch, yawn;
 
-        Escs(const PIDControl& roll, const PIDControl& pitch, const PIDControl& yawn, int min, int max, int idle, int pin_lf, int pin_rf, int pin_lb, int pin_rb, bool calibrate) : roll(roll), pitch(pitch), yawn(yawn)  {
+        Escs() {
+
+        }
+
+        Escs(const PIDControl& roll, const PIDControl& pitch, const PIDControl& yawn, int min, int max, int idle, int pin_lf, int pin_rf, int pin_lb, int pin_rb, bool calibrate, double max_diff) : roll(roll), pitch(pitch), yawn(yawn)  {
             this->calibrate = calibrate;
             this->idle = idle;
             this->max = max;
@@ -250,6 +273,7 @@ namespace drone
             this->pin_rb = pin_rb;
             this->pin_lf = pin_lf;
             this->pin_rf = pin_rf;
+            this->max_diff = max_diff;
         }
 
         Escs(const Escs& e) : roll(e.roll), pitch(e.pitch), yawn(e.yawn) {
@@ -261,24 +285,50 @@ namespace drone
             this->pin_rb = e.pin_rb;
             this->pin_lf = e.pin_lf;
             this->pin_rf = e.pin_rf;
+            this->max_diff = e.max_diff;
         }
     };
 
-    struct PIDControl
+    struct ControlsStruct
     {
-        double k_p, k_d, k_i, max_diff, k_aw;
-        PIDControl(double k_p, double k_d, double k_i, double max_diff, double k_aw) {
-            this->k_aw = k_aw;
-            this->k_d = k_d;
-            this->k_i = k_i;
-            this->max_diff = max_diff;
+        float max_pitch, max_roll, max_yawn;
+        Escs escs;
+
+        ControlsStruct() {
+
         }
 
-        PIDControl(const PIDControl& p) {
-            this->k_aw = p.k_aw;
-            this->k_d = p.k_d;
-            this->k_i = p.k_i;
-            this->max_diff = p.max_diff;
+        ControlsStruct(const Escs& esc, float max_pitch, float max_roll, float max_yawn) : escs(esc) {
+            this->max_pitch = max_pitch;
+            this->max_roll = max_roll;
+            this->max_yawn = max_yawn;
+        }
+
+        ControlsStruct(const ControlsStruct& c) : escs(c.escs) {
+            this->max_pitch = c.max_pitch;
+            this->max_roll = c.max_roll;
+            this->max_yawn = c.max_yawn;
+        }
+    };
+
+    struct SensorsStruct
+    {
+        SensorCalibration sensor_calibration;
+        int decimals;
+        MPU mpu;
+        GPS gps;
+        BMP bmp;
+
+        SensorsStruct() {
+
+        }
+
+        SensorsStruct(const SensorCalibration& sc, const MPU& m, const GPS& g, const BMP& b, int decimals) : sensor_calibration(sc), mpu(m), gps(g), bmp(b) {
+            this->decimals = decimals;
+        }
+
+        SensorsStruct(const SensorsStruct& s) : sensor_calibration(s.sensor_calibration), mpu(s.mpu), gps(s.gps), bmp(s.bmp) {
+            this->decimals = s.decimals;
         }
     };
 
@@ -286,6 +336,10 @@ namespace drone
     {
         int main_sleep;
         bool motors_off_disconnect;
+
+        Logic() {
+
+        }
 
         Logic(int main_sleep, bool motors_off_disconnect) {
             this->main_sleep = main_sleep;
@@ -298,9 +352,36 @@ namespace drone
         }
     };
 
+    struct Config
+    {
+        Logic logic;
+        Server server;
+        Leds leds;
+        Queues queues;
+        SensorsStruct sensors;
+        ControlsStruct controls;
+
+        Config(){
+
+        }
+
+        Config(const Logic& logic, const Server& server, const Leds& leds, const Queues& queues, const SensorsStruct& sensors, const ControlsStruct& controls) : logic(logic), server(server), leds(leds), queues(queues), sensors(sensors), controls(controls) {
+
+        }
+
+        Config(const Config& c) : logic(c.logic), server(c.server), leds(c.leds), queues(c.queues), sensors(c.sensors), controls(c.controls) {
+            
+        }
+    };
+    //{"joystick": {"degress": 0, "offset": 0, "rotation":0}, "throttle": 12, "gps":{"altitude": 0, "longitude": 0, "latitude": 0}}
     void to_json(nlohmann::json &j, const Config &cfg);
 
     void from_json(const nlohmann::json &j, Config &cfg);
+
+    void parse_sensor_obj(const nlohmann::json &j, Config &cfg);
+
+    void parse_control_obj(const nlohmann::json &j, Config &cfg);
+
 } // namespace drone
 
 #endif

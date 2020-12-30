@@ -14,13 +14,12 @@ namespace drone
     {
         loadConfig(config_path);
         pin::initGPIOs();
-        server_ = std::make_unique<rpisocket::WiFiServer>(config_.at("server").at("port"), config_.at("server").at("bytes"));
-        on_led_ = std::make_unique<rpicomponents::Led>(config_.at("leds").at("on_led"), pin::DIGITAL_MODE, pin::DIGITAL_MODE_MAX_VAL);
-        status_led_ = std::make_unique<rpicomponents::Led>(config_.at("leds").at("status_led"), pin::DIGITAL_MODE, pin::DIGITAL_MODE_MAX_VAL);
-        readq_ = std::make_unique<drone::SubscriberQueue<std::string>>(config_.at("queues").at("read_size"));
-        controls_ = std::make_unique<Controls>(config_.at("controls"), config_.at("sensors"));
-        tpe_ = std::make_unique<design_patterns::ThreadPoolExecutor>(1, config_.at("queues").at("write_size"));
-        sleep_ = config_.at("main_loop_sleep");
+        server_ = std::make_unique<rpisocket::WiFiServer>(config_.server.port, config_.server.bytes);
+        on_led_ = std::make_unique<rpicomponents::Led>(config_.leds.on_led, pin::DIGITAL_MODE, pin::DIGITAL_MODE_MAX_VAL);
+        status_led_ = std::make_unique<rpicomponents::Led>(config_.leds.status_led, pin::DIGITAL_MODE, pin::DIGITAL_MODE_MAX_VAL);
+        readq_ = std::make_unique<drone::SubscriberQueue<std::string>>(config_.queues.read_size);
+        controls_ = std::make_unique<Controls>(config_.controls, config_.sensors);
+        tpe_ = std::make_unique<design_patterns::ThreadPoolExecutor>(1, config_.queues.write_size);
     }
 
 
@@ -36,13 +35,17 @@ namespace drone
 
     void Loop::connectionHandler() {
         thread_on_ = true;
-        std::string msg, buf, delimiter = config_.at("server").at("delimiter");
+        std::string msg, buf, delimiter = config_.server.delimiter;
+        int max_buf_size = buf.max_size() * 3 / 4;
         while(1) {
             NETWORK_LOG(DEBUG) << "waiting for connection on " << server_->getServerIp() << ":" << server_->getPort();
             server_->connect();
-            tpe_->clear();
+            buf = "";
             NETWORK_LOG(DEBUG) << "connected to " << server_->getConnectedClient();
             while(server_->hasConnection() && thread_on_){
+                if(buf.size() > max_buf_size) {
+                    buf.clear();
+                }
                 try{
                     server_->readBytes(msg);
                     buf += msg;
@@ -53,6 +56,7 @@ namespace drone
                 }
             }   
             readq_->clear();
+            tpe_->clear();
             if(thread_on_) {
                 readq_->update("{\"joystick\":{\"degrees\":0,\"offset\":0}}");
             } else {
@@ -76,7 +80,7 @@ namespace drone
     
     void Loop::loop() 
     {
-        std::string read, delimiter = config_.at("server").at("delimiter");
+        std::string read, delimiter = config_.server.delimiter;
         control_values vals;
         rpicomponents::GPSCoordinates c;
         json j;
@@ -99,7 +103,7 @@ namespace drone
                         server_->writeBytes(msg + delimiter);
                     }
                 });
-                usleep(sleep_); 
+                usleep(config_.logic.main_sleep); 
             } catch(const std::exception &exc) {
                 CONTROL_LOG(ERROR) << exc.what();
             }
