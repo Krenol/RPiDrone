@@ -33,7 +33,7 @@ namespace drone {
              * data is received via the queue
              * @param input The transmitted input
              */
-            void process_input(const json& input);
+            void process_input(const Input& input);
 
             /**
              * Method that returns the current trhottle value
@@ -77,7 +77,7 @@ namespace drone {
             std::atomic<float> roll_angle_s_{0}, pitch_angle_s_{0}, yawn_vel_s_{0};
             std::unique_ptr<Sensors> sensors_;
             rpicomponents::GPSCoordinates client_pos_;
-            float altitude_0_;
+            float zeroed_altitude_, throttle_factor_;
 
             void startEsc(const std::unique_ptr<rpicomponents::Esc>& esc);
             void calibrateEsc(const std::unique_ptr<rpicomponents::Esc>& esc);
@@ -85,12 +85,6 @@ namespace drone {
             void initEscs(const Escs& escs);
 
             void zeroAltitude(int measurements = 100);
-
-            void parseThrottle(const json& input);
-
-            void parseJoystick(const json& input);
-
-            void parseGPS(const json& input);
     };
 }
 

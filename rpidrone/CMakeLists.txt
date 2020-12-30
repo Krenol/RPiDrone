@@ -47,6 +47,9 @@ endif ()
 
 add_executable (rpidrone ${RPICDRONE_PROJECT_SRCS})
 
+# ENABLE THREAD SAFETY FOR EASYLOGGING
+target_compile_definitions(rpidrone PRIVATE ELPP_THREAD_SAFE)
+
 # Own libs
 find_library(rpicomponents REQUIRED)
 find_library(rpipins REQUIRED)

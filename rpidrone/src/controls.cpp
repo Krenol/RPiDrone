@@ -19,7 +19,7 @@ namespace drone
         initControllers(controls.escs);
         throttle_ = controls_.escs.idle;
         sensors_ = std::make_unique<Sensors>(sensors);
-        
+        throttle_factor_ = (controls_.escs.max - controls_.escs.idle - controls_.escs.max_diff) / drone::THROTTLE_UPPER_BOUND;
         std::async(std::launch::async, [this]() { this->zeroAltitude(); });
         PID_LOG(DEBUG) << "datetime;level;roll_s;roll_is;err_roll;pitch_s;pitch_is;err_pitch;yawn_s;yawn_is;err_yawn;lb;rb;lf;rf";
         CONTROL_LOG(INFO) << "Initialized controls successfully";
@@ -54,13 +54,13 @@ namespace drone
     void Controls::zeroAltitude(int measurements) 
     {
         int runs = measurements;
-        altitude_0_ = 0;
+        zeroed_altitude_ = 0;
         while(runs > 0) {
-            altitude_0_ += sensors_->getBarometricHeight();
+            zeroed_altitude_ += sensors_->getBarometricHeight();
             --runs;
             usleep(100);
         }
-        altitude_0_ /= measurements;
+        zeroed_altitude_ /= measurements;
     }
 
     void Controls::startMotors()
@@ -83,63 +83,15 @@ namespace drone
         f.get();
     }
 
-    void Controls::process_input(const json &input)
+    void Controls::process_input(const Input &input)
     {
         const std::lock_guard<std::mutex> lock(mtx_);
-        parseThrottle(input);
-        parseJoystick(input);
-        parseGPS(input);
-    }
-
-    void Controls::parseThrottle(const json &input)
-    {
-        if (JSON_EXISTS(input, "throttle"))
-        {
-            int t = BOUND<int>(input.at("throttle"), 0, 100);
-            throttle_ = (t * (controls_.escs.max - controls_.escs.idle - controls_.escs.max_diff) / 100) + controls_.escs.idle + controls_.escs.max_diff;
-            CONTROL_LOG(INFO) << "set throttle to " << throttle_;
-        }
-    }
-
-    void Controls::parseJoystick(const json &input)
-    {
-        if (JSON_EXISTS(input, "joystick"))
-        {
-            auto j = input.at("joystick");
-            if (JSON_EXISTS(j, "offset") && JSON_EXISTS(j, "degrees"))
-            {
-                float offset = BOUND<float>(j.at("offset"), 0, 1.0);
-                float degrees = BOUND<float>(j.at("degrees"), -360.0, 360.0);
-                roll_angle_s_ = offset * cos(degrees * M_PI / 180.0) * controls_.max_roll;
-                pitch_angle_s_ = offset * sin(degrees * M_PI / 180.0) * controls_.max_pitch;
-                CONTROL_LOG(INFO) << "set roll angle to " << roll_angle_s_ << " and pitch angle to " << pitch_angle_s_;
-            }
-            if (JSON_EXISTS(j, "rotation")) {
-                float rot = BOUND<float>(j.at("rotation"), -100.0, 100.0);
-                yawn_vel_s_ = controls_.max_yawn * rot / 100.0;
-                CONTROL_LOG(INFO) << "set yawn velocity to " << yawn_vel_s_;
-            }
-        }
-    }
-
-    void Controls::parseGPS(const json &input)
-    {
-        if (JSON_EXISTS(input, "gps"))
-        {
-            auto j = input.at("gps");
-            if (JSON_EXISTS(j, "altitude"))
-            {
-                client_pos_.altitude = j.at("altitude");
-            }
-            if (JSON_EXISTS(j, "latitude"))
-            {
-                client_pos_.latitude = j.at("latitude");
-            }
-            if (JSON_EXISTS(j, "longitude"))
-            {
-                client_pos_.longitude = j.at("longitude");
-            }
-        }
+        throttle_ = input.throttle * throttle_factor_ + controls_.escs.idle + controls_.escs.max_diff;
+        roll_angle_s_ = input.joystick.offset * cos(input.joystick.degrees * M_PI / 180.0) * controls_.max_roll;
+        pitch_angle_s_ = input.joystick.offset * sin(input.joystick.degrees * M_PI / 180.0) * controls_.max_pitch;
+        yawn_vel_s_ = controls_.max_yawn * input.joystick.rotation / drone::ROTATION_UPPER_BOUND;
+        client_pos_ = rpicomponents::GPSCoordinates(input.gps);
+        CONTROL_LOG(DEBUG) << "set throttle to " << throttle_ << "; set roll angle to " << roll_angle_s_ << "; set pitch angle to " << pitch_angle_s_ << "; set yawn velocity to " << yawn_vel_s_;
     }
 
     int Controls::getThrottle()
@@ -154,7 +106,7 @@ namespace drone
     
     float Controls::getAltitude() 
     {
-        return sensors_->getBarometricHeight() - altitude_0_;
+        return sensors_->getBarometricHeight() - zeroed_altitude_;
     }
     
     void Controls::control(control_values& vals)

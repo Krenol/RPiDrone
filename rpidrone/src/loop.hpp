@@ -51,6 +51,7 @@ namespace drone {
             std::thread conn_thread_;
             std::atomic_bool thread_on_;
             std::unique_ptr<design_patterns::ThreadPoolExecutor> tpe_;      
+            Input last_input_;
 
             /**
              * Method to load the config file

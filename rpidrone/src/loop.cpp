@@ -38,12 +38,13 @@ namespace drone
         std::string msg, buf, delimiter = config_.server.delimiter;
         int max_buf_size = buf.max_size() * 3 / 4;
         while(1) {
-            NETWORK_LOG(DEBUG) << "waiting for connection on " << server_->getServerIp() << ":" << server_->getPort();
+            NETWORK_LOG(INFO) << "waiting for connection on " << server_->getServerIp() << ":" << server_->getPort();
             server_->connect();
             buf = "";
-            NETWORK_LOG(DEBUG) << "connected to " << server_->getConnectedClient();
+            NETWORK_LOG(INFO) << "connected to " << server_->getConnectedClient();
             while(server_->hasConnection() && thread_on_){
                 if(buf.size() > max_buf_size) {
+                    NETWORK_LOG(WARNING) << "socket read buffer about to overflow! dumping buffer";
                     buf.clear();
                 }
                 try{
@@ -58,7 +59,12 @@ namespace drone
             readq_->clear();
             tpe_->clear();
             if(thread_on_) {
-                readq_->update("{\"joystick\":{\"degrees\":0,\"offset\":0}}");
+                if(config_.logic.motors_off_disconnect) {
+                    readq_->update("{\"joystick\":{\"degrees\":0,\"offset\":0}, \"throttle\": 0}");
+                } else {
+                    readq_->update("{\"joystick\":{\"degrees\":0,\"offset\":0}}");
+                }
+                
             } else {
                 server_->disconnect();
                 return;
@@ -99,7 +105,7 @@ namespace drone
                 tpe_->enqueue([this, j, &delimiter](){
                     if(server_->hasConnection()) {
                         std::string msg = j.dump();
-                        NETWORK_LOG(INFO) << "writing " << msg;
+                        NETWORK_LOG(DEBUG) << "writing " << msg;
                         server_->writeBytes(msg + delimiter);
                     }
                 });
@@ -152,8 +158,9 @@ namespace drone
         json j;
         try{
             j = json::parse(read);
-            NETWORK_LOG(INFO) << "parsed input to json " << j;
-            controls_->process_input(j);
+            NETWORK_LOG(DEBUG) << "parsed input to json " << j;
+            from_json(j, last_input_);
+            controls_->process_input(last_input_);
         } catch(const std::exception &exc){
             //we return old json
             NETWORK_LOG(ERROR) << exc.what() << "read string: " << read;

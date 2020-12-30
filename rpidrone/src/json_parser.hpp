@@ -1,5 +1,6 @@
 #include <nlohmann/json.hpp>
 #include <string>
+#include "rpicomponents/rpicomponents.hpp"
 
 #ifndef DRONE_JSON_PARSER_H
 #define DRONE_JSON_PARSER_H
@@ -10,8 +11,8 @@ namespace drone
 {
     struct Server
     {
-        int port, bytes;
-        std::string delimiter;
+        int port = 8889, bytes = 256;
+        std::string delimiter = "\r\n";
 
         Server() {
 
@@ -32,7 +33,7 @@ namespace drone
 
     struct Leds
     {
-        int on_led, status_led;
+        int on_led = 4, status_led = 5;
 
         Leds() {
 
@@ -51,7 +52,7 @@ namespace drone
 
     struct Queues
     {
-        int read_size, write_size;
+        int read_size = 100, write_size = 100;
 
         Queues() {
 
@@ -70,8 +71,8 @@ namespace drone
 
     struct SensorCalibration
     {
-        bool calibrate;
-        int measurements;
+        bool calibrate = false;
+        int measurements = 1000;
 
         SensorCalibration() {
 
@@ -90,8 +91,8 @@ namespace drone
 
     struct GPS
     {
-        std::string port;
-        int baudrate;
+        std::string port = "/dev/serial0";
+        int baudrate = 9600;
 
         GPS() {
 
@@ -110,7 +111,7 @@ namespace drone
 
     struct MPUKalmanAngles
     {
-        double c1, c2, r, q11, q12, q21, q22;
+        double c1 = 1, c2 = 0, r = 0.05, q11 = 0.1, q12 = 0, q21 = 0, q22 = 0.1;
 
         MPUKalmanAngles() {
 
@@ -139,7 +140,7 @@ namespace drone
 
     struct MPUKalmanVelocity
     {
-        double q11, q22, q33, q44, q55, q66, r;
+        double q11 = 0.1, q22 = 0.1, q33 = 0.1, q44 = 0.1, q55 = 0.1, q66 = 0.1, r = 0.05;
 
         MPUKalmanVelocity() {
 
@@ -161,6 +162,25 @@ namespace drone
             this->q22 = m.q22;
             this->q33 = m.q33;
             this->q44 = m.q44;
+    struct GpsCoordinates {
+        float altitude = 0.0f, longitude = 0.0f, latitude = 0.0f;
+
+        GpsCoordinates() {
+
+        }
+
+        GpsCoordinates(float altitude, float longitude, float latitude) {
+            this->altitude = altitude;
+            this->longitude = longitude;
+            this->latitude = latitude;
+        }
+
+        GpsCoordinates(const GpsCoordinates& g) {
+            this->altitude = g.altitude;
+            this->longitude = g.longitude;
+            this->latitude = g.latitude;
+        }
+    };
             this->q55 = m.q55;
             this->q66 = m.q66;
         }
@@ -168,7 +188,7 @@ namespace drone
 
     struct MPU
     {
-        int address;
+        int address = 104;
         MPUKalmanVelocity kalman_velocity;
         MPUKalmanAngles kalman_angles;
 
@@ -187,7 +207,7 @@ namespace drone
 
     struct BMPKalman
     {
-        double c1, c2, q11, q12, q21, q22;
+        double c1 = 1.0, c2 = 0.0, q11 = 0.001, q12 = 0, q21 = 0, q22 = 0.001;
 
         BMPKalman() {
 
@@ -214,7 +234,7 @@ namespace drone
 
     struct BMP
     {
-        int address, accuracy;
+        int address = 119, accuracy = 1;
         BMPKalman kalman;
 
         BMP() {
@@ -234,7 +254,7 @@ namespace drone
 
     struct PIDControl
     {
-        double k_p, k_d, k_i, k_aw;
+        double k_p = 1.0, k_d = 1.0, k_i = 0.0, k_aw = 0.0;
 
         PIDControl() {
 
@@ -256,8 +276,8 @@ namespace drone
 
     struct Escs
     {
-        bool calibrate;
-        int min, max, idle, pin_lf, pin_rf, pin_lb, pin_rb, max_diff;
+        bool calibrate = false;
+        int min = 700, max = 2000, idle = 800, pin_lf = 0, pin_rf = 1, pin_lb = 2, pin_rb = 3, max_diff = 50;
         PIDControl roll, pitch, yawn;
 
         Escs() {
@@ -291,7 +311,7 @@ namespace drone
 
     struct ControlsStruct
     {
-        float max_pitch, max_roll, max_yawn;
+        float max_pitch = 20.0f, max_roll = 20.0f, max_yawn = 20.0f;
         Escs escs;
 
         ControlsStruct() {
@@ -314,7 +334,7 @@ namespace drone
     struct SensorsStruct
     {
         SensorCalibration sensor_calibration;
-        int decimals;
+        int decimals = 1;
         MPU mpu;
         GPS gps;
         BMP bmp;
@@ -334,8 +354,8 @@ namespace drone
 
     struct Logic
     {
-        int main_sleep;
-        bool motors_off_disconnect;
+        int main_sleep = 5000;
+        bool motors_off_disconnect = false;
 
         Logic() {
 
@@ -373,14 +393,58 @@ namespace drone
             
         }
     };
-    //{"joystick": {"degress": 0, "offset": 0, "rotation":0}, "throttle": 12, "gps":{"altitude": 0, "longitude": 0, "latitude": 0}}
-    void to_json(nlohmann::json &j, const Config &cfg);
+
+    struct Joystick {
+        float degrees = 0, offset = 0, rotation = 0;
+
+        Joystick() {
+
+        }
+
+        Joystick(float degrees, float offset, float rotation) {
+            this->degrees = degrees;
+            this->offset = offset;
+            this->rotation = rotation;
+        }
+
+        Joystick(const Joystick& j) {
+            this->degrees = j.degrees;
+            this->offset = j.offset;
+            this->rotation = j.rotation;
+        }
+    };
+
+
+    struct Input {
+        int throttle = 0;
+        Joystick joystick;
+        rpicomponents::GPSCoordinates gps;
+
+        Input() {
+
+        }
+
+        Input(const Joystick& j, const rpicomponents::GPSCoordinates& gc, int throttle) : joystick(j), gps(gc)
+        {
+            this->throttle = throttle;
+        }
+
+        Input(const Input& i) : joystick(i.joystick), gps(i.gps)
+        {
+            this->throttle = i.throttle;
+        }
+    };
 
     void from_json(const nlohmann::json &j, Config &cfg);
+
+    void from_json(const nlohmann::json &j, Input &i);
 
     void parse_sensor_obj(const nlohmann::json &j, Config &cfg);
 
     void parse_control_obj(const nlohmann::json &j, Config &cfg);
+
+    static const float DEGREE_UPPER_BOUND = 360.0f, OFFSET_UPPER_BOUND = 1.0f, DEGREE_LOWER_BOUND = -360.0f, OFFSET_LOWER_BOUND = 0.0f, ROTATION_UPPER_BOUND = 100.0f, ROTATION_LOWER_BOUND = -100.0f;
+    static const int THROTTLE_UPPER_BOUND = 100, THROTTLE_LOWER_BOUND = 0;
 
 } // namespace drone
 

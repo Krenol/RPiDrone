@@ -21,8 +21,12 @@ static void mvFile(const std::string& file, const std::string& newFile){
 
 static void initLogging()
 {
-    mvFile(LOG_DIR + "/pid.csv", LOG_DIR + "/pid_" + std::to_string(std::time(0)) + ".csv");
-    mvFile(LOG_DIR + "/network.log", LOG_DIR + "/network_" + std::to_string(std::time(0)) + ".log");
+    auto t = std::to_string(std::time(0));
+    mvFile(LOG_DIR + "/pid.csv", LOG_DIR + "/pid_" + t + ".csv");
+    mvFile(LOG_DIR + "/network.log", LOG_DIR + "/network_" + t + ".log");
+    mvFile(LOG_DIR + "/default.log", LOG_DIR + "/default_" + t + ".log");
+    mvFile(LOG_DIR + "/sensors.log", LOG_DIR + "/sensors_" + t + ".log");
+    mvFile(LOG_DIR + "/controls.log", LOG_DIR + "/controls_" + t + ".log");
     //enable multi loggers
     el::Loggers::addFlag(el::LoggingFlag::MultiLoggerSupport);
     // configure all loggers
