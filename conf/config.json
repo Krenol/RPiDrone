@@ -1,7 +1,7 @@
 {
     "logic": {
         "main_loop_sleep": 5000,
-        "motors_off_on_disconnect": false
+        "motors_off_on_disconnect": true
     },
     "server": {
         "port": 8889,

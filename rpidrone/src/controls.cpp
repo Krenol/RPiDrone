@@ -21,8 +21,10 @@ namespace drone
         sensors_ = std::make_unique<Sensors>(sensors);
         throttle_factor_ = (controls_.escs.max - controls_.escs.idle - controls_.escs.max_diff) / drone::THROTTLE_UPPER_BOUND;
         std::async(std::launch::async, [this]() { this->zeroAltitude(); });
-        PID_LOG(DEBUG) << "datetime;level;roll_s;roll_is;err_roll;pitch_s;pitch_is;err_pitch;yawn_s;yawn_is;err_yawn;lb;rb;lf;rf";
         CONTROL_LOG(INFO) << "Initialized controls successfully";
+        #if defined(PID_LOGS)
+        PID_LOG(DEBUG) << "datetime;level;roll_s;roll_is;err_roll;pitch_s;pitch_is;err_pitch;yawn_s;yawn_is;err_yawn;lb;rb;lf;rf";
+        #endif
     }
 
     
@@ -135,11 +137,12 @@ namespace drone
         is << vals.pitch_angle, -vals.roll_angle, -vals.z_vel;
         shld << pitch_angle_s_, -roll_angle_s_, -yawn_vel_s_;
         pid_lf_->calculate(is, shld, lf);
-
+        #if defined(PID_LOGS)
         PID_LOG(INFO) << roll_angle_s_ << ";" << vals.roll_angle << ";" << roll_angle_s_ - vals.roll_angle << ";" << 
             pitch_angle_s_ << ";" << vals.pitch_angle << ";" << pitch_angle_s_ - vals.pitch_angle << ";" <<
             yawn_vel_s_ << ";" << vals.z_vel << ";" << yawn_vel_s_ - vals.z_vel << ";" <<
             (int)lb(0) << ";" << (int)rb(0) << ";" << (int)lf(0) << ";" << (int)rf(0);
+        #endif
         lf_->SetOutputSpeed(throttle_ + lf(0));
         rf_->SetOutputSpeed(throttle_ + rf(0));
         lb_->SetOutputSpeed(throttle_ + lb(0));
@@ -162,17 +165,11 @@ namespace drone
 
     void Controls::idle()
     {
-        lf_->SetOutputSpeed(controls_.escs.idle);
-        rf_->SetOutputSpeed(controls_.escs.idle);
-        lb_->SetOutputSpeed(controls_.escs.idle);
-        rb_->SetOutputSpeed(controls_.escs.idle);
+        throttle_ = controls_.escs.idle;
     }
 
     void Controls::motorsOff()
     {
-        lf_->SetOutputSpeed(0);
-        rf_->SetOutputSpeed(0);
-        lb_->SetOutputSpeed(0);
-        rb_->SetOutputSpeed(0);
+        throttle_ = 0;
     }
 } // namespace drone

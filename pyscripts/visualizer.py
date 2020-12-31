@@ -31,4 +31,4 @@ def plotPID(file, pltName="pid_plot"):
     plt.show()
 
 if __name__ == "__main__":
-    plotPID("pid.csv", "pid")
+    plotPID("../logs/pid.csv", "../logs/plots/pid")
