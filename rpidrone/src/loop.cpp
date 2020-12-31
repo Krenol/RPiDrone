@@ -58,10 +58,11 @@ namespace drone
             }   
             readq_->clear();
             tpe_->clear();
-            if(thread_on_) {
-                    readq_->update("{\"joystick\":{\"degrees\":0,\"offset\":0}}");
+            if(thread_on_) {  
+                readq_->update("{\"joystick\":{\"degrees\":0,\"offset\":0}}");           
                 if(config_.logic.motors_off_disconnect) {
-                    readq_->update("{\"joystick\":{\"degrees\":0,\"offset\":0}, \"joystick\": 0}");
+                    usleep(config_.logic.sleep_disconnect);
+                    controls_->motorsOff();
                 } 
             } else {
                 server_->disconnect();

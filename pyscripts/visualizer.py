@@ -13,17 +13,20 @@ def plotPID(file, pltName="pid_plot"):
     plt.plot(df.t, df.err_yawn, label="err_yawn")
     plt.ylabel('angle error', fontsize=14)
     plt.legend()
+    plt.grid()
 
     plt.subplot(312)
     plt.plot(df.t, df.lb, label="lb")
     plt.plot(df.t, df.rb, label="rb")
     plt.ylabel('PID control value', fontsize=14)
     plt.legend()
+    plt.grid()
 
     plt.subplot(313)
     plt.plot(df.t, df.lf, label="lf")
     plt.plot(df.t, df.rf, label="rf")
     plt.legend()
+    plt.grid()
     plt.xlabel('time', fontsize=14)
     plt.ylabel('PID control value', fontsize=14)
 

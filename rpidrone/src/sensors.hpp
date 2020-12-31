@@ -77,7 +77,7 @@ namespace drone {
             std::unique_ptr<rpicomponents::MPU6050> mpu_;
             std::unique_ptr<rpicomponents::GpsNeo6MV2> gps_;
             std::unique_ptr<rpicomponents::Bmp180> bmp_;
-            int decimal_places_ = 1;
+            const SensorsStruct data_;
             
 
     };

@@ -12,7 +12,7 @@
 
 namespace drone
 {
-    Sensors::Sensors(const SensorsStruct &sensors, rpicomponents::DISTANCE_UNIT unit)  : unit_{unit}
+    Sensors::Sensors(const SensorsStruct &sensors, rpicomponents::DISTANCE_UNIT unit)  : data_{sensors}, unit_{unit}
     {
         SENSOR_LOG(INFO) << "Initializing sensors...";
         rpicomponents::bmp180_pressure_resolution res = (rpicomponents::bmp180_pressure_resolution)sensors.bmp.accuracy;
@@ -35,7 +35,6 @@ namespace drone
         mpu_->SetKalmanConfig(v_conf);
         rpicomponents::bmp_kalman_conf bmp_conf(sensors.bmp.kalman.c1, sensors.bmp.kalman.c2, sensors.bmp.kalman.q11, sensors.bmp.kalman.q12, sensors.bmp.kalman.q21, sensors.bmp.kalman.q22, sensors.bmp.accuracy);
         bmp_->SetKalmanConfig(bmp_conf);
-        decimal_places_ = sensors.decimals;
         SENSOR_LOG(INFO) << "Initialized sensors successfully";
     }
 
@@ -50,13 +49,20 @@ namespace drone
     void Sensors::getControlValues(control_values& vals) 
     {
         rpicomponents::mpu_angles angles;
-        mpu_->GetKalmanAngles(angles);
-
         rpicomponents::mpu_data vel;
-        mpu_->GetKalmanVelocity(vel);
-        vals.z_vel = ROUND<float>(vel.z, decimal_places_);
-        vals.pitch_angle = ROUND<float>(angles.pitch_angle, decimal_places_);
-        vals.roll_angle = ROUND<float>(angles.roll_angle, decimal_places_);
+        vals.z_vel = 0.0f;
+        vals.pitch_angle = 0.0f;
+        vals.roll_angle = 0.0f;
+        for(auto i = 0; i < data_.control_measurements; i++) {
+            mpu_->GetKalmanAngles(angles);
+            mpu_->GetKalmanVelocity(vel);
+            vals.z_vel += vel.z;
+            vals.pitch_angle += angles.pitch_angle;
+            vals.roll_angle += angles.roll_angle;
+        }
+        vals.z_vel = ROUND<float>(vals.z_vel / data_.control_measurements, data_.decimals);
+        vals.pitch_angle = ROUND<float>(vals.pitch_angle / data_.control_measurements, data_.decimals);
+        vals.roll_angle = ROUND<float>(vals.roll_angle / data_.control_measurements, data_.decimals);
         
     }
     
@@ -67,7 +73,7 @@ namespace drone
     
     float Sensors::getBarometricHeight() 
     {
-        return ROUND<float>(bmp_->getAltitudeKalman(), decimal_places_);
+        return ROUND<float>(bmp_->getAltitudeKalman(), data_.decimals);
     }
 
     void Sensors::calibrate(int measurements) 

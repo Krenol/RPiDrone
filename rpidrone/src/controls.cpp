@@ -144,9 +144,9 @@ namespace drone
             (int)lb(0) << ";" << (int)rb(0) << ";" << (int)lf(0) << ";" << (int)rf(0);
         #endif
         lf_->SetOutputSpeed(throttle_ + lf(0));
+        rb_->SetOutputSpeed(throttle_ + rb(0));
         rf_->SetOutputSpeed(throttle_ + rf(0));
         lb_->SetOutputSpeed(throttle_ + lb(0));
-        rb_->SetOutputSpeed(throttle_ + rb(0));
     }
 
     void Controls::startEsc(const std::unique_ptr<rpicomponents::Esc> &esc)
