@@ -77,8 +77,8 @@
                     "yawn": 0.0
                 },
                 "k_p": {
-                    "roll": 5,
-                    "pitch": 5,
+                    "roll": 5.0,
+                    "pitch": 5.0,
                     "yawn": 0.0
                 },
                 "k_d": {

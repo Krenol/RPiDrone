@@ -39,6 +39,12 @@ namespace drone
         aw << escs.roll.k_aw;
         min << -controls_.escs.max_diff;
         max << controls_.escs.max_diff;
+        CONTROL_LOG(INFO) << "P: " << p;
+        CONTROL_LOG(INFO) << "D: " << d;
+        CONTROL_LOG(INFO) << "I: " << i;
+        CONTROL_LOG(INFO) << "I_AW: " << aw;
+        CONTROL_LOG(INFO) << "MIN: " << min;
+        CONTROL_LOG(INFO) << "MAX: " << max;
         pid_lf_ = std::make_unique<controllers::PID_AW>(p, d, i, aw, min, max);
         pid_lb_ = std::make_unique<controllers::PID_AW>(p, d, i, aw, min, max);
         pid_rf_ = std::make_unique<controllers::PID_AW>(p, d, i, aw, min, max);

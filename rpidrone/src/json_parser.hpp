@@ -264,13 +264,14 @@ namespace drone
             this->k_aw = k_aw;
             this->k_d = k_d;
             this->k_i = k_i;
-            
+            this->k_p = k_p;            
         }
 
         PIDControl(const PIDControl& p) {
             this->k_aw = p.k_aw;
             this->k_d = p.k_d;
             this->k_i = p.k_i;
+            this->k_p = p.k_p;
         }
     };
 
