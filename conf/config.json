@@ -1,6 +1,6 @@
 {
     "logic": {
-        "main_loop_sleep": 5000,
+        "main_loop_sleep": 0,
         "motors_off_on_disconnect": true,
         "sleep_before_disconnect": 200000
     },
@@ -19,8 +19,8 @@
     },
     "sensors": {
         "calibration": {
-            "calibrate": false,
-            "measurements": 2000
+            "calibrate": true,
+            "measurements": 1100
         },
         "decimal_places": 1,
         "control_measurements": 3,
@@ -72,18 +72,18 @@
             "calibrate": false,
             "controllers": {
                 "k_i": {
-                    "roll": 0.0,
-                    "pitch": 0.0,
+                    "roll": 0.0000225,
+                    "pitch": 0.0000225,
                     "yawn": 0.0
                 },
                 "k_p": {
-                    "roll": 5.0,
-                    "pitch": 5.0,
+                    "roll": 4.0,
+                    "pitch": 4.0,
                     "yawn": 0.0
                 },
                 "k_d": {
-                    "roll": 10,
-                    "pitch": 10,
+                    "roll": 0.5,
+                    "pitch": 0.5,
                     "yawn": 0.0
                 },
                 "k_aw": 0.0,

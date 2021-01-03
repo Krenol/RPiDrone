@@ -74,9 +74,17 @@ namespace drone {
         private:
             const rpicomponents::DISTANCE_UNIT unit_;
             //std::unique_ptr<rpicomponents::UltrasonicSensor> uss_left_, uss_right_, uss_top_, uss_bottom_, uss_front_, uss_back_;
-            std::unique_ptr<rpicomponents::MPU6050> mpu_;
             std::unique_ptr<rpicomponents::GpsNeo6MV2> gps_;
-            std::unique_ptr<rpicomponents::Bmp180> bmp_;
+            #if defined(US)
+            std::unique_ptr<rpicomponents::Bmp180<std::chrono::microseconds>> bmp_;
+            std::unique_ptr<rpicomponents::MPU6050<std::chrono::microseconds>> mpu_;
+            #elif defined(NS)
+            std::unique_ptr<rpicomponents::Bmp180<std::chrono::nanoseconds>> bmp_;
+            std::unique_ptr<rpicomponents::MPU6050<std::chrono::nanoseconds>> mpu_;
+            #else
+            std::unique_ptr<rpicomponents::Bmp180<std::chrono::milliseconds>> bmp_;
+            std::unique_ptr<rpicomponents::MPU6050<std::chrono::milliseconds>> mpu_;
+            #endif
             const SensorsStruct data_;
             
 

@@ -81,7 +81,9 @@ namespace drone
     
     void parse_control_obj(const nlohmann::json &j, Config &cfg) 
     {
-        int max_p, max_y, max_r, min_esc, max_esc, idle, lf, rf, lb, rb, kaw, max_diff;
+        int min_esc, max_esc, idle, lf, rf, lb, rb, max_diff;
+        float max_p, max_y, max_r;
+        double kaw;
         bool calib;
         json c, val, ki, kd, kp;
         std::string pos;

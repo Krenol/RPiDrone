@@ -25,7 +25,6 @@ namespace drone
 
     Loop::~Loop() 
     {
-        server_->readThreadOff();
         on_led_->TurnOff();
         status_led_->TurnOff();
         thread_on_ = false;
@@ -87,10 +86,11 @@ namespace drone
     {
         std::string read, delimiter = config_.server.delimiter;
         control_values vals;
-        rpicomponents::GPSCoordinates c;
-        json j;
         conn_thread_ = std::thread(&Loop::connectionHandler, this);
         CONTROL_LOG(INFO) << "starting main control loop";
+        #if defined(EXEC_TIME_LOG)
+        std::chrono::steady_clock::time_point last_call = std::chrono::steady_clock::now(), now;
+        #endif
         while(1){
             try{
                 if(readq_->has_item()){
@@ -100,11 +100,16 @@ namespace drone
                 controls_->control(vals);
 
                 //controls_->getDroneCoordinates(c, 20); 
-                createOutputJson(vals, c, j);
-                tpe_->enqueue([this, j, &delimiter](){
+                
+                tpe_->enqueue([this, vals, &delimiter](){
+                    rpicomponents::GPSCoordinates c;
+                    json j;
+                    createOutputJson(vals, c, j);
                     if(server_->hasConnection()) {
                         std::string msg = j.dump();
+                        #if defined(NETWORK_DEBUG_LOGS)
                         NETWORK_LOG(DEBUG) << "writing " << msg;
+                        #endif
                         server_->writeBytes(msg + delimiter);
                     }
                 });
@@ -112,7 +117,11 @@ namespace drone
             } catch(const std::exception &exc) {
                 CONTROL_LOG(ERROR) << exc.what();
             }
-            
+            #if defined(EXEC_TIME_LOG)
+            now = std::chrono::steady_clock::now();
+            LOG(INFO) << "Loop exec time was " << std::chrono::duration_cast<std::chrono::milliseconds>(now - last_call).count() << " ms";
+            last_call = now;
+            #endif
         }
     }
 
@@ -157,7 +166,9 @@ namespace drone
         json j;
         try{
             j = json::parse(read);
+            #if defined(NETWORK_DEBUG_LOGS)
             NETWORK_LOG(DEBUG) << "parsed input to json " << j;
+            #endif
             from_json(j, last_input_);
             controls_->process_input(last_input_);
         } catch(const std::exception &exc){

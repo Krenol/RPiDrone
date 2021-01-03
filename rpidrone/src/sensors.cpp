@@ -16,8 +16,16 @@ namespace drone
     {
         SENSOR_LOG(INFO) << "Initializing sensors...";
         rpicomponents::bmp180_pressure_resolution res = (rpicomponents::bmp180_pressure_resolution)sensors.bmp.accuracy;
-        mpu_ = std::make_unique<rpicomponents::MPU6050>(sensors.mpu.address, rpicomponents::G_4, rpicomponents::DPS_500);
-        bmp_ = std::make_unique<rpicomponents::Bmp180>(sensors.bmp.address, res);
+        #if defined(US)
+        mpu_ = std::make_unique<rpicomponents::MPU6050<std::chrono::microseconds>>(sensors.mpu.address, rpicomponents::G_4, rpicomponents::DPS_500);
+        bmp_ = std::make_unique<rpicomponents::Bmp180<std::chrono::microseconds>>(sensors.bmp.address, res);
+        #elif defined(NS)
+        mpu_ = std::make_unique<rpicomponents::MPU6050<std::chrono::nanoseconds>>(sensors.mpu.address, rpicomponents::G_4, rpicomponents::DPS_500);
+        bmp_ = std::make_unique<rpicomponents::Bmp180<std::chrono::nanoseconds>>(sensors.bmp.address, res);
+        #else
+        mpu_ = std::make_unique<rpicomponents::MPU6050<std::chrono::milliseconds>>(sensors.mpu.address, rpicomponents::G_4, rpicomponents::DPS_500);
+        bmp_ = std::make_unique<rpicomponents::Bmp180<std::chrono::milliseconds>>(sensors.bmp.address, res);
+        #endif
         gps_ = std::make_unique<rpicomponents::GpsNeo6MV2>(sensors.gps.port, sensors.gps.baudrate);
         if (sensors.sensor_calibration.calibrate)
         {

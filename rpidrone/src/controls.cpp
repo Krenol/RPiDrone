@@ -27,8 +27,6 @@ namespace drone
         #endif
     }
 
-    
-
     void Controls::initControllers(const Escs &escs)
     {
         Eigen::MatrixXd p(3, 1), d(3, 1), i(3, 1);
@@ -45,10 +43,25 @@ namespace drone
         CONTROL_LOG(INFO) << "I_AW: " << aw;
         CONTROL_LOG(INFO) << "MIN: " << min;
         CONTROL_LOG(INFO) << "MAX: " << max;
-        pid_lf_ = std::make_unique<controllers::PID_AW>(p, d, i, aw, min, max);
-        pid_lb_ = std::make_unique<controllers::PID_AW>(p, d, i, aw, min, max);
-        pid_rf_ = std::make_unique<controllers::PID_AW>(p, d, i, aw, min, max);
-        pid_rb_ = std::make_unique<controllers::PID_AW>(p, d, i, aw, min, max);
+        #if defined(US)
+        CONTROL_LOG(INFO) << "time_unit for controllers is us";
+        pid_lf_ = std::make_unique<controllers::PID_AW<std::chrono::microseconds>>(p, d, i, aw, min, max);
+        pid_lb_ = std::make_unique<controllers::PID_AW<std::chrono::microseconds>>(p, d, i, aw, min, max);
+        pid_rf_ = std::make_unique<controllers::PID_AW<std::chrono::microseconds>>(p, d, i, aw, min, max);
+        pid_rb_ = std::make_unique<controllers::PID_AW<std::chrono::microseconds>>(p, d, i, aw, min, max);
+        #elif defined(NS)
+        CONTROL_LOG(INFO) << "time_unit for controllers is ns";
+        pid_lf_ = std::make_unique<controllers::PID_AW<std::chrono::nanoseconds>>(p, d, i, aw, min, max);
+        pid_lb_ = std::make_unique<controllers::PID_AW<std::chrono::nanoseconds>>(p, d, i, aw, min, max);
+        pid_rf_ = std::make_unique<controllers::PID_AW<std::chrono::nanoseconds>>(p, d, i, aw, min, max);
+        pid_rb_ = std::make_unique<controllers::PID_AW<std::chrono::nanoseconds>>(p, d, i, aw, min, max);
+        #else
+        CONTROL_LOG(INFO) << "time_unit for controllers is ms";
+        pid_lf_ = std::make_unique<controllers::PID_AW<std::chrono::milliseconds>>(p, d, i, aw, min, max);
+        pid_lb_ = std::make_unique<controllers::PID_AW<std::chrono::milliseconds>>(p, d, i, aw, min, max);
+        pid_rf_ = std::make_unique<controllers::PID_AW<std::chrono::milliseconds>>(p, d, i, aw, min, max);
+        pid_rb_ = std::make_unique<controllers::PID_AW<std::chrono::milliseconds>>(p, d, i, aw, min, max);
+        #endif
     }
 
     void Controls::initEscs(const Escs &escs)
@@ -58,12 +71,13 @@ namespace drone
         rf_ = std::make_unique<rpicomponents::Esc>(escs.pin_rf, controls_.escs.min, controls_.escs.max);
         lf_ = std::make_unique<rpicomponents::Esc>(escs.pin_lf, controls_.escs.min, controls_.escs.max);
     }
-    
-    void Controls::zeroAltitude(int measurements) 
+
+    void Controls::zeroAltitude(int measurements)
     {
         int runs = measurements;
         zeroed_altitude_ = 0;
-        while(runs > 0) {
+        while (runs > 0)
+        {
             zeroed_altitude_ += sensors_->getBarometricHeight();
             --runs;
             usleep(100);
@@ -86,7 +100,7 @@ namespace drone
             std::async(std::launch::async, [this]() { this->startEsc(rb_); });
             std::async(std::launch::async, [this]() { this->startEsc(rf_); });
             std::async(std::launch::async, [this]() { this->startEsc(lb_); });
-            f= std::async(std::launch::async, [this]() { this->startEsc(lf_); });
+            f = std::async(std::launch::async, [this]() { this->startEsc(lf_); });
         }
         f.get();
     }
@@ -107,17 +121,17 @@ namespace drone
         return throttle_;
     }
 
-    void Controls::getDroneCoordinates(rpicomponents::GPSCoordinates& c, int retires) 
+    void Controls::getDroneCoordinates(rpicomponents::GPSCoordinates &c, int retires)
     {
         sensors_->getDroneCoordinates(c, retires);
     }
-    
-    float Controls::getAltitude() 
+
+    float Controls::getAltitude()
     {
         return sensors_->getBarometricHeight() - zeroed_altitude_;
     }
-    
-    void Controls::control(control_values& vals)
+
+    void Controls::control(control_values &vals)
     {
         const std::lock_guard<std::mutex> lock(mtx_);
         sensors_->getControlValues(vals);
@@ -143,12 +157,9 @@ namespace drone
         is << vals.pitch_angle, -vals.roll_angle, -vals.z_vel;
         shld << pitch_angle_s_, -roll_angle_s_, -yawn_vel_s_;
         pid_lf_->calculate(is, shld, lf);
-        #if defined(PID_LOGS)
-        PID_LOG(INFO) << roll_angle_s_ << ";" << vals.roll_angle << ";" << roll_angle_s_ - vals.roll_angle << ";" << 
-            pitch_angle_s_ << ";" << vals.pitch_angle << ";" << pitch_angle_s_ - vals.pitch_angle << ";" <<
-            yawn_vel_s_ << ";" << vals.z_vel << ";" << yawn_vel_s_ - vals.z_vel << ";" <<
-            (int)lb(0) << ";" << (int)rb(0) << ";" << (int)lf(0) << ";" << (int)rf(0);
-        #endif
+#if defined(PID_LOGS)
+        PID_LOG(INFO) << roll_angle_s_ << ";" << vals.roll_angle << ";" << roll_angle_s_ - vals.roll_angle << ";" << pitch_angle_s_ << ";" << vals.pitch_angle << ";" << pitch_angle_s_ - vals.pitch_angle << ";" << yawn_vel_s_ << ";" << vals.z_vel << ";" << yawn_vel_s_ - vals.z_vel << ";" << (int)lb(0) << ";" << (int)rb(0) << ";" << (int)lf(0) << ";" << (int)rf(0);
+#endif
         lf_->SetOutputSpeed(throttle_ + lf(0));
         rb_->SetOutputSpeed(throttle_ + rb(0));
         rf_->SetOutputSpeed(throttle_ + rf(0));
