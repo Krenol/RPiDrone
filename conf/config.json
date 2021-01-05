@@ -72,21 +72,21 @@
             "calibrate": false,
             "controllers": {
                 "k_i": {
-                    "roll": 0.000228,
-                    "pitch": 0.000228,
+                    "roll": 0.0,
+                    "pitch": 0.0,
                     "yawn": 0.0
                 },
                 "k_p": {
-                    "roll": 1.2,
-                    "pitch": 1.2,
+                    "roll": 2.2,
+                    "pitch": 2.2,
                     "yawn": 0.0
                 },
                 "k_d": {
-                    "roll": -0.0,
-                    "pitch": -0.0,
+                    "roll": -0.025,
+                    "pitch": -0.025,
                     "yawn": 0.0
                 },
-                "k_aw": 1.0,
+                "k_aw": 0.0,
                 "max_diff": 100
             },
             "min": 700,
