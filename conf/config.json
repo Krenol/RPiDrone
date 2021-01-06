@@ -10,8 +10,8 @@
         "delimiter": "\r\n"
     },
     "leds": {
-        "on_led": 5,
-        "status_led": 6
+        "on_led": 6,
+        "status_led": 5
     },
     "queues": {
         "read_size": 100,
