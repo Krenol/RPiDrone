@@ -1,6 +1,0 @@
-#include "../../src/p.hpp"
-#include "../../src/pd.hpp"
-#include "../../src/pi.hpp"
-#include "../../src/pid.hpp"
-#include "../../src/pid_aw.hpp"
-#include "../../src/controller.hpp"
