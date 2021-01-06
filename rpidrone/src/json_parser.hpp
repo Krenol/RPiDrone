@@ -137,6 +137,26 @@ namespace drone
             this->r = m.r;
         }
     };
+    
+    struct GpsCoordinates {
+        float altitude = 0.0f, longitude = 0.0f, latitude = 0.0f;
+
+        GpsCoordinates() {
+
+        }
+
+        GpsCoordinates(float altitude, float longitude, float latitude) {
+            this->altitude = altitude;
+            this->longitude = longitude;
+            this->latitude = latitude;
+        }
+
+        GpsCoordinates(const GpsCoordinates& g) {
+            this->altitude = g.altitude;
+            this->longitude = g.longitude;
+            this->latitude = g.latitude;
+        }
+    };
 
     struct MPUKalmanVelocity
     {
@@ -162,25 +182,6 @@ namespace drone
             this->q22 = m.q22;
             this->q33 = m.q33;
             this->q44 = m.q44;
-    struct GpsCoordinates {
-        float altitude = 0.0f, longitude = 0.0f, latitude = 0.0f;
-
-        GpsCoordinates() {
-
-        }
-
-        GpsCoordinates(float altitude, float longitude, float latitude) {
-            this->altitude = altitude;
-            this->longitude = longitude;
-            this->latitude = latitude;
-        }
-
-        GpsCoordinates(const GpsCoordinates& g) {
-            this->altitude = g.altitude;
-            this->longitude = g.longitude;
-            this->latitude = g.latitude;
-        }
-    };
             this->q55 = m.q55;
             this->q66 = m.q66;
         }
