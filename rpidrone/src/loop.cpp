@@ -128,7 +128,7 @@ namespace drone
     void Loop::createOutputJson(const control_values& vals, const rpicomponents::GPSCoordinates& c, json& j) {
         j = {
                 {"angles", {
-                    {"yaw", 0}, 
+                    {"yaw", vals.yaw_angle}, 
                     {"pitch", vals.pitch_angle}, 
                     {"roll", vals.roll_angle}}
                 },

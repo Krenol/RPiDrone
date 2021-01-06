@@ -1,10 +1,8 @@
 #include "rpicomponents/rpicomponents.hpp"
 #include <nlohmann/json.hpp>
 #include <memory>
-#include "controllers/controllers.hpp"
+#include "pid.hpp"
 #include <string>
-#include "controllers/controllers.hpp"
-#include <atomic>
 #include "sensors.hpp"
 #include "json_parser.hpp"
 
@@ -73,14 +71,14 @@ namespace drone {
             std::unique_ptr<rpicomponents::Esc> lf_, rf_, lb_, rb_;
             std::mutex mtx_; 
             #if defined(US)
-            std::unique_ptr<controllers::PID_AW<std::chrono::microseconds>> pid_lf_, pid_rf_, pid_rb_, pid_lb_;
+            std::unique_ptr<PID<float, std::chrono::microseconds>> pid_roll_rate_, pid_pitch_rate_, pid_yaw_rate_, pid_roll_output_, pid_pitch_output_, pid_yaw_output_;
             #elif defined(NS)
-            std::unique_ptr<controllers::PID_AW<std::chrono::nanoseconds>> pid_lf_, pid_rf_, pid_rb_, pid_lb_;
+            std::unique_ptr<PID<float, std::chrono::nanoseconds>> pid_roll_rate_, pid_pitch_rate_, pid_yaw_rate_, pid_roll_output_, pid_pitch_output_, pid_yaw_output_;
             #else
-            std::unique_ptr<controllers::PID_AW<std::chrono::milliseconds>> pid_lf_, pid_rf_, pid_rb_, pid_lb_;
+            std::unique_ptr<PID<float, std::chrono::milliseconds>> pid_roll_rate_, pid_pitch_rate_, pid_yaw_rate_, pid_roll_output_, pid_pitch_output_, pid_yaw_output_;
             #endif
             std::atomic_int throttle_{0};
-            std::atomic<float> roll_angle_s_{0}, pitch_angle_s_{0}, yawn_vel_s_{0};
+            std::atomic<float> roll_angle_s_{0}, pitch_angle_s_{0}, yaw_vel_s_{0};
             std::unique_ptr<Sensors> sensors_;
             rpicomponents::GPSCoordinates client_pos_;
             float zeroed_altitude_, throttle_factor_;

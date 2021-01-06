@@ -109,59 +109,7 @@ namespace drone
         }
     };
 
-    struct MPUKalmanAngles
-    {
-        double c1 = 1, c2 = 0, r = 0.05, q11 = 0.1, q12 = 0, q21 = 0, q22 = 0.1;
 
-        MPUKalmanAngles() {
-
-        }
-
-        MPUKalmanAngles(double c1, double c2, double r, double q11, double q12, double q21, double q22) {
-            this->c1 = c1;
-            this->c2 = c2;
-            this->q11 = q11;
-            this->q12 = q12;
-            this->q21 = q21;
-            this->q22 = q22;
-            this->r = r;
-        }
-
-        MPUKalmanAngles(const MPUKalmanAngles& m) {
-            this->c1 = m.c1;
-            this->c2 = m.c2;
-            this->q11 = m.q11;
-            this->q12 = m.q12;
-            this->q21 = m.q21;
-            this->q22 = m.q22;
-            this->r = m.r;
-        }
-    };
-
-    struct MPUKalmanVelocity
-    {
-        double q11 = 0.1, q22 = 0.1, q33 = 0.1, q44 = 0.1, q55 = 0.1, q66 = 0.1, r = 0.05;
-
-        MPUKalmanVelocity() {
-
-        }
-
-        MPUKalmanVelocity(double r, double q11, double q22, double q33, double q44, double q55, double q66) {
-            this->r = r;
-            this->q11 = q11;
-            this->q22 = q22;
-            this->q33 = q33;
-            this->q44 = q44;
-            this->q55 = q55;
-            this->q66 = q66;
-        }
-
-        MPUKalmanVelocity(const MPUKalmanVelocity& m) {
-            this->r = m.r;
-            this->q11 = m.q11;
-            this->q22 = m.q22;
-            this->q33 = m.q33;
-            this->q44 = m.q44;
     struct GpsCoordinates {
         float altitude = 0.0f, longitude = 0.0f, latitude = 0.0f;
 
@@ -181,26 +129,31 @@ namespace drone
             this->latitude = g.latitude;
         }
     };
-            this->q55 = m.q55;
-            this->q66 = m.q66;
+
+    struct AHRS {
+        float beta;
+        AHRS(float beta = 1.0f) {
+            this->beta = beta;
+        }
+        AHRS(const AHRS &a) {
+            this->beta = a.beta;
         }
     };
 
     struct MPU
     {
         int address = 104;
-        MPUKalmanVelocity kalman_velocity;
-        MPUKalmanAngles kalman_angles;
+        AHRS ahrs;
 
         MPU() {
 
         }
 
-        MPU(int address, const MPUKalmanVelocity& kv, const MPUKalmanAngles& ka) : kalman_angles(ka), kalman_velocity(kv) {
+        MPU(int address, const AHRS &a) : ahrs(a) {
             this->address = address;
         }
 
-        MPU(const MPU& m) : kalman_angles(m.kalman_angles), kalman_velocity(m.kalman_velocity) {
+        MPU(const MPU& m) : ahrs(m.ahrs) {
             this->address = m.address;
         }
     };
@@ -254,17 +207,19 @@ namespace drone
 
     struct PIDControl
     {
-        double k_p = 1.0, k_d = 1.0, k_i = 0.0, k_aw = 0.0;
+        double k_p = 1.0, k_d = 1.0, k_i = 0.0, k_aw = 0.0, max = 0.0, min = 0.0;
 
         PIDControl() {
 
         }
 
-        PIDControl(double k_p, double k_d, double k_i, double k_aw) {
+        PIDControl(double k_p, double k_d, double k_i, double k_aw, double min, double max) {
             this->k_aw = k_aw;
             this->k_d = k_d;
             this->k_i = k_i;
-            this->k_p = k_p;            
+            this->k_p = k_p;       
+            this->min = min;    
+            this->max = max;         
         }
 
         PIDControl(const PIDControl& p) {
@@ -272,20 +227,22 @@ namespace drone
             this->k_d = p.k_d;
             this->k_i = p.k_i;
             this->k_p = p.k_p;
+            this->min = p.min;    
+            this->max = p.max;     
         }
     };
 
     struct Escs
     {
         bool calibrate = false;
-        int min = 700, max = 2000, idle = 800, pin_lf = 0, pin_rf = 1, pin_lb = 2, pin_rb = 3, max_diff = 50;
-        PIDControl roll, pitch, yawn;
+        int min = 700, max = 2000, idle = 800, pin_lf = 0, pin_rf = 1, pin_lb = 2, pin_rb = 3;
+        PIDControl roll_rate, pitch_rate, yaw_rate, roll_output, pitch_output, yaw_output;
 
         Escs() {
 
         }
 
-        Escs(const PIDControl& roll, const PIDControl& pitch, const PIDControl& yawn, int min, int max, int idle, int pin_lf, int pin_rf, int pin_lb, int pin_rb, bool calibrate, double max_diff) : roll(roll), pitch(pitch), yawn(yawn)  {
+        Escs(const PIDControl& roll_rate, const PIDControl& pitch_rate, const PIDControl& yaw_rate, const PIDControl& roll_output, const PIDControl& pitch_output, const PIDControl& yaw_output, int min, int max, int idle, int pin_lf, int pin_rf, int pin_lb, int pin_rb, bool calibrate) : roll_rate(roll_rate), pitch_rate(pitch_rate), yaw_rate(yaw_rate), roll_output(roll_output), pitch_output(pitch_output), yaw_output(yaw_output) {
             this->calibrate = calibrate;
             this->idle = idle;
             this->max = max;
@@ -294,10 +251,9 @@ namespace drone
             this->pin_rb = pin_rb;
             this->pin_lf = pin_lf;
             this->pin_rf = pin_rf;
-            this->max_diff = max_diff;
         }
 
-        Escs(const Escs& e) : roll(e.roll), pitch(e.pitch), yawn(e.yawn) {
+        Escs(const Escs& e) : roll_rate(e.roll_rate), pitch_rate(e.pitch_rate), yaw_rate(e.yaw_rate), roll_output(roll_output), pitch_output(pitch_output), yaw_output(yaw_output) {
             this->calibrate = e.calibrate;
             this->idle = e.idle;
             this->max = e.max;
@@ -306,7 +262,6 @@ namespace drone
             this->pin_rb = e.pin_rb;
             this->pin_lf = e.pin_lf;
             this->pin_rf = e.pin_rf;
-            this->max_diff = e.max_diff;
         }
     };
 

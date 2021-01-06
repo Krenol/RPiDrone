@@ -21,19 +21,19 @@ namespace drone
         static constexpr bool value = true;
     };
 
-    template <typename T = std::chrono::milliseconds>
+    template <typename X = float, typename T = std::chrono::milliseconds>
     class PID
     {
     private:
-        const double ki_, kd_, kp_, kaw_, min_, max_;
+        const X ki_, kd_, kp_, kaw_, min_, max_;
+        X integral_, last_error_;
         const bool is_bound_{false};
-        std::atomic<double> integral_{0}, last_error_{0};
         std::chrono::steady_clock::time_point last_call_;
         std::atomic_bool first_call_;
         std::mutex mtx_;
 
-        double getDt() {
-            double dt;
+        long getDt() {
+            long dt;
             auto now = std::chrono::steady_clock::now();
             dt = std::chrono::duration_cast<T>(now - last_call_).count();
             last_call_ = now;
@@ -48,7 +48,7 @@ namespace drone
          * @param ki Value for integral part
          * @param kaw Anti windup param for controller
          */
-        PID(double kp = 1.0, double kd = 1.0, double ki = 1.0) : ki_{ki}, kd_{kd}, kp_{kp}, kaw_{0}, min_{0}, max_{0}, is_bound_{false}
+        PID(X kp = 1.0, X kd = 1.0, X ki = 1.0) : ki_{ki}, kd_{kd}, kp_{kp}, kaw_{0}, min_{0}, max_{0}, is_bound_{false}
         {
             static_assert(is_chrono_duration<T>::value, "T not derived from std::chrono::duration");
         }
@@ -62,7 +62,7 @@ namespace drone
          * @param min Min value of the controller
          * @param max max value of the controller
          */
-        PID(double kp, double kd, double ki, double kaw, double min, double max) : ki_{ki}, kd_{kd}, kp_{kp}, kaw_{kaw}, min_{min}, max_{max}, is_bound_{true}
+        PID(X kp, X kd, X ki, X kaw, X min, X max) : ki_{ki}, kd_{kd}, kp_{kp}, kaw_{kaw}, min_{min}, max_{max}, is_bound_{true}
         {
             static_assert(is_chrono_duration<T>::value, "T not derived from std::chrono::duration");
         }
@@ -72,7 +72,7 @@ namespace drone
          * @param is The is state of the system
          * @param desired The desired state
          */
-        double control(double is, double desired) 
+        X control(X is, X desired) 
         {
              if(first_call_){
                 last_call_ = std::chrono::steady_clock::now();

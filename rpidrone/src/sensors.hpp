@@ -14,7 +14,7 @@ namespace drone {
     };
 
     struct control_values {
-        float roll_angle, pitch_angle, z_vel;
+        float roll_angle, pitch_angle, yaw_angle, z_vel, x_vel, y_vel;
     };
 
     class Sensors {
@@ -75,6 +75,7 @@ namespace drone {
             const rpicomponents::DISTANCE_UNIT unit_;
             //std::unique_ptr<rpicomponents::UltrasonicSensor> uss_left_, uss_right_, uss_top_, uss_bottom_, uss_front_, uss_back_;
             std::unique_ptr<rpicomponents::GpsNeo6MV2> gps_;
+            std::unique_ptr<rpicomponents::Ahrs> ahrs_;
             #if defined(US)
             std::unique_ptr<rpicomponents::Bmp180<std::chrono::microseconds>> bmp_;
             std::unique_ptr<rpicomponents::MPU6050<std::chrono::microseconds>> mpu_;

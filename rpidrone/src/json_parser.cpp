@@ -72,25 +72,23 @@ namespace drone
         BMPKalman bkal(b.at("kalman").at("c1"), b.at("kalman").at("c2"), b.at("kalman").at("q11"), b.at("kalman").at("q12"), b.at("kalman").at("q21"), b.at("kalman").at("q22"));
         BMP bmp(b.at("address"), b.at("accuracy"), bkal);
         b = js.at("mpu");
-        js = b.at("kalman");
-        MPUKalmanAngles ma(js.at("angles").at("c1"), js.at("angles").at("c2"), js.at("angles").at("r"), js.at("angles").at("q11"), js.at("angles").at("q12"), js.at("angles").at("q21"), js.at("angles").at("q22"));
-        MPUKalmanVelocity mv(js.at("velocity").at("r"), js.at("velocity").at("q11"), js.at("velocity").at("q22"), js.at("velocity").at("q33"), js.at("velocity").at("q44"), js.at("velocity").at("q55"), js.at("velocity").at("q66"));
-        MPU mpu(b.at("address"), mv, ma);
+        js = b.at("ahrs");
+        AHRS a(js.at("beta"));
+        MPU mpu(b.at("address"), a);
         cfg.sensors = SensorsStruct(sc, mpu, gps, bmp, dec, con_measure);
     }
     
     void parse_control_obj(const nlohmann::json &j, Config &cfg) 
     {
-        int min_esc, max_esc, idle, lf, rf, lb, rb, max_diff;
-        float max_p, max_y, max_r;
-        double kaw;
+        int min_esc, max_esc, idle, lf, rf, lb, rb;
+        float max_p, max_y, max_r, m;
         bool calib;
-        json c, val, ki, kd, kp;
+        json c, val, ki, kd, kp, kaw, diffs;
         std::string pos;
         c = j.at("controls");
-        max_p = c.at("max_pitch_angle");
-        max_r = c.at("max_roll_angle");
-        max_y = c.at("max_yawn_velocity");
+        max_p = c.at("max_pitch_rate");
+        max_r = c.at("max_roll_rate");
+        max_y = c.at("max_yaw_velocity");
         c = c.at("escs");
         calib = c.at("calibrate");
         min_esc = c.at("min");
@@ -122,12 +120,21 @@ namespace drone
         ki = c.at("k_i");
         kp = c.at("k_p");
         kd = c.at("k_d");
-        max_diff = c.at("max_diff");
+        diffs = c.at("max_diff");
         kaw = c.at("k_aw");
-        PIDControl rc(kp.at("roll"), kd.at("roll"), ki.at("roll"), kaw);
-        PIDControl pc(kp.at("pitch"), kd.at("pitch"), ki.at("pitch"), kaw);
-        PIDControl yc(kp.at("yawn"), kd.at("yawn"), ki.at("yawn"), kaw);
-        Escs escs(rc, pc, yc, min_esc, max_esc, idle, lf, rf, lb, rb, calib, max_diff);
+        m = diffs.at("roll_rate");
+        PIDControl rac(kp.at("roll_rate"), kd.at("roll_rate"), ki.at("roll_rate"), kaw.at("roll_rate"), -m, m);
+        m = diffs.at("pitch_rate");
+        PIDControl pac(kp.at("pitch_rate"), kd.at("pitch_rate"), ki.at("pitch_rate"), kaw.at("pitch_rate"), -m, m);
+        m = diffs.at("yaw_rate");
+        PIDControl yac(kp.at("yaw_rate"), kd.at("yaw_rate"), ki.at("yaw_rate"), kaw.at("yaw_rate"), -m, m);
+        m = diffs.at("roll_output");
+        PIDControl rrc(kp.at("roll_output"), kd.at("roll_output"), ki.at("roll_output"), kaw.at("roll_output"), -m, m);
+        m = diffs.at("pitch_output");
+        PIDControl prc(kp.at("pitch_output"), kd.at("pitch_output"), ki.at("pitch_output"), kaw.at("pitch_output"), -m, m);
+        m = diffs.at("yaw_output");
+        PIDControl yrc(kp.at("yaw_output"), kd.at("yaw_output"), ki.at("yaw_output"), kaw.at("yaw_output"), -m, m);
+        Escs escs(rac, pac, yac, rrc, prc, yrc, min_esc, max_esc, idle, lf, rf, lb, rb, calib);
         cfg.controls = ControlsStruct(escs, max_p, max_r, max_y);
     }
 }
