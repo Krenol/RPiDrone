@@ -74,7 +74,10 @@ namespace drone
         b = js.at("mpu");
         js = b.at("ahrs");
         AHRS a(js.at("beta"));
-        MPU mpu(b.at("address"), a);
+        js = b.at("kalman");
+        MPUKalmanAngles ma(js.at("angles").at("c1"), js.at("angles").at("c2"), js.at("angles").at("r"), js.at("angles").at("q11"), js.at("angles").at("q12"), js.at("angles").at("q21"), js.at("angles").at("q22"));
+        MPUKalmanVelocity mv(js.at("velocity").at("r"), js.at("velocity").at("q11"), js.at("velocity").at("q22"), js.at("velocity").at("q33"), js.at("velocity").at("q44"), js.at("velocity").at("q55"), js.at("velocity").at("q66"));
+        MPU mpu(b.at("address"), a, mv, ma);
         cfg.sensors = SensorsStruct(sc, mpu, gps, bmp, dec, con_measure);
     }
     

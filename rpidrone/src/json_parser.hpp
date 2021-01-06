@@ -130,6 +130,64 @@ namespace drone
         }
     };
 
+    struct MPUKalmanAngles
+    {
+        double c1 = 1, c2 = 0, r = 0.05, q11 = 0.1, q12 = 0, q21 = 0, q22 = 0.1;
+
+        MPUKalmanAngles() {
+
+        }
+
+        MPUKalmanAngles(double c1, double c2, double r, double q11, double q12, double q21, double q22) {
+            this->c1 = c1;
+            this->c2 = c2;
+            this->q11 = q11;
+            this->q12 = q12;
+            this->q21 = q21;
+            this->q22 = q22;
+            this->r = r;
+        }
+
+        MPUKalmanAngles(const MPUKalmanAngles& m) {
+            this->c1 = m.c1;
+            this->c2 = m.c2;
+            this->q11 = m.q11;
+            this->q12 = m.q12;
+            this->q21 = m.q21;
+            this->q22 = m.q22;
+            this->r = m.r;
+        }
+    };
+
+    struct MPUKalmanVelocity
+    {
+        double q11 = 0.1, q22 = 0.1, q33 = 0.1, q44 = 0.1, q55 = 0.1, q66 = 0.1, r = 0.05;
+
+        MPUKalmanVelocity() {
+
+        }
+
+        MPUKalmanVelocity(double r, double q11, double q22, double q33, double q44, double q55, double q66) {
+            this->r = r;
+            this->q11 = q11;
+            this->q22 = q22;
+            this->q33 = q33;
+            this->q44 = q44;
+            this->q55 = q55;
+            this->q66 = q66;
+        }
+
+        MPUKalmanVelocity(const MPUKalmanVelocity& m) {
+            this->r = m.r;
+            this->q11 = m.q11;
+            this->q22 = m.q22;
+            this->q33 = m.q33;
+            this->q44 = m.q44;
+            this->q55 = m.q55;
+            this->q66 = m.q66;
+        }
+    };
+
     struct AHRS {
         float beta;
         AHRS(float beta = 1.0f) {
@@ -144,16 +202,18 @@ namespace drone
     {
         int address = 104;
         AHRS ahrs;
+        MPUKalmanVelocity kalman_velocity;
+        MPUKalmanAngles kalman_angles;
 
         MPU() {
 
         }
 
-        MPU(int address, const AHRS &a) : ahrs(a) {
+        MPU(int address, const AHRS &a, const MPUKalmanVelocity& kv, const MPUKalmanAngles& ka) : ahrs(a), kalman_angles(ka), kalman_velocity(kv) {
             this->address = address;
         }
 
-        MPU(const MPU& m) : ahrs(m.ahrs) {
+        MPU(const MPU& m) : ahrs(m.ahrs), kalman_angles(m.kalman_angles), kalman_velocity(m.kalman_velocity) {
             this->address = m.address;
         }
     };

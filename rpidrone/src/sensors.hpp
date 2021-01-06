@@ -88,7 +88,7 @@ namespace drone {
             #endif
             const SensorsStruct data_;
             
-
+            void ahrs(control_values& vals);
     };
 }
 

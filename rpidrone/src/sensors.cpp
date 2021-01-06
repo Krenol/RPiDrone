@@ -38,6 +38,10 @@ namespace drone
         {
             loadCalibration(CONF_DIR + "/" + MPU_CONF);
         }
+        rpicomponents::mpu_kalman_angles_conf a_conf(sensors.mpu.kalman_angles.c1, sensors.mpu.kalman_angles.c2, sensors.mpu.kalman_angles.r, sensors.mpu.kalman_angles.q11, sensors.mpu.kalman_angles.q12, sensors.mpu.kalman_angles.q21, sensors.mpu.kalman_angles.q22);
+        mpu_->SetKalmanConfig(a_conf);
+        rpicomponents::mpu_kalman_vel_conf v_conf(sensors.mpu.kalman_velocity.r, sensors.mpu.kalman_velocity.q11, sensors.mpu.kalman_velocity.q22, sensors.mpu.kalman_velocity.q33, sensors.mpu.kalman_velocity.q44, sensors.mpu.kalman_velocity.q55, sensors.mpu.kalman_velocity.q66);
+        mpu_->SetKalmanConfig(v_conf);
         rpicomponents::bmp_kalman_conf bmp_conf(sensors.bmp.kalman.c1, sensors.bmp.kalman.c2, sensors.bmp.kalman.q11, sensors.bmp.kalman.q12, sensors.bmp.kalman.q21, sensors.bmp.kalman.q22, sensors.bmp.accuracy);
         bmp_->SetKalmanConfig(bmp_conf);
         SENSOR_LOG(INFO) << "Initialized sensors successfully";
@@ -50,8 +54,48 @@ namespace drone
         // dist.dist_front = uss_front_->MeasureDistance(rpicomponents::UNIT_M);
         return dist;
     }
+
+
     
     void Sensors::getControlValues(control_values& vals) 
+    {
+        rpicomponents::mpu_data vel;
+        rpicomponents::mpu_angles angles;
+        
+        vals.x_vel = 0;
+        vals.y_vel = 0;
+        vals.z_vel = 0;
+        vals.pitch_angle = 0;
+        vals.roll_angle = 0;
+        vals.yaw_angle = 0;
+        for(auto i = 0; i < data_.control_measurements; i++) {
+            mpu_->GetKalmanVelocity(vel);
+            mpu_->GetKalmanAngles(angles);
+            vals.x_vel += vel.x;
+            vals.y_vel += vel.y;
+            vals.z_vel += vel.z;
+            vals.pitch_angle += angles.pitch_angle;
+            vals.roll_angle += angles.roll_angle;
+        }
+        
+        vals.x_vel = ROUND<float>(vals.x_vel / data_.control_measurements, data_.decimals);
+        vals.y_vel = ROUND<float>(vals.y_vel / data_.control_measurements, data_.decimals);
+        vals.z_vel = ROUND<float>(vals.z_vel / data_.control_measurements, data_.decimals);
+        vals.pitch_angle = ROUND<float>(vals.pitch_angle / data_.control_measurements, data_.decimals);
+        vals.roll_angle = ROUND<float>(vals.roll_angle / data_.control_measurements, data_.decimals);
+    }
+    
+    void Sensors::getDroneCoordinates(rpicomponents::GPSCoordinates& c, int retires) 
+    {
+        gps_->getCoordinates(c, retires);
+    }
+    
+    float Sensors::getBarometricHeight() 
+    {
+        return ROUND<float>(bmp_->getAltitudeKalman(), data_.decimals);
+    }
+    
+    void Sensors::ahrs(control_values& vals) 
     {
         rpicomponents::mpu_data vel, acc, acc1;
         rpicomponents::EulerAngles angles;
@@ -89,16 +133,6 @@ namespace drone
         vals.pitch_angle = ROUND<float>(angles.pitch , data_.decimals);
         vals.roll_angle = ROUND<float>(angles.roll, data_.decimals);
         vals.yaw_angle = ROUND<float>(angles.yaw, data_.decimals);
-    }
-    
-    void Sensors::getDroneCoordinates(rpicomponents::GPSCoordinates& c, int retires) 
-    {
-        gps_->getCoordinates(c, retires);
-    }
-    
-    float Sensors::getBarometricHeight() 
-    {
-        return ROUND<float>(bmp_->getAltitudeKalman(), data_.decimals);
     }
 
     void Sensors::calibrate(int measurements) 

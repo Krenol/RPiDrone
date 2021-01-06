@@ -11,7 +11,7 @@ def plotPID(file, pltName="pid_plot"):
     plt.plot(df.t, df.roll_is, label="roll_is")
     plt.plot(df.t, df.pitch_is, label="pitch_is")
     plt.plot(df.t, df.yaw_is, label="yaw_is")
-    plt.ylabel('angle error', fontsize=14)
+    plt.ylabel('is values', fontsize=14)
     plt.legend()
     plt.grid()
 
