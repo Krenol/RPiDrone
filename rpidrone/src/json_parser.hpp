@@ -313,7 +313,7 @@ namespace drone
             this->pin_rf = pin_rf;
         }
 
-        Escs(const Escs& e) : roll_rate(e.roll_rate), pitch_rate(e.pitch_rate), yaw_rate(e.yaw_rate), roll_output(roll_output), pitch_output(pitch_output), yaw_output(yaw_output) {
+        Escs(const Escs& e) : roll_rate(e.roll_rate), pitch_rate(e.pitch_rate), yaw_rate(e.yaw_rate), roll_output(e.roll_output), pitch_output(e.pitch_output), yaw_output(e.yaw_output) {
             this->calibrate = e.calibrate;
             this->idle = e.idle;
             this->max = e.max;

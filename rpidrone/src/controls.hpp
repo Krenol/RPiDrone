@@ -70,13 +70,7 @@ namespace drone {
             const ControlsStruct controls_;
             std::unique_ptr<rpicomponents::Esc> lf_, rf_, lb_, rb_;
             std::mutex mtx_; 
-            #if defined(US)
-            std::unique_ptr<PID<float, std::chrono::microseconds>> pid_roll_rate_, pid_pitch_rate_, pid_yaw_rate_, pid_roll_output_, pid_pitch_output_, pid_yaw_output_;
-            #elif defined(NS)
-            std::unique_ptr<PID<float, std::chrono::nanoseconds>> pid_roll_rate_, pid_pitch_rate_, pid_yaw_rate_, pid_roll_output_, pid_pitch_output_, pid_yaw_output_;
-            #else
-            std::unique_ptr<PID<float, std::chrono::milliseconds>> pid_roll_rate_, pid_pitch_rate_, pid_yaw_rate_, pid_roll_output_, pid_pitch_output_, pid_yaw_output_;
-            #endif
+            std::unique_ptr<PID<float>> pid_roll_rate_, pid_pitch_rate_, pid_yaw_rate_, pid_roll_output_, pid_pitch_output_, pid_yaw_output_;
             std::atomic_int throttle_{0};
             std::atomic<float> roll_angle_s_{0}, pitch_angle_s_{0}, yaw_vel_s_{0};
             std::unique_ptr<Sensors> sensors_;

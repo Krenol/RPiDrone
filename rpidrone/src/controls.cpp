@@ -8,7 +8,9 @@
 #include "globals.hpp"
 
 #define CONTROL_LOG(LEVEL) CLOG(LEVEL, "controls") //define controls log
-#define PID_LOG(LEVEL) CLOG(LEVEL, "pid")          //define controls log
+#if defined(PID_LOGS)
+#define PID_LOG(LEVEL) CLOG(LEVEL, "pid")          //define pid log
+#endif
 namespace drone
 {
     Controls::Controls(const ControlsStruct &controls, const SensorsStruct &sensors) : controls_{controls}
@@ -22,37 +24,19 @@ namespace drone
         std::async(std::launch::async, [this]() { this->zeroAltitude(); });
         CONTROL_LOG(INFO) << "Initialized controls successfully";
         #if defined(PID_LOGS)
-        PID_LOG(DEBUG) << "datetime;level;roll_s;roll_is;err_roll;pitch_s;pitch_is;err_pitch;yaw_s;yaw_is;err_yawn;lb;rb;lf;rf";
+        PID_LOG(DEBUG) << "datetime;level;roll_s;roll_is;err_roll;pitch_s;pitch_is;err_pitch;vel_x_is;vel_x_s;err_vel_x;vel_y_is;vel_y_s;err_vel_y;vel_z_is;vel_z_s;err_vel_z;lb;rb;lf;rf;throttle";
         #endif
     }
 
     void Controls::initControllers(const Escs &escs)
     {
-        #if defined(US)
-        CONTROL_LOG(INFO) << "time_unit for controllers is us";
-        pid_roll_rate_ = std::make_unique<PID<float, std::chrono::microseconds>>(escs.roll_rate.k_p, escs.roll_rate.k_d, escs.roll_rate.k_i, escs.roll_rate.k_aw, escs.roll_rate.min, escs.roll_rate.max);
-        pid_pitch_rate_ = std::make_unique<PID<float, std::chrono::microseconds>>(escs.pitch_rate.k_p, escs.pitch_rate.k_d, escs.pitch_rate.k_i, escs.pitch_rate.k_aw, escs.pitch_rate.min, escs.pitch_rate.max);
-        pid_yaw_rate_ = std::make_unique<PID<float, std::chrono::microseconds>>(escs.yaw_rate.k_p, escs.yaw_rate.k_d, escs.yaw_rate.k_i, escs.yaw_rate.k_aw, escs.yaw_rate.min, escs.yaw_rate.max);
-        pid_roll_output_ = std::make_unique<PID<float, std::chrono::microseconds>>(escs.roll_output.k_p, escs.roll_output.k_d, escs.roll_output.k_i, escs.roll_output.k_aw, escs.roll_output.min, escs.roll_output.max);
-        pid_pitch_output_ = std::make_unique<PID<float, std::chrono::microseconds>>(escs.pitch_output.k_p, escs.pitch_output.k_d, escs.pitch_output.k_i, escs.pitch_output.k_aw, escs.pitch_output.min, escs.pitch_output.max);
-        pid_yaw_output_ = std::make_unique<PID<float, std::chrono::microseconds>>(escs.yaw_output.k_p, escs.yaw_output.k_d, escs.yaw_output.k_i, escs.yaw_output.k_aw, escs.yaw_output.min, escs.yaw_output.max);
-        #elif defined(NS)
-        CONTROL_LOG(INFO) << "time_unit for controllers is ns";
-        pid_roll_rate_ = std::make_unique<PID<float, std::chrono::nanoseconds>>(escs.roll_rate.k_p, escs.roll_rate.k_d, escs.roll_rate.k_i, escs.roll_rate.k_aw, escs.roll_rate.min, escs.roll_rate.max);
-        pid_pitch_rate_ = std::make_unique<PID<float, std::chrono::nanoseconds>>(escs.pitch_rate.k_p, escs.pitch_rate.k_d, escs.pitch_rate.k_i, escs.pitch_rate.k_aw, escs.pitch_rate.min, escs.pitch_rate.max);
-        pid_yaw_rate_ = std::make_unique<PID<float, std::chrono::nanoseconds>>(escs.yaw_rate.k_p, escs.yaw_rate.k_d, escs.yaw_rate.k_i, escs.yaw_rate.k_aw, escs.yaw_rate.min, escs.yaw_rate.max);
-        pid_roll_output_ = std::make_unique<PID<float, std::chrono::nanoseconds>>(escs.roll_output.k_p, escs.roll_output.k_d, escs.roll_output.k_i, escs.roll_output.k_aw, escs.roll_output.min, escs.roll_output.max);
-        pid_pitch_output_ = std::make_unique<PID<float, std::chrono::nanoseconds>>(escs.pitch_output.k_p, escs.pitch_output.k_d, escs.pitch_output.k_i, escs.pitch_output.k_aw, escs.pitch_output.min, escs.pitch_output.max);
-        pid_yaw_output_ = std::make_unique<PID<float, std::chrono::nanoseconds>>(escs.yaw_output.k_p, escs.yaw_output.k_d, escs.yaw_output.k_i, escs.yaw_output.k_aw, escs.yaw_output.min, escs.yaw_output.max);
-        #else
-        CONTROL_LOG(INFO) << "time_unit for controllers is ms";
-        pid_roll_rate_ = std::make_unique<PID<float, std::chrono::milliseconds>>(escs.roll_rate.k_p, escs.roll_rate.k_d, escs.roll_rate.k_i, escs.roll_rate.k_aw, escs.roll_rate.min, escs.roll_rate.max);
-        pid_pitch_rate_ = std::make_unique<PID<float, std::chrono::milliseconds>>(escs.pitch_rate.k_p, escs.pitch_rate.k_d, escs.pitch_rate.k_i, escs.pitch_rate.k_aw, escs.pitch_rate.min, escs.pitch_rate.max);
-        pid_yaw_rate_ = std::make_unique<PID<float, std::chrono::milliseconds>>(escs.yaw_rate.k_p, escs.yaw_rate.k_d, escs.yaw_rate.k_i, escs.yaw_rate.k_aw, escs.yaw_rate.min, escs.yaw_rate.max);
-        pid_roll_output_ = std::make_unique<PID<float, std::chrono::milliseconds>>(escs.roll_output.k_p, escs.roll_output.k_d, escs.roll_output.k_i, escs.roll_output.k_aw, escs.roll_output.min, escs.roll_output.max);
-        pid_pitch_output_ = std::make_unique<PID<float, std::chrono::milliseconds>>(escs.pitch_output.k_p, escs.pitch_output.k_d, escs.pitch_output.k_i, escs.pitch_output.k_aw, escs.pitch_output.min, escs.pitch_output.max);
-        pid_yaw_output_ = std::make_unique<PID<float, std::chrono::milliseconds>>(escs.yaw_output.k_p, escs.yaw_output.k_d, escs.yaw_output.k_i, escs.yaw_output.k_aw, escs.yaw_output.min, escs.yaw_output.max);
-        #endif
+        pid_roll_rate_ = std::make_unique<PID<float>>(escs.roll_rate.k_p, escs.roll_rate.k_d, escs.roll_rate.k_i, escs.roll_rate.k_aw, escs.roll_rate.min, escs.roll_rate.max);
+        pid_pitch_rate_ = std::make_unique<PID<float>>(escs.pitch_rate.k_p, escs.pitch_rate.k_d, escs.pitch_rate.k_i, escs.pitch_rate.k_aw, escs.pitch_rate.min, escs.pitch_rate.max);
+        pid_yaw_rate_ = std::make_unique<PID<float>>(escs.yaw_rate.k_p, escs.yaw_rate.k_d, escs.yaw_rate.k_i, escs.yaw_rate.k_aw, escs.yaw_rate.min, escs.yaw_rate.max);
+        pid_roll_output_ = std::make_unique<PID<float>>(escs.roll_output.k_p, escs.roll_output.k_d, escs.roll_output.k_i, escs.roll_output.k_aw, escs.roll_output.min, escs.roll_output.max);
+        pid_pitch_output_ = std::make_unique<PID<float>>(escs.pitch_output.k_p, escs.pitch_output.k_d, escs.pitch_output.k_i, escs.pitch_output.k_aw, escs.pitch_output.min, escs.pitch_output.max);
+        pid_yaw_output_ = std::make_unique<PID<float>>(escs.yaw_output.k_p, escs.yaw_output.k_d, escs.yaw_output.k_i, escs.yaw_output.k_aw, escs.yaw_output.min, escs.yaw_output.max);
+
     }
 
     void Controls::initEscs(const Escs &escs)
@@ -144,7 +128,7 @@ namespace drone
         lb = -roll_out + pitch_out + yaw_out; 
 
         #if defined(PID_LOGS)
-        PID_LOG(INFO) << roll_angle_s_ << ";" << vals.roll_angle << ";" << roll_angle_s_ - vals.roll_angle<< ";" << pitch_angle_s_ << ";" << vals.pitch_angle << ";" << pitch_angle_s_ - vals.pitch_angle << ";" << yaw_vel_s_ << ";" << vals.z_vel << ";" << yaw_vel_s_ - vals.z_vel << ";" << lb << ";" << rb << ";" << lf << ";" << rf;
+        PID_LOG(INFO) << roll_angle_s_ << ";" << vals.roll_angle << ";" << roll_angle_s_ - vals.roll_angle<< ";" << pitch_angle_s_ << ";" << vals.pitch_angle << ";" << pitch_angle_s_ - vals.pitch_angle << ";" << vals.x_vel << ";" << roll_rate << ";" << vals.x_vel - roll_rate << ";" << vals.y_vel << ";" << pitch_rate << ";" << vals.y_vel - pitch_rate << ";" << vals.z_vel  << ";" << yaw_vel_s_ << ";" << yaw_vel_s_ - vals.z_vel << ";" << lb << ";" << rb << ";" << lf << ";" << rf << ";" << throttle_;
         #endif
         lf_->SetOutputSpeed(throttle_ + lf);
         rb_->SetOutputSpeed(throttle_ + rb);

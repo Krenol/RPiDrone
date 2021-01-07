@@ -37,6 +37,7 @@ static void initLogging()
     mvFile(LOG_DIR + "/sensors.log", OLD_LOG_DIR + "/sensors_" + t + ".log");
     mvFile(LOG_DIR + "/controls.log", OLD_LOG_DIR + "/controls_" + t + ".log");
     mvFile(LOG_DIR + "/power.csv", OLD_LOG_DIR + "/power_" + t + ".csv");
+    mvFile(LOG_DIR + "/exec.csv", OLD_LOG_DIR + "/exec_" + t + ".csv");
     //enable multi loggers
     el::Loggers::addFlag(el::LoggingFlag::MultiLoggerSupport);
     // configure all loggers

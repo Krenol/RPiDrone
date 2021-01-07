@@ -6,7 +6,10 @@
 
 #define NETWORK_LOG(LEVEL) CLOG(LEVEL, "network") //define network log
 #define CONTROL_LOG(LEVEL) CLOG(LEVEL, "controls") //define control log
-//#include <filesystem>
+#if defined(EXEC_TIME_LOG)
+#define EXEC_LOG(LEVEL) CLOG(LEVEL, "exec") //define exec time log
+#endif
+
 
 namespace drone
 {
@@ -20,6 +23,9 @@ namespace drone
         readq_ = std::make_unique<drone::SubscriberQueue<std::string>>(config_.queues.read_size);
         controls_ = std::make_unique<Controls>(config_.controls, config_.sensors);
         tpe_ = std::make_unique<design_patterns::ThreadPoolExecutor>(1, config_.queues.write_size);
+        #if defined(EXEC_TIME_LOG)
+        EXEC_LOG(DEBUG) << "datetime;level;t_exec";
+        #endif
     }
 
 
@@ -119,7 +125,7 @@ namespace drone
             }
             #if defined(EXEC_TIME_LOG)
             now = std::chrono::steady_clock::now();
-            LOG(INFO) << "Loop exec time was " << std::chrono::duration_cast<std::chrono::milliseconds>(now - last_call).count() << " ms";
+            EXEC_LOG(INFO) << std::chrono::duration_cast<std::chrono::milliseconds>(now - last_call).count();
             last_call = now;
             #endif
         }

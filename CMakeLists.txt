@@ -28,3 +28,15 @@ configure_file(
     ${CMAKE_SOURCE_DIR}/globals.hpp.in
     ${CMAKE_SOURCE_DIR}/rpidrone/src/globals.hpp
 )
+
+
+# ENABLE THREAD SAFETY FOR EASYLOGGING
+target_compile_definitions(rpidrone PRIVATE ELPP_THREAD_SAFE)
+# ENABLE PID LOGS BY
+target_compile_definitions(rpidrone PRIVATE PID_LOGS)
+# ENABLE POWER LOGS 
+target_compile_definitions(rpidrone PRIVATE POWER_LOGS)
+# ENABLE NETWORK DEBUG LOGS
+target_compile_definitions(rpidrone PRIVATE NETWORK_DEBUG_LOGS)
+# ENABLE LOG OF MAIN LOOP EXEC TIME 
+target_compile_definitions(rpidrone PRIVATE EXEC_TIME_LOG)

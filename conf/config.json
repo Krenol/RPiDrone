@@ -20,7 +20,7 @@
     "sensors": {
         "calibration": {
             "calibrate": true,
-            "measurements": 1100
+            "measurements": 1500
         },
         "decimal_places": 1,
         "control_measurements": 3,
@@ -78,17 +78,17 @@
                     "roll_rate": 0.0,
                     "pitch_rate": 0.0,
                     "yaw_rate": 0.0,
-                    "roll_output": 1.0,
-                    "pitch_output": 1.0,
-                    "yaw_output": 1.0
+                    "roll_output": 0.011,
+                    "pitch_output": 0.011,
+                    "yaw_output": 0.004
                 },
                 "k_p": {
-                    "roll_rate": 3.0,
-                    "pitch_rate": 3.0,
-                    "yaw_rate": 2.0,
-                    "roll_output": 0.7,
-                    "pitch_output": 0.7,
-                    "yaw_output": 2.7
+                    "roll_rate": 4.0,
+                    "pitch_rate": 4.0,
+                    "yaw_rate": 8.0,
+                    "roll_output": 3.40,
+                    "pitch_output": 3.40,
+                    "yaw_output": 1.25
                 },
                 "k_d": {
                     "roll_rate": 0.0,
@@ -99,20 +99,20 @@
                     "yaw_output": 0.0
                 },
                 "k_aw": {
-                    "roll_rate": 0.0,
+                    "roll_rate": 0,
                     "pitch_rate": 0.0,
                     "yaw_rate": 0.0,
-                    "roll_output": 0.5,
-                    "pitch_output": 0.5,
-                    "yaw_output": 0.5
+                    "roll_output": 70.0,
+                    "pitch_output": 70.0,
+                    "yaw_output": 27.5
                 },
                 "max_diff": {
-                    "roll_rate": 6.0,
-                    "pitch_rate": 6.0,
+                    "roll_rate": 8.0,
+                    "pitch_rate": 8.0,
                     "yaw_rate": 0.0,
                     "roll_output": 50.0,
                     "pitch_output": 50.0,
-                    "yaw_output": 15.0
+                    "yaw_output": 25.0
                 }
             },
             "min": 700,
