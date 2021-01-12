@@ -11,21 +11,8 @@ def getNetworkTimes(cons, t_0):
         ret.append((t - t_0).total_seconds())
     return ret
     
-
-def plotPID(pid_file, power_file, exec_file, network_log, pltName="plot"):
-    df = pd.read_csv(pid_file, sep=";", header=0, error_bad_lines=False)
-    df['datetime'] =  pd.to_datetime(df['datetime'])
-    t_0 = df['datetime'][0]
-    df['t'] = (df.datetime - t_0).dt.total_seconds()
-    textfile = open(network_log, 'r')
-    filetext = textfile.read()
-    textfile.close()
-    conStrs = re.findall(".*(?:INFO connected to)", filetext)
-    disconStrs = re.findall(".*(?:ERROR lost connection to client)", filetext)
-
-    cons = getNetworkTimes(conStrs, t_0)
-    discons = getNetworkTimes(disconStrs, t_0)
-
+def plot_pid(df, cons, discons):
+    
     plt.subplot(5,2,1)
     plt.plot(df.t, df.vel_x_is, label="x_is")
     plt.plot(df.t, df.vel_y_is, label="y_is")
@@ -36,6 +23,7 @@ def plotPID(pid_file, power_file, exec_file, network_log, pltName="plot"):
     plt.vlines(discons, min_val, max_val, 'r', linestyles='dashed')
     plt.ylabel('is vel')
     plt.legend()
+    plt.xlim(xmin=0)
     plt.grid()
 
     plt.subplot(5,2,2)
@@ -48,6 +36,7 @@ def plotPID(pid_file, power_file, exec_file, network_log, pltName="plot"):
     plt.vlines(discons, min_val, max_val, 'r', linestyles='dashed')
     plt.ylabel('vel error')
     plt.legend()
+    plt.xlim(xmin=0)
     plt.grid()
 
     plt.subplot(5,2,3)
@@ -59,6 +48,7 @@ def plotPID(pid_file, power_file, exec_file, network_log, pltName="plot"):
     plt.vlines(discons, min_val, max_val, 'r', linestyles='dashed')
     plt.ylabel('is angles')
     plt.legend()
+    plt.xlim(xmin=0)
     plt.grid()
 
     plt.subplot(5,2,4)
@@ -70,6 +60,7 @@ def plotPID(pid_file, power_file, exec_file, network_log, pltName="plot"):
     plt.vlines(discons, min_val, max_val, 'r', linestyles='dashed')
     plt.ylabel('angle error')
     plt.legend()
+    plt.xlim(xmin=0)
     plt.grid()
 
     plt.subplot(5,2,5)
@@ -81,6 +72,7 @@ def plotPID(pid_file, power_file, exec_file, network_log, pltName="plot"):
     plt.vlines(discons, min_val, max_val, 'r', linestyles='dashed')
     plt.ylabel('PID control value')
     plt.legend()
+    plt.xlim(xmin=0)
     plt.grid()
 
     plt.subplot(5,2,6)
@@ -92,6 +84,7 @@ def plotPID(pid_file, power_file, exec_file, network_log, pltName="plot"):
     plt.vlines(discons, min_val, max_val, 'r', linestyles='dashed')
     plt.ylabel('PID control value')
     plt.legend()
+    plt.xlim(xmin=0)
     plt.grid()
 
     plt.subplot(5,2,7)
@@ -101,17 +94,11 @@ def plotPID(pid_file, power_file, exec_file, network_log, pltName="plot"):
     plt.vlines(cons, min_val, max_val, 'g', linestyles='dashed')
     plt.vlines(discons, min_val, max_val, 'r', linestyles='dashed')
     plt.legend()
+    plt.xlim(xmin=0)
     plt.grid()
     plt.ylabel('throttle')
 
-    df = pd.read_csv(exec_file, sep=";", header=0, error_bad_lines=False)
-    df['datetime'] =  pd.to_datetime(df['datetime'])
-    t_0 = df['datetime'][0]
-    df['t'] = (df.datetime - t_0).dt.total_seconds()
-    cons = getNetworkTimes(conStrs, t_0)
-    discons = getNetworkTimes(disconStrs, t_0)
-
-
+def plot_exec(df, cons, discons):
     plt.subplot(5,2,8)
     plt.plot(df.t, df.t_exec, label="exec time")
     x = [df.t[0], df.t[df.last_valid_index()]]
@@ -124,18 +111,11 @@ def plotPID(pid_file, power_file, exec_file, network_log, pltName="plot"):
     plt.vlines(cons, min_val, max_val, 'g', linestyles='dashed')
     plt.vlines(discons, min_val, max_val, 'r', linestyles='dashed')
     plt.legend()
+    plt.xlim(xmin=0)
     plt.grid()
-    plt.ylabel('throttle per esc')
+    plt.ylabel('loop exec time [ms]')
 
-
-    df = pd.read_csv(power_file, sep=";", header=0, error_bad_lines=False)
-    df['datetime'] =  pd.to_datetime(df['datetime'])
-    t_0 = df['datetime'][0]
-    df['t'] = (df.datetime - t_0).dt.total_seconds()
-    cons = getNetworkTimes(conStrs, t_0)
-    discons = getNetworkTimes(disconStrs, t_0)
-
-
+def plot_power(df, cons, discons):
     n = 5  # the larger n is, the smoother curve will be
     b = [1.0 / n] * n
     a = 1
@@ -145,29 +125,63 @@ def plotPID(pid_file, power_file, exec_file, network_log, pltName="plot"):
     plt.plot(df.t, df.sys_cpu, label="sys_cpu")
     plt.plot(df.t, df.proc_cpu, label="proc_cpu")
     plt.plot(df.t, yy, label="proc_cpu_lfilter")
-    plt.ylabel('CPU consumption [%]')
+    plt.ylabel('CPU utilization [%]')
     min_val = min(df.sys_cpu.min(), df.proc_cpu.min()) * 1.1
     max_val = max(df.sys_cpu.max(), df.proc_cpu.max()) * 1.1
     plt.vlines(cons, min_val, max_val, 'g', linestyles='dashed')
     plt.vlines(discons, min_val, max_val, 'r', linestyles='dashed')
     plt.legend()
+    plt.xlim(xmin=0)
     plt.grid()
     plt.xlabel('time')
 
     plt.subplot(5,2,10)
-    plt.plot(df.t, df.memory, label="memory")
-    plt.plot(df.t, df.virtual_memory, label="virtual_memory")
-    plt.ylabel('Memory consumption [MB]')
+    plt.plot(df.t, df.memory, label="hardware")
+    plt.plot(df.t, df.virtual_memory, label="virtual")
+    plt.ylabel('Memory [MB]')
     min_val = min(df.virtual_memory.min(), df.memory.min()) * 1.1
     max_val = max(df.virtual_memory.max(), df.memory.max()) * 1.1
     plt.vlines(cons, min_val, max_val, 'g', linestyles='dashed')
     plt.vlines(discons, min_val, max_val, 'r', linestyles='dashed')
     plt.legend()
+    plt.xlim(xmin=0)
     plt.grid()
     plt.xlabel('time')
 
+def plot(pid_file, power_file, exec_file, network_log, pltName="plot"):
+    df_power = pd.read_csv(power_file, sep=";", header=0, error_bad_lines=False)
+    df_power['datetime'] =  pd.to_datetime(df_power['datetime'])
+    t_0_power = df_power['datetime'][0]
+    df_exec = pd.read_csv(exec_file, sep=";", header=0, error_bad_lines=False)
+    df_exec['datetime'] =  pd.to_datetime(df_exec['datetime'])
+    t_0_exec = df_exec['datetime'][0]
+    df_pid = pd.read_csv(pid_file, sep=";", header=0, error_bad_lines=False)
+    df_pid['datetime'] =  pd.to_datetime(df_pid['datetime'])
+    t_0_pid = df_pid['datetime'][0]
+    
+    
+    t_0 = min(t_0_exec, t_0_power, t_0_pid)
+
+    df_pid['t'] = (df_pid.datetime - t_0).dt.total_seconds()
+    df_power['t'] = (df_power.datetime - t_0).dt.total_seconds()
+    df_exec['t'] = (df_exec.datetime - t_0).dt.total_seconds()
+
+    textfile = open(network_log, 'r')
+    filetext = textfile.read()
+    textfile.close()
+    conStrs = re.findall(".*(?:INFO connected to)", filetext)
+    disconStrs = re.findall(".*(?:ERROR lost connection to client)", filetext)
+    cons = getNetworkTimes(conStrs, t_0)
+    discons = getNetworkTimes(disconStrs, t_0)
+
+    plot_pid(df_pid, cons, discons)
+
+    plot_exec(df_exec, cons, discons)
+    
+    plot_power(df_power, cons, discons)
+    
     plt.savefig(pltName + ".png", bbox_inches='tight')
     plt.show()
 
 if __name__ == "__main__":
-    plotPID("../logs/pid.csv", "../logs/power.csv", "../logs/exec.csv", "../logs/network.log", "../logs/plots/plot")
+    plot("../logs/pid.csv", "../logs/power.csv", "../logs/exec.csv", "../logs/network.log", "../logs/plots/plot")
