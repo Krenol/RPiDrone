@@ -24,7 +24,7 @@ namespace drone
         std::async(std::launch::async, [this]() { this->zeroAltitude(); });
         CONTROL_LOG(INFO) << "Initialized controls successfully";
         #if defined(PID_LOGS)
-        PID_LOG(DEBUG) << "datetime;level;roll_s;roll_is;err_roll;pitch_s;pitch_is;err_pitch;vel_x_is;vel_x_s;err_vel_x;vel_y_is;vel_y_s;err_vel_y;vel_z_is;vel_z_s;err_vel_z;lb;rb;lf;rf;throttle";
+        PID_LOG(DEBUG) << "datetime;level;roll_s;roll_is;err_roll;pitch_s;pitch_is;err_pitch;vel_x_is;vel_x_s;err_vel_x;vel_y_is;vel_y_s;err_vel_y;vel_z_is;vel_z_s;err_vel_z;lb;rb;lf;rf;throttle;roll_out;pitch_out;yaw_out";
         #endif
     }
 
@@ -128,7 +128,7 @@ namespace drone
         lb = -roll_out + pitch_out + yaw_out; 
 
         #if defined(PID_LOGS)
-        PID_LOG(INFO) << roll_angle_s_ << ";" << vals.roll_angle << ";" << roll_angle_s_ - vals.roll_angle<< ";" << pitch_angle_s_ << ";" << vals.pitch_angle << ";" << pitch_angle_s_ - vals.pitch_angle << ";" << vals.x_vel << ";" << roll_rate << ";" << vals.x_vel - roll_rate << ";" << vals.y_vel << ";" << pitch_rate << ";" << vals.y_vel - pitch_rate << ";" << vals.z_vel  << ";" << yaw_vel_s_ << ";" << yaw_vel_s_ - vals.z_vel << ";" << lb << ";" << rb << ";" << lf << ";" << rf << ";" << throttle_;
+        PID_LOG(INFO) << roll_angle_s_ << ";" << vals.roll_angle << ";" << roll_angle_s_ - vals.roll_angle<< ";" << pitch_angle_s_ << ";" << vals.pitch_angle << ";" << pitch_angle_s_ - vals.pitch_angle << ";" << vals.x_vel << ";" << roll_rate << ";" << vals.x_vel - roll_rate << ";" << vals.y_vel << ";" << pitch_rate << ";" << vals.y_vel - pitch_rate << ";" << vals.z_vel  << ";" << yaw_vel_s_ << ";" << yaw_vel_s_ - vals.z_vel << ";" << lb << ";" << rb << ";" << lf << ";" << rf << ";" << throttle_ << ";" << roll_out << ";" << pitch_out << ";" << yaw_out;
         #endif
         lf_->SetOutputSpeed(throttle_ + lf);
         rb_->SetOutputSpeed(throttle_ + rb);

@@ -13,7 +13,7 @@ def getNetworkTimes(cons, t_0):
     
 def plot_pid(df, cons, discons):
     
-    plt.subplot(5,2,1)
+    plt.subplot(6,2,1)
     plt.plot(df.t, df.vel_x_is, label="x_is")
     plt.plot(df.t, df.vel_y_is, label="y_is")
     plt.plot(df.t, df.vel_z_is, label="z_is")
@@ -26,7 +26,7 @@ def plot_pid(df, cons, discons):
     plt.xlim(xmin=0)
     plt.grid()
 
-    plt.subplot(5,2,2)
+    plt.subplot(6,2,2)
     plt.plot(df.t, df.err_vel_x, label="err_x")
     plt.plot(df.t, df.err_vel_y, label="err_y")
     plt.plot(df.t, df.err_vel_z, label="err_z")
@@ -39,31 +39,60 @@ def plot_pid(df, cons, discons):
     plt.xlim(xmin=0)
     plt.grid()
 
-    plt.subplot(5,2,3)
+    plt.subplot(6,2,3)
     plt.plot(df.t, df.roll_is, label="roll_is")
     plt.plot(df.t, df.pitch_is, label="pitch_is")
-    min_val = min(df.roll_is.min(), df.pitch_is.min()) * 1.1
-    max_val = max(df.roll_is.max(), df.pitch_is.max()) * 1.1
+    plt.plot(df.t, df.roll_s, label="roll_s")
+    plt.plot(df.t, df.pitch_s, label="pitch_s")
+    min_val = min(df.roll_is.min(), df.pitch_is.min(), df.roll_s.min(), df.pitch_s.min()) * 1.1
+    max_val = max(df.roll_is.max(), df.pitch_is.max(), df.roll_s.max(), df.pitch_s.max()) * 1.1
     plt.vlines(cons, min_val, max_val, 'g', linestyles='dashed')
     plt.vlines(discons, min_val, max_val, 'r', linestyles='dashed')
-    plt.ylabel('is angles')
+    plt.ylabel('angles')
     plt.legend()
     plt.xlim(xmin=0)
     plt.grid()
 
-    plt.subplot(5,2,4)
-    plt.plot(df.t, df.err_roll, label="err_roll")
-    plt.plot(df.t, df.err_pitch, label="err_pitch")
-    min_val = min(df.err_roll.min(), df.err_pitch.min()) * 1.1
-    max_val = max(df.err_roll.max(), df.err_pitch.max()) * 1.1
+    plt.subplot(6,2,4)
+    plt.plot(df.t, df.vel_x_is, label="x_is")
+    plt.plot(df.t, df.vel_y_is, label="y_is")
+    plt.plot(df.t, df.vel_z_is, label="z_is")
+    min_val = min(df.vel_x_is.min(), df.vel_y_is.min(), df.vel_z_is.min(), -0.1) * 1.1
+    max_val = max(df.vel_x_is.max(), df.vel_y_is.max(), df.vel_z_is.max(), 0.1) * 1.1
     plt.vlines(cons, min_val, max_val, 'g', linestyles='dashed')
     plt.vlines(discons, min_val, max_val, 'r', linestyles='dashed')
-    plt.ylabel('angle error')
+    plt.ylabel('is vel')
     plt.legend()
     plt.xlim(xmin=0)
     plt.grid()
 
-    plt.subplot(5,2,5)
+    plt.subplot(6,2,5)
+    plt.plot(df.t, df.vel_x_s, label="x_s")
+    plt.plot(df.t, df.vel_y_s, label="y_s")
+    plt.plot(df.t, df.vel_z_s, label="z_s")
+    min_val = min(df.vel_x_s.min(), df.vel_y_s.min(), df.vel_z_s.min(), -0.1) * 1.1
+    max_val = max(df.vel_x_s.max(), df.vel_y_s.max(), df.vel_z_s.max(), 0.1) * 1.1
+    plt.vlines(cons, min_val, max_val, 'g', linestyles='dashed')
+    plt.vlines(discons, min_val, max_val, 'r', linestyles='dashed')
+    plt.ylabel('should vel')
+    plt.legend()
+    plt.xlim(xmin=0)
+    plt.grid()
+
+    plt.subplot(6,2,6)
+    plt.plot(df.t, df.roll_out, label="roll_out")
+    plt.plot(df.t, df.pitch_out, label="pitch_out")
+    plt.plot(df.t, df.yaw_out, label="yaw_out")
+    min_val = min(df.roll_out.min(), df.pitch_out.min(), df.yaw_out.min()) * 1.1
+    max_val = max(df.roll_out.max(), df.pitch_out.max(), df.yaw_out.max()) * 1.1
+    plt.vlines(cons, min_val, max_val, 'g', linestyles='dashed')
+    plt.vlines(discons, min_val, max_val, 'r', linestyles='dashed')
+    plt.ylabel('Inner PID out')
+    plt.legend()
+    plt.xlim(xmin=0)
+    plt.grid()
+
+    plt.subplot(6,2,7)
     plt.plot(df.t, df.lb, label="lb")
     plt.plot(df.t, df.rb, label="rb")
     min_val = min(df.lb.min(), df.rb.min()) * 1.1
@@ -75,7 +104,7 @@ def plot_pid(df, cons, discons):
     plt.xlim(xmin=0)
     plt.grid()
 
-    plt.subplot(5,2,6)
+    plt.subplot(6,2,8)
     plt.plot(df.t, df.lf, label="lf")
     plt.plot(df.t, df.rf, label="rf")
     min_val = min(df.lf.min(), df.rf.min()) * 1.1
@@ -87,7 +116,7 @@ def plot_pid(df, cons, discons):
     plt.xlim(xmin=0)
     plt.grid()
 
-    plt.subplot(5,2,7)
+    plt.subplot(6,2,9)
     plt.plot(df.t, df.throttle, label="throttle")
     min_val = df.throttle.min() * 1.1
     max_val = df.throttle.max() * 1.1
@@ -99,7 +128,7 @@ def plot_pid(df, cons, discons):
     plt.ylabel('throttle')
 
 def plot_exec(df, cons, discons):
-    plt.subplot(5,2,8)
+    plt.subplot(6,2,10)
     plt.plot(df.t, df.t_exec, label="exec time")
     x = [df.t[0], df.t[df.last_valid_index()]]
     y = df.t_exec.median()
@@ -121,7 +150,7 @@ def plot_power(df, cons, discons):
     a = 1
     yy = lfilter(b,a,df.proc_cpu)
 
-    plt.subplot(5,2,9)
+    plt.subplot(6,2,11)
     plt.plot(df.t, df.sys_cpu, label="sys_cpu")
     plt.plot(df.t, df.proc_cpu, label="proc_cpu")
     plt.plot(df.t, yy, label="proc_cpu_lfilter")
@@ -135,7 +164,7 @@ def plot_power(df, cons, discons):
     plt.grid()
     plt.xlabel('time')
 
-    plt.subplot(5,2,10)
+    plt.subplot(6,2,12)
     plt.plot(df.t, df.memory, label="hardware")
     plt.plot(df.t, df.virtual_memory, label="virtual")
     plt.ylabel('Memory [MB]')

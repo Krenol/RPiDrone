@@ -44,23 +44,6 @@ static void initLogging()
     el::Loggers::configureFromGlobal((CONF_DIR + "/" + LOG_CONF).c_str());
 }
 
-// void sig_handler(int s){
-//     printf("Caught signal %d\n",s);
-//     for(int i < 0; i < 53; i++){
-        
-//     }
-//     pin::terminateGPIOs();
-//     exit(0); 
-// }
-
-// void catchSigActions(){
-//     struct sigaction sigIntHandler;
-//     sigIntHandler.sa_handler = sig_handler;
-//     sigemptyset(&sigIntHandler.sa_mask);
-//     sigIntHandler.sa_flags = 0;
-//     sigaction(SIGINT, &sigIntHandler, NULL);
-// }
-
 void initPowerLogs(const bool& run) {
     #if defined(POWER_LOGS)
     drone::initCpuLog();
