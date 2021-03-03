@@ -83,12 +83,12 @@
                     "yaw_output": 0.00
                 },
                 "k_p": {
-                    "roll_rate": 1.7,
-                    "pitch_rate": 1.7,
-                    "yaw_rate": 2,
-                    "roll_output": 0.85,
-                    "pitch_output": 0.85,
-                    "yaw_output": 0.45
+                    "roll_rate": 1,
+                    "pitch_rate": 1,
+                    "yaw_rate": 1,
+                    "roll_output": 1.0,
+                    "pitch_output": 1.0,
+                    "yaw_output": 1.0
                 },
                 "k_d": {
                     "roll_rate": 0.0,

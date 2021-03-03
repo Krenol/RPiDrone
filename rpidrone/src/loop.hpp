@@ -1,4 +1,5 @@
 #include "rpisocket/rpisocket.hpp"
+#include "connection.hpp"
 #include "subqueue.hpp"
 #include "controls.hpp"
 #include <memory>
@@ -43,13 +44,15 @@ namespace drone {
             bool hasConnection();
             
         private:
+
             std::unique_ptr<rpicomponents::Led> on_led_, status_led_;
-            std::unique_ptr<rpisocket::WiFiServer> server_;
+            //std::unique_ptr<rpisocket::WiFiServer> server_;
             std::unique_ptr<Controls> controls_;
             Config config_;
+            std::unique_ptr<Connection> connection_;
             std::unique_ptr<drone::SubscriberQueue<std::string>> readq_;
-            std::thread conn_thread_;
-            std::atomic_bool thread_on_;
+            //std::thread conn_thread_;
+            //std::atomic_bool thread_on_;
             std::unique_ptr<design_patterns::ThreadPoolExecutor> tpe_;      
             Input last_input_;
 

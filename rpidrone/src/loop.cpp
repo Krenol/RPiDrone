@@ -17,7 +17,8 @@ namespace drone
     {
         loadConfig(config_path);
         pin::initGPIOs();
-        server_ = std::make_unique<rpisocket::WiFiServer>(config_.server.port, config_.server.bytes);
+        //server_ = std::make_unique<rpisocket::WiFiServer>(config_.server.port, config_.server.bytes);
+        connection_ = std::make_unique<Connection>(config_.server.port, config_.server.bytes, config_.server.delimiter);
         on_led_ = std::make_unique<rpicomponents::Led>(config_.leds.on_led, pin::DIGITAL_MODE, pin::DIGITAL_MODE_MAX_VAL);
         status_led_ = std::make_unique<rpicomponents::Led>(config_.leds.status_led, pin::DIGITAL_MODE, pin::DIGITAL_MODE_MAX_VAL);
         readq_ = std::make_unique<drone::SubscriberQueue<std::string>>(config_.queues.read_size);
@@ -33,11 +34,13 @@ namespace drone
     {
         on_led_->TurnOff();
         status_led_->TurnOff();
-        thread_on_ = false;
-        conn_thread_.join();
+        //thread_on_ = false;
+        //conn_thread_.join();
+        connection_->stopThread();
         pin::terminateGPIOs();
     }
 
+    /*
     void Loop::connectionHandler() {
         thread_on_ = true;
         std::string msg, buf, delimiter = config_.server.delimiter;
@@ -86,13 +89,14 @@ namespace drone
             readq_->update(msg);
             buf.erase(0, pos + delimiter.length());
         }
-    }
+    }*/
     
     void Loop::loop() 
     {
         std::string read, delimiter = config_.server.delimiter;
         control_values vals;
-        conn_thread_ = std::thread(&Loop::connectionHandler, this);
+        //conn_thread_ = std::thread(&Loop::connectionHandler, this);
+        connection_ -> startThread();
         CONTROL_LOG(INFO) << "starting main control loop";
         #if defined(EXEC_TIME_LOG)
         std::chrono::steady_clock::time_point last_call = std::chrono::steady_clock::now(), now;
