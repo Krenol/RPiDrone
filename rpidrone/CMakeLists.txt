@@ -15,6 +15,7 @@ ${PROJECT_SOURCE_DIR}/sensors.cpp
 ${PROJECT_SOURCE_DIR}/controls.cpp
 ${PROJECT_SOURCE_DIR}/easylogging++.cc
 ${PROJECT_SOURCE_DIR}/json_parser.cpp
+${PROJECT_SOURCE_DIR}/server_sub_q.cpp
 ${PROJECT_SOURCE_DIR}/connection.cpp
 )
 

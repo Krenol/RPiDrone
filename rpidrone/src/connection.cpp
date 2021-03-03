@@ -71,9 +71,18 @@ namespace drone {
             thread_.join();
         }
     }
+    
+    bool Connection::hasConnection() const
+    {
+        return server_->hasConnection; 
+    }
 
-    Connection(int port, int msg_size, , std::string delimiter) : delimiter_{delimiter}
+    Connection::Connection(int port, int msg_size, , std::string delimiter) : delimiter_{delimiter}
     {
         server_ = std::make_unique<rpisocket::WiFiServer>(port, msg_size);
+    }
+
+    void Connection::writeMsg(const std::string& msg) {
+        server_->writeBytes(msg);
     }
 }

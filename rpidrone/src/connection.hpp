@@ -35,6 +35,10 @@ namespace drone
         void startThread();
 
         void stopThread();
+
+        bool hasConnection() const;
+
+        void writeMsg(const std::string& msg);
     };
 }
 

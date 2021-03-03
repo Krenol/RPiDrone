@@ -3,6 +3,7 @@
 #include <fstream>
 #include <future>
 #include "easylogging++.h"
+#include "input_parser.hpp"
 
 #define NETWORK_LOG(LEVEL) CLOG(LEVEL, "network") //define network log
 #define CONTROL_LOG(LEVEL) CLOG(LEVEL, "controls") //define control log
@@ -17,13 +18,14 @@ namespace drone
     {
         loadConfig(config_path);
         pin::initGPIOs();
-        //server_ = std::make_unique<rpisocket::WiFiServer>(config_.server.port, config_.server.bytes);
         connection_ = std::make_unique<Connection>(config_.server.port, config_.server.bytes, config_.server.delimiter);
         on_led_ = std::make_unique<rpicomponents::Led>(config_.leds.on_led, pin::DIGITAL_MODE, pin::DIGITAL_MODE_MAX_VAL);
         status_led_ = std::make_unique<rpicomponents::Led>(config_.leds.status_led, pin::DIGITAL_MODE, pin::DIGITAL_MODE_MAX_VAL);
-        readq_ = std::make_unique<drone::SubscriberQueue<std::string>>(config_.queues.read_size);
+        //readq_ = std::make_unique<drone::SubscriberQueue<std::string>>(config_.queues.read_size);
         controls_ = std::make_unique<Controls>(config_.controls, config_.sensors);
+        server_q_ = std::make_shared<ServerSubscriberQueue>(config_.controls, config_.queues.read_size);
         tpe_ = std::make_unique<design_patterns::ThreadPoolExecutor>(1, config_.queues.write_size);
+        connection_->subscribe(server_q_);
         #if defined(EXEC_TIME_LOG)
         EXEC_LOG(DEBUG) << "datetime;level;t_exec";
         #endif
@@ -34,68 +36,17 @@ namespace drone
     {
         on_led_->TurnOff();
         status_led_->TurnOff();
-        //thread_on_ = false;
-        //conn_thread_.join();
         connection_->stopThread();
         pin::terminateGPIOs();
     }
 
-    /*
-    void Loop::connectionHandler() {
-        thread_on_ = true;
-        std::string msg, buf, delimiter = config_.server.delimiter;
-        int max_buf_size = buf.max_size() * 3 / 4;
-        while(1) {
-            NETWORK_LOG(INFO) << "waiting for connection on " << server_->getServerIp() << ":" << server_->getPort();
-            server_->connect();
-            buf = "";
-            NETWORK_LOG(INFO) << "connected to " << server_->getConnectedClient();
-            while(server_->hasConnection() && thread_on_){
-                if(buf.size() > max_buf_size) {
-                    NETWORK_LOG(WARNING) << "socket read buffer about to overflow! dumping buffer";
-                    buf.clear();
-                }
-                try{
-                    server_->readBytes(msg);
-                    buf += msg;
-                    processServerRead(buf, delimiter);
-                } catch(const std::exception &exc) {
-                    NETWORK_LOG(ERROR) << exc.what();
-                    break;
-                }
-            }   
-            readq_->clear();
-            tpe_->clear();
-            if(thread_on_) {  
-                readq_->update("{\"joystick\":{\"degrees\":0,\"offset\":0}}");           
-                if(config_.logic.motors_off_disconnect) {
-                    usleep(config_.logic.sleep_disconnect);
-                    controls_->motorsOff();
-                } 
-            } else {
-                server_->disconnect();
-                return;
-            }
-        }
-    }
-
-    void Loop::processServerRead(std::string& buf, const std::string& delimiter) {
-        std::string msg;
-        std::size_t pos, pos1;
-        while ((pos = buf.find(delimiter)) != std::string::npos) {
-            msg = buf.substr(0, pos);
-            pos1 = msg.find_first_of("{");
-            msg.erase(0, pos1);
-            readq_->update(msg);
-            buf.erase(0, pos + delimiter.length());
-        }
-    }*/
+    
     
     void Loop::loop() 
     {
-        std::string read, delimiter = config_.server.delimiter;
+        std::string delimiter = config_.server.delimiter;
         control_values vals;
-        //conn_thread_ = std::thread(&Loop::connectionHandler, this);
+        ControlValues cvs;
         connection_ -> startThread();
         CONTROL_LOG(INFO) << "starting main control loop";
         #if defined(EXEC_TIME_LOG)
@@ -103,9 +54,8 @@ namespace drone
         #endif
         while(1){
             try{
-                if(readq_->has_item()){
-                    readq_->pop(read);
-                    processInput(read);
+                if(server_q_->has_item()){
+                    server_q_->pop(cvs);
                 }
                 controls_->control(vals);
 
@@ -115,12 +65,12 @@ namespace drone
                     rpicomponents::GPSCoordinates c;
                     json j;
                     createOutputJson(vals, c, j);
-                    if(server_->hasConnection()) {
+                    if(connection_->hasConnection()) {
                         std::string msg = j.dump();
                         #if defined(NETWORK_DEBUG_LOGS)
                         NETWORK_LOG(DEBUG) << "writing " << msg;
                         #endif
-                        server_->writeBytes(msg + delimiter);
+                        connection_->writeMsg(msg + delimiter);
                     }
                 });
                 usleep(config_.logic.main_sleep); 
@@ -161,10 +111,7 @@ namespace drone
         status_led_->TurnOn();
     }
     
-    bool Loop::hasConnection() 
-    {
-        return server_->hasConnection();
-    }
+
 
     void Loop::loadConfig(const std::string& file) {
         std::ifstream ifs(file);

@@ -23,7 +23,7 @@ namespace drone
             this->throttle = input.throttle * (controls.escs.max - controls.escs.idle) / drone::THROTTLE_UPPER_BOUND + controls.escs.idle;
             roll_angle = input.joystick.offset * cos(input.joystick.degrees * M_PI / 180.0) * controls.max_roll;
             pitch_angle = input.joystick.offset * sin(input.joystick.degrees * M_PI / 180.0) * controls.max_pitch;
-            yaw_vel = controls_.max_yawn * input.joystick.rotation / drone::ROTATION_UPPER_BOUND;
+            yaw_vel = controls.max_yawn * input.joystick.rotation / drone::ROTATION_UPPER_BOUND;
             gps = rpicomponents::GPSCoordinates(input.gps);
         }
 
