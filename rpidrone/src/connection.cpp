@@ -27,8 +27,8 @@ namespace drone {
                     break;
                 }
             }   
-            readq_->clear();
-            tpe_->clear();
+            //readq_->clear();
+            //tpe_->clear();
             if(thread_on_) {  
                 notifyAll("{\"disconnected\": true}");           
             } else {
@@ -46,7 +46,7 @@ namespace drone {
             pos1 = msg.find_first_of("{");
             msg.erase(0, pos1);
             notifyAll(msg);
-            buf.erase(0, pos + delimiter.length());
+            buf.erase(0, pos + delimiter_.length());
         }
     }
 
@@ -74,10 +74,10 @@ namespace drone {
     
     bool Connection::hasConnection() const
     {
-        return server_->hasConnection; 
+        return server_->hasConnection(); 
     }
 
-    Connection::Connection(int port, int msg_size, , std::string delimiter) : delimiter_{delimiter}
+    Connection::Connection(int port, int msg_size, std::string delimiter) : delimiter_{delimiter}
     {
         server_ = std::make_unique<rpisocket::WiFiServer>(port, msg_size);
     }
