@@ -1,4 +1,7 @@
+#ifndef DRONE_GLOBALS_H
+#define DRONE_GLOBALS_H
 #include <string>
+
 static const std::string HOME_DIR = "${CMAKE_SOURCE_DIR}";
 static const std::string LOG_DIR = HOME_DIR + "/logs";
 static const std::string OLD_LOG_DIR = HOME_DIR + "/logs/old_logs";
@@ -7,3 +10,5 @@ static const std::string LOG_DIR_TAG = "{{DIR}}";
 static const std::string CONF_FILE = "config.json";
 static const std::string LOG_CONF = "log.conf";
 static const std::string MPU_CONF = "mpu.json";
+
+#endif

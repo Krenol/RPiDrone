@@ -21,7 +21,7 @@ namespace drone
         
         void process_next(const std::string& msg);
 
-        void update(const T& msg);
+        void update(const ControlValues& msg);
     
     };
 }

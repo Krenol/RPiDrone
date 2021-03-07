@@ -11,7 +11,7 @@ namespace drone
 {
     struct ControlValues {
         int throttle;
-        float roll_angle, pitch_angle, yaw_vel,
+        float roll_angle, pitch_angle, yaw_vel;
         rpicomponents::GPSCoordinates gps;
 
         ControlValues() {
