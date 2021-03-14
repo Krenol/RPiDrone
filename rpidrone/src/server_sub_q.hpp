@@ -9,19 +9,20 @@
 
 namespace drone
 {
-    class ServerSubscriberQueue : public design_patterns::SubscriberQueue<std::string>, public design_patterns::Queue<ControlValues> {
+    class ServerSubscriberQueue : public design_patterns::SubscriberQueue<std::string>, public design_patterns::Queue<UserInput> {
     private:
     const ControlsStruct controls_;
     const int max_size_ {100};
+    const bool motors_off_;
 
     public:
 
-        ServerSubscriberQueue(const ControlsStruct &controls, int max_q_size = 100);
+        ServerSubscriberQueue(const ControlsStruct &controls, int max_q_size = 100, bool motors_off_on_disconnect = false);
 
         
         void process_next(const std::string& msg);
 
-        void update(const ControlValues& msg);
+        void update(const UserInput& msg);
     
     };
 }

@@ -13,7 +13,7 @@ namespace drone {
         float dist_left {0}, dist_right {0}, dist_top {0}, dist_bottom {0}, dist_front {0}, dist_back {0};
     };
 
-    struct control_values {
+    struct SensorData {
         float roll_angle, pitch_angle, yaw_angle, z_vel, x_vel, y_vel;
     };
 
@@ -56,7 +56,7 @@ namespace drone {
              * Method to get all values needed for the controllers
              * @param vals: The struct to store the control values
              */
-            void getControlValues(control_values& vals);
+            void getControlValues(SensorData& vals);
 
             /**
              * Get the current location of the Drone via the GPS Sensor
@@ -88,7 +88,7 @@ namespace drone {
             #endif
             const SensorsStruct data_;
             
-            void ahrs(control_values& vals);
+            void ahrs(SensorData& vals);
     };
 }
 

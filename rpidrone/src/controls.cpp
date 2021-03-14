@@ -18,9 +18,7 @@ namespace drone
         CONTROL_LOG(INFO) << "Initializing controls...";
         initEscs(controls.escs);
         initControllers(controls.escs);
-        throttle_ = controls_.escs.idle;
         sensors_ = std::make_unique<Sensors>(sensors);
-        throttle_factor_ = (controls_.escs.max - controls_.escs.idle) / drone::THROTTLE_UPPER_BOUND;
         std::async(std::launch::async, [this]() { this->zeroAltitude(); });
         CONTROL_LOG(INFO) << "Initialized controls successfully";
         #if defined(PID_LOGS)
@@ -80,22 +78,6 @@ namespace drone
         f.get();
     }
 
-    void Controls::process_input(const Input &input)
-    {
-        const std::lock_guard<std::mutex> lock(mtx_);
-        throttle_ = input.throttle * throttle_factor_ + controls_.escs.idle;
-        roll_angle_s_ = input.joystick.offset * cos(input.joystick.degrees * M_PI / 180.0) * controls_.max_roll;
-        pitch_angle_s_ = input.joystick.offset * sin(input.joystick.degrees * M_PI / 180.0) * controls_.max_pitch;
-        yaw_vel_s_ = controls_.max_yawn * input.joystick.rotation / drone::ROTATION_UPPER_BOUND;
-        client_pos_ = rpicomponents::GPSCoordinates(input.gps);
-        CONTROL_LOG(DEBUG) << "set throttle to " << throttle_ << "; set roll angle to " << roll_angle_s_ << "; set pitch angle to " << pitch_angle_s_ << "; set yawn velocity to " << yaw_vel_s_;
-    }
-
-    int Controls::getThrottle()
-    {
-        return throttle_;
-    }
-
     void Controls::getDroneCoordinates(rpicomponents::GPSCoordinates &c, int retires)
     {
         sensors_->getDroneCoordinates(c, retires);
@@ -106,21 +88,21 @@ namespace drone
         return sensors_->getBarometricHeight() - zeroed_altitude_;
     }
 
-    void Controls::control(control_values &vals)
+    void Controls::control(SensorData& sensorData, const UserInput &userInput)
     {
         float roll_out, pitch_out, yaw_out, roll_rate, pitch_rate, yaw_rate;
         int lb, rb, lf, rf;
 
         const std::lock_guard<std::mutex> lock(mtx_);
-        sensors_->getControlValues(vals);
+        sensors_->getControlValues(sensorData);
 
-        roll_rate = pid_roll_rate_->control(vals.roll_angle, roll_angle_s_);
-        pitch_rate = pid_pitch_rate_->control(vals.pitch_angle, pitch_angle_s_);
-        yaw_rate = yaw_vel_s_;
+        roll_rate = pid_roll_rate_->control(sensorData.roll_angle, userInput.roll_angle);
+        pitch_rate = pid_pitch_rate_->control(sensorData.pitch_angle, userInput.pitch_angle);
+        yaw_rate = userInput.yaw_vel;
 
-        roll_out = pid_roll_output_->control(vals.x_vel, roll_rate);
-        pitch_out = pid_pitch_output_->control(vals.y_vel, pitch_rate);
-        yaw_out = pid_yaw_output_->control(vals.z_vel, yaw_rate);
+        roll_out = pid_roll_output_->control(sensorData.x_vel, roll_rate);
+        pitch_out = pid_pitch_output_->control(sensorData.y_vel, pitch_rate);
+        yaw_out = pid_yaw_output_->control(sensorData.z_vel, yaw_rate);
 
         rf = roll_out - pitch_out + yaw_out;
         lf = -roll_out - pitch_out - yaw_out;
@@ -128,12 +110,12 @@ namespace drone
         lb = -roll_out + pitch_out + yaw_out; 
 
         #if defined(PID_LOGS)
-        PID_LOG(INFO) << roll_angle_s_ << ";" << vals.roll_angle << ";" << roll_angle_s_ - vals.roll_angle<< ";" << pitch_angle_s_ << ";" << vals.pitch_angle << ";" << pitch_angle_s_ - vals.pitch_angle << ";" << vals.x_vel << ";" << roll_rate << ";" << vals.x_vel - roll_rate << ";" << vals.y_vel << ";" << pitch_rate << ";" << vals.y_vel - pitch_rate << ";" << vals.z_vel  << ";" << yaw_vel_s_ << ";" << yaw_vel_s_ - vals.z_vel << ";" << lb << ";" << rb << ";" << lf << ";" << rf << ";" << throttle_ << ";" << roll_out << ";" << pitch_out << ";" << yaw_out;
+        PID_LOG(INFO) << userInput.roll_angle << ";" << sensorData.roll_angle << ";" << userInput.roll_angle - sensorData.roll_angle<< ";" << userInput.pitch_angle << ";" << sensorData.pitch_angle << ";" << userInput.pitch_angle - sensorData.pitch_angle << ";" << sensorData.x_vel << ";" << roll_rate << ";" << sensorData.x_vel - roll_rate << ";" << sensorData.y_vel << ";" << pitch_rate << ";" << sensorData.y_vel - pitch_rate << ";" << sensorData.z_vel  << ";" << userInput.yaw_vel << ";" << userInput.yaw_vel - sensorData.z_vel << ";" << lb << ";" << rb << ";" << lf << ";" << rf << ";" << userInput.throttle << ";" << roll_out << ";" << pitch_out << ";" << yaw_out;
         #endif
-        lf_->SetOutputSpeed(throttle_ + lf);
-        rb_->SetOutputSpeed(throttle_ + rb);
-        rf_->SetOutputSpeed(throttle_ + rf);
-        lb_->SetOutputSpeed(throttle_ + lb);
+        lf_->SetOutputSpeed(userInput.throttle + lf);
+        rb_->SetOutputSpeed(userInput.throttle + rb);
+        rf_->SetOutputSpeed(userInput.throttle + rf);
+        lb_->SetOutputSpeed(userInput.throttle + lb);
     }
 
     void Controls::startEsc(const std::unique_ptr<rpicomponents::Esc> &esc)
@@ -148,15 +130,5 @@ namespace drone
         esc->Calibrate(false);
         esc->SetOutputSpeed(0);
         sleep(1);
-    }
-
-    void Controls::idle()
-    {
-        throttle_ = controls_.escs.idle;
-    }
-
-    void Controls::motorsOff()
-    {
-        throttle_ = 0;
     }
 } // namespace drone

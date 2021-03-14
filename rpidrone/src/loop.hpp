@@ -1,6 +1,5 @@
 #include "rpisocket/rpisocket.hpp"
 #include "connection.hpp"
-#include "subqueue.hpp"
 #include "controls.hpp"
 #include <memory>
 #include <string>
@@ -55,17 +54,11 @@ namespace drone {
             void loadConfig(const std::string& file);
 
             /**
-             * Process newly read input
-             * @param read The read string
-             */
-            void processInput(const std::string& read);
-
-            /**
              * Loop maintianing the connection to clients
              */
             void connectionHandler();
 
-            void createOutputJson(const control_values& vals, const rpicomponents::GPSCoordinates& c, json& j);
+            void createOutputJson(const SensorData& vals, const rpicomponents::GPSCoordinates& c, json& j);
 
 
             void processServerRead(std::string& buf, const std::string& delimiter);

@@ -9,7 +9,7 @@ namespace drone {
         std::string msg, buf;
         int max_buf_size = buf.max_size() * 3 / 4;
         while(thread_on_) {
-            NETWORK_LOG(INFO) << "waiting for connection on " << server_->getServerIp() << ":" << server_->getPort();
+            NETWORK_LOG(INFO) << "waiting for connection on " << server_->getServerAddress() << ":" << server_->getServerPort();
             server_->connect();
             buf = "";
             NETWORK_LOG(INFO) << "connected to " << server_->getConnectedClient();
@@ -77,10 +77,11 @@ namespace drone {
         return server_->hasConnection(); 
     }
 
-    Connection::Connection(int port, int msg_size, std::string delimiter) : delimiter_{delimiter}
+    Connection::Connection(std::unique_ptr<rpisocket::Server> server, std::string delimiter) : delimiter_{delimiter}, server_{std::move(server)}
     {
-        server_ = std::make_unique<rpisocket::WiFiServer>(port, msg_size);
+        
     }
+
 
     void Connection::writeMsg(const std::string& msg) {
         server_->writeBytes(msg);

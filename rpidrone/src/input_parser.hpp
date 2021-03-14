@@ -9,16 +9,16 @@
 
 namespace drone
 {
-    struct ControlValues {
-        int throttle;
-        float roll_angle, pitch_angle, yaw_vel;
+    struct UserInput {
+        int throttle = 0;
+        float roll_angle = 0.0f, pitch_angle = 0.0f, yaw_vel = 0.0f;
         rpicomponents::GPSCoordinates gps;
 
-        ControlValues() {
+        UserInput() {
 
         }
 
-        ControlValues(const Input& input, const ControlsStruct &controls) 
+        UserInput(const Input& input, const ControlsStruct &controls) 
         {
             this->throttle = input.throttle * (controls.escs.max - controls.escs.idle) / drone::THROTTLE_UPPER_BOUND + controls.escs.idle;
             roll_angle = input.joystick.offset * cos(input.joystick.degrees * M_PI / 180.0) * controls.max_roll;
@@ -27,7 +27,7 @@ namespace drone
             gps = rpicomponents::GPSCoordinates(input.gps);
         }
 
-        ControlValues(const ControlValues& i)
+        UserInput(const UserInput& i)
         {
             this->throttle = i.throttle;
             this->roll_angle = i.roll_angle;

@@ -5,6 +5,7 @@
 #include <string>
 #include "sensors.hpp"
 #include "json_parser.hpp"
+#include "input_parser.hpp"
 
 #ifndef DRONE_CONTROLS_H
 #define DRONE_CONTROLS_H
@@ -27,32 +28,11 @@ namespace drone {
             void startMotors();
 
             /**
-             * Method that set motor speeds and angles based on control input;
-             * data is received via the queue
-             * @param input The transmitted input
-             */
-            void process_input(const Input& input);
-
-            /**
-             * Method that returns the current trhottle value
-             */
-            int getThrottle();
-
-            /**
              * Control method to control ESCs etc based on sensors and input
-             * @param vals The control values struct
+             * @param sensorData The SensorData struct containing sensor measurements
+             * @param userInput The desired values needed for the controller
              */
-            void control(control_values& vals);
-
-            /**
-             * Method to idle motors
-             */
-            void idle();
-
-            /**
-             * Method to turn motors off
-             */
-            void motorsOff();
+            void control(SensorData& sensorData, const UserInput &userInput);
 
             /**
              * Get the current location of the Drone via the GPS Sensor
@@ -71,11 +51,9 @@ namespace drone {
             std::unique_ptr<rpicomponents::Esc> lf_, rf_, lb_, rb_;
             std::mutex mtx_; 
             std::unique_ptr<PID<float>> pid_roll_rate_, pid_pitch_rate_, pid_yaw_rate_, pid_roll_output_, pid_pitch_output_, pid_yaw_output_;
-            std::atomic_int throttle_{0};
-            std::atomic<float> roll_angle_s_{0}, pitch_angle_s_{0}, yaw_vel_s_{0};
             std::unique_ptr<Sensors> sensors_;
             rpicomponents::GPSCoordinates client_pos_;
-            float zeroed_altitude_, throttle_factor_;
+            float zeroed_altitude_;
 
             void startEsc(const std::unique_ptr<rpicomponents::Esc>& esc);
             void calibrateEsc(const std::unique_ptr<rpicomponents::Esc>& esc);

@@ -45,20 +45,20 @@ static void initLogging()
 }
 
 void initPowerLogs(const bool& run) {
-    #if defined(POWER_LOGS)
     drone::initCpuLog();
     POWER_LOG(DEBUG) << "datetime;level;sys_cpu;proc_cpu;memory;virtual_memory";
     while(run) {
         POWER_LOG(INFO) << drone::systemCpuConsumption() << ";" << drone::getCpuConsumption() << ";" << drone::getMemoryConsumption() << ";" << drone::getVirtualMemoryConsumption();
         usleep(100000);
     }
-    #endif
 }
 
 int main() {
     bool run = true;
     initLogging();
+    #if defined(POWER_LOGS)
     std::thread thrd([&run] () {initPowerLogs(run); });
+    #endif
     LOG(INFO) << "Loading " << CONF_FILE;
     drone::Loop l (CONF_DIR + "/" + CONF_FILE);
     LOG(INFO) << "Drone startup";

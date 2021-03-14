@@ -57,7 +57,7 @@ namespace drone
 
 
     
-    void Sensors::getControlValues(control_values& vals) 
+    void Sensors::getControlValues(SensorData& vals) 
     {
         rpicomponents::mpu_data vel;
         rpicomponents::mpu_angles angles;
@@ -95,7 +95,7 @@ namespace drone
         return ROUND<float>(bmp_->getAltitudeKalman(), data_.decimals);
     }
     
-    void Sensors::ahrs(control_values& vals) 
+    void Sensors::ahrs(SensorData& vals) 
     {
         rpicomponents::mpu_data vel, acc, acc1;
         rpicomponents::EulerAngles angles;

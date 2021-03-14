@@ -18,12 +18,11 @@ namespace drone
     {
         loadConfig(config_path);
         pin::initGPIOs();
-        connection_ = std::make_unique<Connection>(config_.server.port, config_.server.bytes, config_.server.delimiter);
+        connection_ = std::make_unique<Connection>(std::make_unique<rpisocket::WiFiServer>(config_.server.port, config_.server.bytes), config_.server.delimiter);
         on_led_ = std::make_unique<rpicomponents::Led>(config_.leds.on_led, pin::DIGITAL_MODE, pin::DIGITAL_MODE_MAX_VAL);
         status_led_ = std::make_unique<rpicomponents::Led>(config_.leds.status_led, pin::DIGITAL_MODE, pin::DIGITAL_MODE_MAX_VAL);
-        //readq_ = std::make_unique<drone::SubscriberQueue<std::string>>(config_.queues.read_size);
         controls_ = std::make_unique<Controls>(config_.controls, config_.sensors);
-        server_q_ = std::make_shared<ServerSubscriberQueue>(config_.controls, config_.queues.read_size);
+        server_q_ = std::make_shared<ServerSubscriberQueue>(config_.controls, config_.queues.read_size, config_.logic.motors_off_disconnect);
         tpe_ = std::make_unique<design_patterns::ThreadPoolExecutor>(1, config_.queues.write_size);
         connection_->subscribe(server_q_);
         #if defined(EXEC_TIME_LOG)
@@ -45,8 +44,8 @@ namespace drone
     void Loop::loop() 
     {
         std::string delimiter = config_.server.delimiter;
-        control_values vals;
-        ControlValues cvs;
+        SensorData sensorData;
+        UserInput userInput;
         connection_ -> startThread();
         CONTROL_LOG(INFO) << "starting main control loop";
         #if defined(EXEC_TIME_LOG)
@@ -55,16 +54,16 @@ namespace drone
         while(1){
             try{
                 if(server_q_->has_item()){
-                    server_q_->pop(cvs);
+                    server_q_->pop(userInput);
                 }
-                controls_->control(vals);
+                controls_->control(sensorData, userInput);
 
                 //controls_->getDroneCoordinates(c, 20); 
                 
-                tpe_->enqueue([this, vals, &delimiter](){
+                tpe_->enqueue([this, sensorData, &delimiter](){
                     rpicomponents::GPSCoordinates c;
                     json j;
-                    createOutputJson(vals, c, j);
+                    createOutputJson(sensorData, c, j);
                     if(connection_->hasConnection()) {
                         std::string msg = j.dump();
                         #if defined(NETWORK_DEBUG_LOGS)
@@ -85,7 +84,7 @@ namespace drone
         }
     }
 
-    void Loop::createOutputJson(const control_values& vals, const rpicomponents::GPSCoordinates& c, json& j) {
+    void Loop::createOutputJson(const SensorData& vals, const rpicomponents::GPSCoordinates& c, json& j) {
         j = {
                 {"angles", {
                     {"yaw", vals.yaw_angle}, 
@@ -118,20 +117,4 @@ namespace drone
         config_ = json::parse(ifs);
     }
     
-    void Loop::processInput(const std::string& read)
-    {
-        json j;
-        try{
-            j = json::parse(read);
-            #if defined(NETWORK_DEBUG_LOGS)
-            NETWORK_LOG(DEBUG) << "parsed input to json " << j;
-            #endif
-            from_json(j, last_input_);
-            controls_->process_input(last_input_);
-        } catch(const std::exception &exc){
-            //we return old json
-            NETWORK_LOG(ERROR) << exc.what() << "read string: " << read;
-        }
-        
-    }
 }

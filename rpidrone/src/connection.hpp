@@ -14,7 +14,7 @@ namespace drone
         const std::string delimiter_;
         std::thread thread_;
         std::atomic_bool thread_on_;
-        std::unique_ptr<rpisocket::WiFiServer> server_;
+        std::unique_ptr<rpisocket::Server> server_;
 
         /**
          * Loop executed in thread
@@ -29,7 +29,7 @@ namespace drone
         
     public:
 
-        Connection(int port, int msg_size, std::string delimiter);
+        Connection(std::unique_ptr<rpisocket::Server> server, std::string delimiter);
         ~Connection();
 
         void startThread();
