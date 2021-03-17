@@ -77,7 +77,7 @@ namespace drone {
         return server_->hasConnection(); 
     }
 
-    Connection::Connection(std::unique_ptr<rpisocket::Server> server, std::string delimiter) : delimiter_{delimiter}, server_{std::move(server)}
+    Connection::Connection(std::unique_ptr<rpisocket::Server> server, std::string delimiter) : delimiter_{delimiter}, server_{std::move(server)}, thread_on_{false}
     {
         
     }
