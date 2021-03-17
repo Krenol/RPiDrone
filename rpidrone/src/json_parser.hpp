@@ -350,7 +350,7 @@ namespace drone
     struct SensorsStruct
     {
         SensorCalibration sensor_calibration;
-        int decimals = 1,  control_measurements = 3;
+        int decimals = 1;
         MPU mpu;
         GPS gps;
         BMP bmp;
@@ -359,36 +359,29 @@ namespace drone
 
         }
 
-        SensorsStruct(const SensorCalibration& sc, const MPU& m, const GPS& g, const BMP& b, int decimals, int control_measurements) : sensor_calibration(sc), mpu(m), gps(g), bmp(b) {
+        SensorsStruct(const SensorCalibration& sc, const MPU& m, const GPS& g, const BMP& b, int decimals) : sensor_calibration(sc), mpu(m), gps(g), bmp(b) {
             this->decimals = decimals;
-            this->control_measurements = control_measurements;
         }
 
         SensorsStruct(const SensorsStruct& s) : sensor_calibration(s.sensor_calibration), mpu(s.mpu), gps(s.gps), bmp(s.bmp) {
             this->decimals = s.decimals;
-            this->control_measurements = s.control_measurements;
         }
     };
 
     struct Logic
     {
-        int main_sleep = 5000, sleep_disconnect = 200000;
         bool motors_off_disconnect = false;
 
         Logic() {
 
         }
 
-        Logic(int main_sleep, bool motors_off_disconnect, int sleep_disconnect) {
-            this->main_sleep = main_sleep;
+        Logic(bool motors_off_disconnect) {
             this->motors_off_disconnect = motors_off_disconnect;
-            this->sleep_disconnect = sleep_disconnect;
         }
 
         Logic(const Logic& l) {
-            this->main_sleep = l.main_sleep;
             this->motors_off_disconnect = l.motors_off_disconnect;
-            this->sleep_disconnect = l.sleep_disconnect;
         }
     };
 

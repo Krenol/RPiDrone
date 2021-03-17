@@ -10,7 +10,7 @@ namespace drone
     void from_json(const nlohmann::json &j, Config &cfg) 
     {
         cfg.leds = Leds(j.at("leds").at("on_led"), j.at("leds").at("status_led"));
-        cfg.logic = Logic(j.at("logic").at("main_loop_sleep"), j.at("logic").at("motors_off_on_disconnect"), j.at("logic").at("sleep_before_disconnect"));
+        cfg.logic = Logic(j.at("logic").at("motors_off_on_disconnect"));
         cfg.server = Server(j.at("server").at("port"), j.at("server").at("bytes"), j.at("server").at("delimiter"));
         cfg.queues = Queues(j.at("queues").at("read_size"), j.at("queues").at("write_size"));
         parse_sensor_obj(j, cfg);
@@ -65,7 +65,6 @@ namespace drone
     {
         auto js = j.at("sensors");
         int dec = js.at("decimal_places");
-        int con_measure = js.at("control_measurements");
         SensorCalibration sc(js.at("calibration").at("calibrate"), js.at("calibration").at("measurements"));
         GPS gps(js.at("gps").at("port"), js.at("gps").at("baudrate"));
         auto b = js.at("bmp");
@@ -78,7 +77,7 @@ namespace drone
         MPUKalmanAngles ma(js.at("angles").at("c1"), js.at("angles").at("c2"), js.at("angles").at("r"), js.at("angles").at("q11"), js.at("angles").at("q12"), js.at("angles").at("q21"), js.at("angles").at("q22"));
         MPUKalmanVelocity mv(js.at("velocity").at("r"), js.at("velocity").at("q11"), js.at("velocity").at("q22"), js.at("velocity").at("q33"), js.at("velocity").at("q44"), js.at("velocity").at("q55"), js.at("velocity").at("q66"));
         MPU mpu(b.at("address"), a, mv, ma);
-        cfg.sensors = SensorsStruct(sc, mpu, gps, bmp, dec, con_measure);
+        cfg.sensors = SensorsStruct(sc, mpu, gps, bmp, dec);
     }
     
     void parse_control_obj(const nlohmann::json &j, Config &cfg) 

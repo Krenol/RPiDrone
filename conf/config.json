@@ -1,8 +1,6 @@
 {
     "logic": {
-        "main_loop_sleep": 0,
-        "motors_off_on_disconnect": true,
-        "sleep_before_disconnect": 200000
+        "motors_off_on_disconnect": true
     },
     "server": {
         "port": 8889,
@@ -23,7 +21,6 @@
             "measurements": 1500
         },
         "decimal_places": 1,
-        "control_measurements": 3,
         "mpu": {
             "address": 104,
             "ahrs": {

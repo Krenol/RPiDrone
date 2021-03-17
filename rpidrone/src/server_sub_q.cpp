@@ -43,7 +43,6 @@ namespace drone
         }
         catch (const std::exception &exc)
         {
-            //we return old json
             NETWORK_LOG(ERROR) << exc.what() << "read string: " << msg;
         }
     }

@@ -62,27 +62,14 @@ namespace drone
         rpicomponents::mpu_data vel;
         rpicomponents::mpu_angles angles;
         
-        vals.x_vel = 0;
-        vals.y_vel = 0;
-        vals.z_vel = 0;
-        vals.pitch_angle = 0;
-        vals.roll_angle = 0;
         vals.yaw_angle = 0;
-        for(auto i = 0; i < data_.control_measurements; i++) {
-            mpu_->GetKalmanVelocity(vel);
-            mpu_->GetKalmanAngles(angles);
-            vals.x_vel += vel.x;
-            vals.y_vel += vel.y;
-            vals.z_vel += vel.z;
-            vals.pitch_angle += angles.pitch_angle;
-            vals.roll_angle += angles.roll_angle;
-        }
-        
-        vals.x_vel = ROUND<float>(vals.x_vel / data_.control_measurements, data_.decimals);
-        vals.y_vel = ROUND<float>(vals.y_vel / data_.control_measurements, data_.decimals);
-        vals.z_vel = ROUND<float>(vals.z_vel / data_.control_measurements, data_.decimals);
-        vals.pitch_angle = ROUND<float>(vals.pitch_angle / data_.control_measurements, data_.decimals);
-        vals.roll_angle = ROUND<float>(vals.roll_angle / data_.control_measurements, data_.decimals);
+        mpu_->GetKalmanVelocity(vel);
+        mpu_->GetKalmanAngles(angles);
+        vals.x_vel = ROUND<float>(vel.x, data_.decimals);
+        vals.y_vel = ROUND<float>(vel.y, data_.decimals);
+        vals.z_vel = ROUND<float>(vel.z, data_.decimals);
+        vals.pitch_angle = ROUND<float>(angles.pitch_angle, data_.decimals);
+        vals.roll_angle = ROUND<float>(angles.roll_angle, data_.decimals);
     }
     
     void Sensors::getDroneCoordinates(rpicomponents::GPSCoordinates& c, int retires) 
@@ -100,32 +87,14 @@ namespace drone
         rpicomponents::mpu_data vel, acc, acc1;
         rpicomponents::EulerAngles angles;
         
-        vals.x_vel = 0;
-        vals.y_vel = 0;
-        vals.z_vel = 0;
-        vals.pitch_angle = 0;
-        vals.roll_angle = 0;
-        vals.yaw_angle = 0;
-        acc.x = 0;
-        acc.y = 0;
-        acc.z = 0;
-        for(auto i = 0; i < data_.control_measurements; i++) {
-            mpu_->GetAngularVelocity(vel);
-            mpu_->GetAcceleration(acc1);
-            vals.x_vel += vel.x;
-            vals.y_vel += vel.y;
-            vals.z_vel += vel.z;
-            acc.x += acc1.x;
-            acc.y += acc1.y;
-            acc.z += acc1.z;
-        }
-        
-        vals.x_vel = ROUND<float>(vals.x_vel / data_.control_measurements, data_.decimals);
-        vals.y_vel = ROUND<float>(vals.y_vel / data_.control_measurements, data_.decimals);
-        vals.z_vel = ROUND<float>(vals.z_vel / data_.control_measurements, data_.decimals);
-        acc.x = ROUND<float>(acc.x / data_.control_measurements, data_.decimals);
-        acc.y = ROUND<float>(acc.y / data_.control_measurements, data_.decimals);
-        acc.z = ROUND<float>(acc.z / data_.control_measurements, data_.decimals);
+        mpu_->GetAngularVelocity(vel);
+        mpu_->GetAcceleration(acc);
+        vals.x_vel = ROUND<float>(vel.x, data_.decimals);
+        vals.y_vel = ROUND<float>(vel.y, data_.decimals);
+        vals.z_vel = ROUND<float>(vel.z, data_.decimals);
+        acc.x = ROUND<float>(acc.x, data_.decimals);
+        acc.y = ROUND<float>(acc.y, data_.decimals);
+        acc.z = ROUND<float>(acc.z, data_.decimals);
         
         ahrs_->update(vals.x_vel, vals.y_vel, vals.z_vel, acc.x, acc.y, acc.z);
         ahrs_->getEulerAngles(angles);

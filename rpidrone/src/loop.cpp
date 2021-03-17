@@ -61,10 +61,10 @@ namespace drone
                 //controls_->getDroneCoordinates(c, 20); 
                 
                 tpe_->enqueue([this, sensorData, &delimiter](){
-                    rpicomponents::GPSCoordinates c;
-                    json j;
-                    createOutputJson(sensorData, c, j);
                     if(connection_->hasConnection()) {
+                        rpicomponents::GPSCoordinates c;
+                        json j;
+                        createOutputJson(sensorData, c, j);
                         std::string msg = j.dump();
                         #if defined(NETWORK_DEBUG_LOGS)
                         NETWORK_LOG(DEBUG) << "writing " << msg;
@@ -72,7 +72,6 @@ namespace drone
                         connection_->writeMsg(msg + delimiter);
                     }
                 });
-                usleep(config_.logic.main_sleep); 
             } catch(const std::exception &exc) {
                 CONTROL_LOG(ERROR) << exc.what();
             }
