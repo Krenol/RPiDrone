@@ -3,7 +3,8 @@
 #include <fstream>
 #include <future>
 #include "easylogging++.h"
-#include "input_parser.hpp"
+#include "user_input.hpp"
+
 
 #define NETWORK_LOG(LEVEL) CLOG(LEVEL, "network") //define network log
 #define CONTROL_LOG(LEVEL) CLOG(LEVEL, "controls") //define control log
@@ -31,7 +32,6 @@ namespace drone
         #endif
     }
 
-
     Loop::~Loop() 
     {
         on_led_->TurnOff();
@@ -39,12 +39,12 @@ namespace drone
         connection_->stopThread();
         pin::terminateGPIOs();
     }
-
-    
     
     void Loop::loop() 
     {
         std::string delimiter = config_.server.delimiter;
+        rpicomponents::mpu_angles angles;
+        rpicomponents::mpu_data velocities;
         SensorData sensorData;
         UserInput userInput;
         connection_ -> startThread();
@@ -57,16 +57,16 @@ namespace drone
                 if(server_q_->has_item()){
                     server_q_->pop(userInput);
                 }
-                sensors_->getControlValues(sensorData);
+                sensors_->getAngles(angles);
+                sensors_->getVelocities(velocities);
+                sensorData = SensorData(angles.roll_angle, angles.pitch_angle, 0, velocities.x, velocities.y, velocities.z);
                 controls_->control(sensorData, userInput);
 
-                //controls_->getDroneCoordinates(c, 20); 
-                
-                tpe_->enqueue([this, sensorData, &delimiter](){
+                tpe_->enqueue([this, angles, &delimiter](){
                     if(connection_->hasConnection()) {
                         rpicomponents::GPSCoordinates c;
                         json j;
-                        createOutputJson(sensorData, c, j);
+                        createOutputJson(angles, c, j);
                         std::string msg = j.dump();
                         #if defined(NETWORK_DEBUG_LOGS)
                         NETWORK_LOG(DEBUG) << "writing " << msg;
@@ -85,10 +85,10 @@ namespace drone
         }
     }
 
-    void Loop::createOutputJson(const SensorData& vals, const rpicomponents::GPSCoordinates& c, json& j) {
+    void Loop::createOutputJson(const rpicomponents::mpu_angles& vals, const rpicomponents::GPSCoordinates& c, json& j) {
         j = {
                 {"angles", {
-                    {"yaw", vals.yaw_angle}, 
+                    {"yaw", 0}, 
                     {"pitch", vals.pitch_angle}, 
                     {"roll", vals.roll_angle}}
                 },
@@ -105,14 +105,10 @@ namespace drone
     
     void Loop::startupDrone() {
         on_led_->TurnOn();
-        sleep(5); //give 5s to get away from drone
         controls_->startMotors();
-        sleep(5); //give motors 5s
         status_led_->TurnOn();
     }
     
-
-
     void Loop::loadConfig(const std::string& file) {
         std::ifstream ifs(file);
         config_ = json::parse(ifs);

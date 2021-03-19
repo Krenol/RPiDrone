@@ -1,7 +1,7 @@
 #include "rpicomponents/rpicomponents.hpp"
 #include <memory>
 #include <nlohmann/json.hpp>
-#include "json_parser.hpp"
+#include "json_config_parser.hpp"
 #include <string>
 
 #ifndef DRONE_SENSORICS_H
@@ -12,10 +12,6 @@ using json = nlohmann::json;
 namespace drone {
     struct Distances {
         float dist_left {0}, dist_right {0}, dist_top {0}, dist_bottom {0}, dist_front {0}, dist_back {0};
-    };
-
-    struct SensorData {
-        float roll_angle, pitch_angle, yaw_angle, z_vel, x_vel, y_vel;
     };
 
     class Sensors {
@@ -54,10 +50,16 @@ namespace drone {
             Distances getDistances() const;         
 
             /**
-             * Method to get all values needed for the controllers
-             * @param vals: The struct to store the control values
+             * Method to get the drone angles
+             * @param vals: The struct to store the angles
              */
-            void getControlValues(SensorData& vals);
+            void getAngles(rpicomponents::mpu_angles& angles);
+
+            /**
+             * Method to get dromne velvoities
+             * @param velocities: The struct to store the velocities
+             */
+            void getVelocities(rpicomponents::mpu_data& velocities);
 
             /**
              * Get the current location of the Drone via the GPS Sensor
@@ -76,7 +78,7 @@ namespace drone {
             const rpicomponents::DISTANCE_UNIT unit_;
             //std::unique_ptr<rpicomponents::UltrasonicSensor> uss_left_, uss_right_, uss_top_, uss_bottom_, uss_front_, uss_back_;
             std::unique_ptr<rpicomponents::GpsNeo6MV2> gps_;
-            std::unique_ptr<rpicomponents::Ahrs> ahrs_;
+            //std::unique_ptr<rpicomponents::Ahrs> ahrs_;
             #if defined(US)
             std::unique_ptr<rpicomponents::Bmp180<std::chrono::microseconds>> bmp_;
             std::unique_ptr<rpicomponents::MPU6050<std::chrono::microseconds>> mpu_;
@@ -89,7 +91,7 @@ namespace drone {
             #endif
             const SensorsStruct data_;
             
-            void ahrs(SensorData& vals);
+            //void ahrs(SensorData& vals);
     };
 }
 

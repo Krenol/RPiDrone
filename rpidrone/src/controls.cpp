@@ -62,12 +62,13 @@ namespace drone
             f = std::async(std::launch::async, [this]() { this->startEsc(lf_); });
         }
         f.get();
+        sleep(5); //give motors 5s
     }
 
-    void Controls::getDroneCoordinates(rpicomponents::GPSCoordinates &c, int retires)
-    {
-        sensors_->getDroneCoordinates(c, retires);
-    }
+    // void Controls::getDroneCoordinates(rpicomponents::GPSCoordinates &c, int retires)
+    // {
+    //     sensors_->getDroneCoordinates(c, retires);
+    // }
 
     void Controls::control(SensorData& sensorData, const UserInput &userInput)
     {

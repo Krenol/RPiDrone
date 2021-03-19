@@ -4,10 +4,10 @@
 #include <memory>
 #include <string>
 #include <atomic>
-#include "json_parser.hpp"
+#include "json_config_parser.hpp"
 #include "server_sub_q.hpp"
 #include "sensors.hpp"
-
+#include "rpicomponents/rpicomponents.hpp"
 
 #ifndef DRONE_LOOP_H
 #define DRONE_LOOP_H
@@ -60,7 +60,7 @@ namespace drone {
              */
             void connectionHandler();
 
-            void createOutputJson(const SensorData& vals, const rpicomponents::GPSCoordinates& c, json& j);
+            void createOutputJson(const rpicomponents::mpu_angles& vals, const rpicomponents::GPSCoordinates& c, json& j);
 
 
             void processServerRead(std::string& buf, const std::string& delimiter);

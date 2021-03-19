@@ -27,7 +27,7 @@ namespace drone
         bmp_ = std::make_unique<rpicomponents::Bmp180<std::chrono::milliseconds>>(sensors.bmp.address, res);
         #endif
         gps_ = std::make_unique<rpicomponents::GpsNeo6MV2>(sensors.gps.port, sensors.gps.baudrate);
-        ahrs_ = std::make_unique<rpicomponents::Ahrs>(sensors.mpu.ahrs.beta);
+        //ahrs_ = std::make_unique<rpicomponents::Ahrs>(sensors.mpu.ahrs.beta);
         if (sensors.sensor_calibration.calibrate)
         {
             int runs = sensors.sensor_calibration.measurements;
@@ -54,22 +54,23 @@ namespace drone
         // dist.dist_front = uss_front_->MeasureDistance(rpicomponents::UNIT_M);
         return dist;
     }
-
-
     
-    void Sensors::getControlValues(SensorData& vals) 
+    void Sensors::getAngles(rpicomponents::mpu_angles& angles) 
     {
-        rpicomponents::mpu_data vel;
-        rpicomponents::mpu_angles angles;
-        
-        vals.yaw_angle = 0;
-        mpu_->GetKalmanVelocity(vel);
         mpu_->GetKalmanAngles(angles);
-        vals.x_vel = ROUND<float>(vel.x, data_.decimals);
-        vals.y_vel = ROUND<float>(vel.y, data_.decimals);
-        vals.z_vel = ROUND<float>(vel.z, data_.decimals);
-        vals.pitch_angle = ROUND<float>(angles.pitch_angle, data_.decimals);
-        vals.roll_angle = ROUND<float>(angles.roll_angle, data_.decimals);
+        angles.pitch_angle = ROUND<float>(angles.pitch_angle, data_.decimals);
+        angles.roll_angle = ROUND<float>(angles.roll_angle, data_.decimals);
+    }
+    
+    void Sensors::getVelocities(rpicomponents::mpu_data& velocities) 
+    {
+        mpu_->GetKalmanVelocity(velocities);
+        velocities.x = ROUND<float>(velocities.x, data_.decimals);
+        velocities.y = ROUND<float>(velocities.y, data_.decimals);
+        velocities.z = ROUND<float>(velocities.z, data_.decimals);
+        velocities.dx = 0;
+        velocities.dy = 0;
+        velocities.dz = 0;
     }
     
     void Sensors::getDroneCoordinates(rpicomponents::GPSCoordinates& c, int retires) 
@@ -82,27 +83,27 @@ namespace drone
         return ROUND<float>(bmp_->getAltitudeKalman(), data_.decimals);
     }
     
-    void Sensors::ahrs(SensorData& vals) 
-    {
-        rpicomponents::mpu_data vel, acc, acc1;
-        rpicomponents::EulerAngles angles;
+    // void Sensors::ahrs(SensorData& vals) 
+    // {
+    //     rpicomponents::mpu_data vel, acc, acc1;
+    //     rpicomponents::EulerAngles angles;
         
-        mpu_->GetAngularVelocity(vel);
-        mpu_->GetAcceleration(acc);
-        vals.x_vel = ROUND<float>(vel.x, data_.decimals);
-        vals.y_vel = ROUND<float>(vel.y, data_.decimals);
-        vals.z_vel = ROUND<float>(vel.z, data_.decimals);
-        acc.x = ROUND<float>(acc.x, data_.decimals);
-        acc.y = ROUND<float>(acc.y, data_.decimals);
-        acc.z = ROUND<float>(acc.z, data_.decimals);
+    //     mpu_->GetAngularVelocity(vel);
+    //     mpu_->GetAcceleration(acc);
+    //     vals.x_vel = ROUND<float>(vel.x, data_.decimals);
+    //     vals.y_vel = ROUND<float>(vel.y, data_.decimals);
+    //     vals.z_vel = ROUND<float>(vel.z, data_.decimals);
+    //     acc.x = ROUND<float>(acc.x, data_.decimals);
+    //     acc.y = ROUND<float>(acc.y, data_.decimals);
+    //     acc.z = ROUND<float>(acc.z, data_.decimals);
         
-        ahrs_->update(vals.x_vel, vals.y_vel, vals.z_vel, acc.x, acc.y, acc.z);
-        ahrs_->getEulerAngles(angles);
+    //     ahrs_->update(vals.x_vel, vals.y_vel, vals.z_vel, acc.x, acc.y, acc.z);
+    //     ahrs_->getEulerAngles(angles);
         
-        vals.pitch_angle = ROUND<float>(angles.pitch , data_.decimals);
-        vals.roll_angle = ROUND<float>(angles.roll, data_.decimals);
-        vals.yaw_angle = ROUND<float>(angles.yaw, data_.decimals);
-    }
+    //     vals.pitch_angle = ROUND<float>(angles.pitch , data_.decimals);
+    //     vals.roll_angle = ROUND<float>(angles.roll, data_.decimals);
+    //     vals.yaw_angle = ROUND<float>(angles.yaw, data_.decimals);
+    // }
 
     void Sensors::calibrate(int measurements) 
     {

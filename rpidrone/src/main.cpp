@@ -7,8 +7,8 @@
 #include <ios>
 #include <ctime>
 #if defined(POWER_LOGS)
-#include "cpu_log.hpp"
-#include "memory_log.hpp"
+#include "logs/cpu_log.hpp"
+#include "logs/memory_log.hpp"
 #define POWER_LOG(LEVEL) CLOG(LEVEL, "power")  
 #endif
 
@@ -45,10 +45,10 @@ static void initLogging()
 }
 
 void initPowerLogs(const bool& run) {
-    drone::initCpuLog();
+    drone::logs::initCpuLog();
     POWER_LOG(DEBUG) << "datetime;level;sys_cpu;proc_cpu;memory;virtual_memory";
     while(run) {
-        POWER_LOG(INFO) << drone::systemCpuConsumption() << ";" << drone::getCpuConsumption() << ";" << drone::getMemoryConsumption() << ";" << drone::getVirtualMemoryConsumption();
+        POWER_LOG(INFO) << drone::logs::systemCpuConsumption() << ";" << drone::logs::getCpuConsumption() << ";" << drone::logs::getMemoryConsumption() << ";" << drone::logs::getVirtualMemoryConsumption();
         usleep(100000);
     }
 }

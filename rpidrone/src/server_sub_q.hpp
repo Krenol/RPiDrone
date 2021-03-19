@@ -1,6 +1,6 @@
 #include "design_patterns/design_patterns.hpp"
 #include "easylogging++.h"
-#include "input_parser.hpp"
+#include "user_input.hpp"
 #include <string>
 
 #define NETWORK_LOG(LEVEL) CLOG(LEVEL, "network") //define network log

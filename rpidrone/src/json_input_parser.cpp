@@ -1,5 +1,4 @@
-#include "json_parser.hpp"
-#include "easylogging++.h"
+#include "json_input_parser.hpp"
 #include "misc.hpp"
 
 namespace drone

@@ -1,6 +1,6 @@
 project (rpidrone)
 
-set(PROJECT_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
+#set(PROJECT_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
 set(PROJECT_SOURCE_DIR ${PROJECT_SOURCE_DIR}/src)
 set(RPISOCKET_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/external/RPiSocket CACHE INTERNAL "Path to include folder for RPiSocket")
 set(RPICOMP_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/external/RPiComponents CACHE INTERNAL "Path to include folder for RPiComponents")
@@ -14,9 +14,11 @@ ${PROJECT_SOURCE_DIR}/main.cpp
 ${PROJECT_SOURCE_DIR}/sensors.cpp
 ${PROJECT_SOURCE_DIR}/controls.cpp
 ${PROJECT_SOURCE_DIR}/easylogging++.cc
-${PROJECT_SOURCE_DIR}/json_parser.cpp
+${PROJECT_SOURCE_DIR}/json_config_parser.cpp
+${PROJECT_SOURCE_DIR}/json_input_parser.cpp
 ${PROJECT_SOURCE_DIR}/server_sub_q.cpp
 ${PROJECT_SOURCE_DIR}/connection.cpp
+${PROJECT_SOURCE_DIR}/pid.cpp
 )
 
 include_directories(${PROJECT_INCLUDE_DIR})
