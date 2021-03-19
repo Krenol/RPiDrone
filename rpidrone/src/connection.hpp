@@ -32,12 +32,26 @@ namespace drone
         Connection(std::unique_ptr<rpisocket::Server> server, std::string delimiter);
         ~Connection();
 
+        /**
+         * start the connection handler thread
+         */
         void startThread();
 
+        /**
+         * stop the connection handler thread
+         */
         void stopThread();
 
+        /**
+         * Method to check if server has connection or not
+         * @return true if server has connected clients else false
+         */
         bool hasConnection() const;
 
+        /**
+         * Write a message to the connected clients
+         * @param msg The message to be written
+         */
         void writeMsg(const std::string& msg);
     };
 }

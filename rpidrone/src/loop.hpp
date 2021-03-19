@@ -6,6 +6,7 @@
 #include <atomic>
 #include "json_parser.hpp"
 #include "server_sub_q.hpp"
+#include "sensors.hpp"
 
 
 #ifndef DRONE_LOOP_H
@@ -40,6 +41,7 @@ namespace drone {
         private:
 
             std::unique_ptr<rpicomponents::Led> on_led_, status_led_;
+            std::unique_ptr<Sensors> sensors_;
             std::unique_ptr<Controls> controls_;
             Config config_;
             std::unique_ptr<Connection> connection_;

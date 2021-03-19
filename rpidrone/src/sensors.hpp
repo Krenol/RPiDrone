@@ -2,6 +2,7 @@
 #include <memory>
 #include <nlohmann/json.hpp>
 #include "json_parser.hpp"
+#include <string>
 
 #ifndef DRONE_SENSORICS_H
 #define DRONE_SENSORICS_H

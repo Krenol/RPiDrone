@@ -13,13 +13,12 @@
 #endif
 namespace drone
 {
-    Controls::Controls(const ControlsStruct &controls, const SensorsStruct &sensors) : controls_{controls}
+    Controls::Controls(const ControlsStruct &controls) : controls_{controls}
     {
         CONTROL_LOG(INFO) << "Initializing controls...";
         initEscs(controls.escs);
         initControllers(controls.escs);
-        sensors_ = std::make_unique<Sensors>(sensors);
-        std::async(std::launch::async, [this]() { this->zeroAltitude(); });
+        
         CONTROL_LOG(INFO) << "Initialized controls successfully";
         #if defined(PID_LOGS)
         PID_LOG(DEBUG) << "datetime;level;roll_s;roll_is;err_roll;pitch_s;pitch_is;err_pitch;vel_x_is;vel_x_s;err_vel_x;vel_y_is;vel_y_s;err_vel_y;vel_z_is;vel_z_s;err_vel_z;lb;rb;lf;rf;throttle;roll_out;pitch_out;yaw_out";
@@ -43,19 +42,6 @@ namespace drone
         lb_ = std::make_unique<rpicomponents::Esc>(escs.pin_lb, controls_.escs.min, controls_.escs.max);
         rf_ = std::make_unique<rpicomponents::Esc>(escs.pin_rf, controls_.escs.min, controls_.escs.max);
         lf_ = std::make_unique<rpicomponents::Esc>(escs.pin_lf, controls_.escs.min, controls_.escs.max);
-    }
-
-    void Controls::zeroAltitude(int measurements)
-    {
-        int runs = measurements;
-        zeroed_altitude_ = 0;
-        while (runs > 0)
-        {
-            zeroed_altitude_ += sensors_->getBarometricHeight();
-            --runs;
-            usleep(100);
-        }
-        zeroed_altitude_ /= measurements;
     }
 
     void Controls::startMotors()
@@ -83,18 +69,12 @@ namespace drone
         sensors_->getDroneCoordinates(c, retires);
     }
 
-    float Controls::getAltitude()
-    {
-        return sensors_->getBarometricHeight() - zeroed_altitude_;
-    }
-
     void Controls::control(SensorData& sensorData, const UserInput &userInput)
     {
         float roll_out, pitch_out, yaw_out, roll_rate, pitch_rate, yaw_rate;
         int lb, rb, lf, rf;
 
         const std::lock_guard<std::mutex> lock(mtx_);
-        sensors_->getControlValues(sensorData);
 
         roll_rate = pid_roll_rate_->control(sensorData.roll_angle, userInput.roll_angle);
         pitch_rate = pid_pitch_rate_->control(sensorData.pitch_angle, userInput.pitch_angle);

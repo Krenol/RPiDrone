@@ -3,7 +3,6 @@
 #include <memory>
 #include "pid.hpp"
 #include <string>
-#include "sensors.hpp"
 #include "json_parser.hpp"
 #include "input_parser.hpp"
 
@@ -20,7 +19,7 @@ namespace drone {
              * @param controls struct containing the controls array from the CONF_FILE
              * @param sensors struct containing the sensors part from the CONF_FILE
              */
-            Controls(const ControlsStruct& controls, const SensorsStruct& sensors);
+            Controls(const ControlsStruct& controls);
 
             /**
              * Method to fire up all motors
@@ -41,26 +40,17 @@ namespace drone {
              */
             void getDroneCoordinates(rpicomponents::GPSCoordinates& c, int retires = 100);
 
-            /**
-             * Method to get the barometric alitude based upon the start level
-             * @returns the altitude in m
-             */
-            float getAltitude();
         private:
             const ControlsStruct controls_;
             std::unique_ptr<rpicomponents::Esc> lf_, rf_, lb_, rb_;
             std::mutex mtx_; 
             std::unique_ptr<PID<float>> pid_roll_rate_, pid_pitch_rate_, pid_yaw_rate_, pid_roll_output_, pid_pitch_output_, pid_yaw_output_;
-            std::unique_ptr<Sensors> sensors_;
-            rpicomponents::GPSCoordinates client_pos_;
-            float zeroed_altitude_;
+            
 
             void startEsc(const std::unique_ptr<rpicomponents::Esc>& esc);
             void calibrateEsc(const std::unique_ptr<rpicomponents::Esc>& esc);
             void initControllers(const Escs& escs);
             void initEscs(const Escs& escs);
-
-            void zeroAltitude(int measurements = 100);
     };
 }
 
