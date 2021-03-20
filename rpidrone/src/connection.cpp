@@ -1,5 +1,5 @@
 #include "connection.hpp"
-#include "easylogging++.h"
+#include "logs/easylogging++.h"
 
 #define NETWORK_LOG(LEVEL) CLOG(LEVEL, "network") //define network log
 

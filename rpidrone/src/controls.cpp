@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <Eigen/Dense>
 #include <unistd.h>
-#include "easylogging++.h"
+#include "logs/easylogging++.h"
 #include "globals.hpp"
 
 #define CONTROL_LOG(LEVEL) CLOG(LEVEL, "controls") //define controls log

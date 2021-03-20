@@ -13,12 +13,11 @@ ${PROJECT_SOURCE_DIR}/loop.cpp
 ${PROJECT_SOURCE_DIR}/main.cpp
 ${PROJECT_SOURCE_DIR}/sensors.cpp
 ${PROJECT_SOURCE_DIR}/controls.cpp
-${PROJECT_SOURCE_DIR}/easylogging++.cc
-${PROJECT_SOURCE_DIR}/json_config_parser.cpp
-${PROJECT_SOURCE_DIR}/json_input_parser.cpp
+${PROJECT_SOURCE_DIR}/logs/easylogging++.cc
+${PROJECT_SOURCE_DIR}/parsers/json_config_parser.cpp
+${PROJECT_SOURCE_DIR}/parsers/json_input_parser.cpp
 ${PROJECT_SOURCE_DIR}/server_sub_q.cpp
 ${PROJECT_SOURCE_DIR}/connection.cpp
-${PROJECT_SOURCE_DIR}/pid.cpp
 )
 
 include_directories(${PROJECT_INCLUDE_DIR})

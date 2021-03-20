@@ -1,8 +1,7 @@
 #include "sensors.hpp"
 #include "utils/utils.hpp"
 #include <iostream>
-#include <nlohmann/json.hpp>
-#include "easylogging++.h"
+#include "logs/easylogging++.h"
 #include <fstream>
 #include <Eigen/Dense>
 #include "globals.hpp"

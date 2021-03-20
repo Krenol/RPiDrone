@@ -1,8 +1,7 @@
 #include "server_sub_q.hpp"
-#include "easylogging++.h"
 #include <nlohmann/json.hpp>
 #include "misc.hpp"
-#include "json_input_parser.hpp"
+#include "parsers/json_input_parser.hpp"
 
 #define NETWORK_LOG(LEVEL) CLOG(LEVEL, "network") //define network log
 

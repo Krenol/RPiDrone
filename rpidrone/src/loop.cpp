@@ -2,7 +2,7 @@
 #include <unistd.h>
 #include <fstream>
 #include <future>
-#include "easylogging++.h"
+#include "logs/easylogging++.h"
 #include "user_input.hpp"
 
 

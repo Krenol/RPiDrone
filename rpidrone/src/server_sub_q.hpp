@@ -1,5 +1,5 @@
 #include "design_patterns/design_patterns.hpp"
-#include "easylogging++.h"
+#include "logs/easylogging++.h"
 #include "user_input.hpp"
 #include <string>
 

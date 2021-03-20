@@ -3,7 +3,7 @@
 #include <memory>
 #include "pid.hpp"
 #include <string>
-#include "json_config_parser.hpp"
+#include "parsers/json_config_parser.hpp"
 #include "user_input.hpp"
 
 #ifndef DRONE_CONTROLS_H

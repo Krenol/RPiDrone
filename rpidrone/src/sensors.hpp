@@ -1,7 +1,7 @@
 #include "rpicomponents/rpicomponents.hpp"
 #include <memory>
 #include <nlohmann/json.hpp>
-#include "json_config_parser.hpp"
+#include "parsers/json_config_parser.hpp"
 #include <string>
 
 #ifndef DRONE_SENSORICS_H

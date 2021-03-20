@@ -4,7 +4,7 @@
 #include <memory>
 #include <string>
 #include <atomic>
-#include "json_config_parser.hpp"
+#include "parsers/json_config_parser.hpp"
 #include "server_sub_q.hpp"
 #include "sensors.hpp"
 #include "rpicomponents/rpicomponents.hpp"

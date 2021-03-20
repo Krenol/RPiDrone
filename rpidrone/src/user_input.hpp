@@ -1,5 +1,5 @@
-#include "json_input_parser.hpp"
-#include "json_config_parser.hpp"
+#include "parsers/json_input_parser.hpp"
+#include "parsers/json_config_parser.hpp"
 #include "rpicomponents/rpicomponents.hpp"
 #include "globals.hpp"
 #include <cmath>

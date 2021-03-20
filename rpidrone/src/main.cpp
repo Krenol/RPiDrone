@@ -1,5 +1,5 @@
 #include "loop.hpp"
-#include "easylogging++.h"
+#include "logs/easylogging++.h"
 #include "globals.hpp"
 #include <cstdio>
 #include <fstream>
