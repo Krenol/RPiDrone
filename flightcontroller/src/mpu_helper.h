@@ -1,16 +1,11 @@
-#ifndef _SENSORS_H_
-#define _SENSORS_H_
+#ifndef _MPU_HELPER_H_
+#define _MPU_HELPER_H_
 
 #include "I2Cdev.h"
 #include "MPU6050/MPU6050_6Axis_MotionApps20.h"
-#include <SFE_BMP180.h>
 
 #define INTERRUPT_PIN 2
 
-// ===========
-// == BMP Defs
-// ============
-SFE_BMP180  barometer;
 
 // ===========
 // == MPU Defs
@@ -20,9 +15,18 @@ struct YPR
     float yaw = 0, pitch = 0, roll = 0;
 };
 
-MPU6050 mpu;
+struct accel
+{
+    float x = 0, y = 0, z = 0;
+};
+
+//MPU6050 mpu;
 // MPU control/status vars
 bool dmpReady = false; // set true if DMP init was successful
+Quaternion q;        // [w, x, y, z]         quaternion container
+VectorFloat gravity; // [x, y, z]            gravity vector
+float ypr[3];        // [yaw, pitch, roll]   yaw/pitch/roll container and gravity vector
+uint8_t fifoBuffer[64]; // FIFO storage buffer
 
 //uint16_t packetSize;    // expected DMP packet size (default is 42 bytes)
 
@@ -32,27 +36,23 @@ void dmpDataReady()
     mpuInterrupt = true;
 }
 
-void print()
+void print(MPU6050 *mpu)
 {
     // if programming failed, don't try to do anything
     if (!dmpReady)
         return;
     // orientation/motion vars
-    Quaternion q;        // [w, x, y, z]         quaternion container
     VectorInt16 aa;      // [x, y, z]            accel sensor measurements
     VectorInt16 aaReal;  // [x, y, z]            gravity-free accel sensor measurements
-    VectorFloat gravity; // [x, y, z]            gravity vector
-    float ypr[3];        // [yaw, pitch, roll]   yaw/pitch/roll container and gravity vector
-    uint8_t fifoBuffer[64]; // FIFO storage buffer
 
     // read a packet from FIFO
-    if (mpu.dmpGetCurrentFIFOPacket(fifoBuffer))
+    if (mpu->dmpGetCurrentFIFOPacket(fifoBuffer))
     { // Get the Latest packet
 
         // display Euler angles in degrees
-        mpu.dmpGetQuaternion(&q, fifoBuffer);
-        mpu.dmpGetGravity(&gravity, &q);
-        mpu.dmpGetYawPitchRoll(ypr, &q, &gravity);
+        mpu->dmpGetQuaternion(&q, fifoBuffer);
+        mpu->dmpGetGravity(&gravity, &q);
+        mpu->dmpGetYawPitchRoll(ypr, &q, &gravity);
         Serial.print("ypr\t");
         Serial.print(ypr[0] * 180 / M_PI);
         Serial.print("\t");
@@ -60,10 +60,10 @@ void print()
         Serial.print("\t");
         Serial.println(ypr[2] * 180 / M_PI);
 
-        mpu.dmpGetQuaternion(&q, fifoBuffer);
-        mpu.dmpGetAccel(&aa, fifoBuffer);
-        mpu.dmpGetGravity(&gravity, &q);
-        mpu.dmpGetLinearAccel(&aaReal, &aa, &gravity);
+        mpu->dmpGetQuaternion(&q, fifoBuffer);
+        mpu->dmpGetAccel(&aa, fifoBuffer);
+        mpu->dmpGetGravity(&gravity, &q);
+        mpu->dmpGetLinearAccel(&aaReal, &aa, &gravity);
         Serial.print("areal\t");
         Serial.print(aaReal.x);
         Serial.print("\t");
@@ -73,18 +73,14 @@ void print()
     }
 }
 
-void getYPR(YPR *ypr_struct, bool degrees = true)
+void getYPR(MPU6050 *mpu, YPR *ypr_struct, bool degrees = true)
 {
     if (!dmpReady)
         return;
-    Quaternion q;        // [w, x, y, z]         quaternion container
-    VectorFloat gravity; // [x, y, z]            gravity vector
-    float ypr[3];        // [yaw, pitch, roll]   yaw/pitch/roll container and gravity vector
-    uint8_t fifoBuffer[64]; // FIFO storage buffer
-
-    mpu.dmpGetQuaternion(&q, fifoBuffer);
-    mpu.dmpGetGravity(&gravity, &q);
-    mpu.dmpGetYawPitchRoll(ypr, &q, &gravity);
+    
+    mpu->dmpGetQuaternion(&q, fifoBuffer);
+    mpu->dmpGetGravity(&gravity, &q);
+    mpu->dmpGetYawPitchRoll(ypr, &q, &gravity);
     if (degrees)
     {
         ypr_struct->yaw = ypr[0] * 180 / M_PI;
@@ -99,11 +95,18 @@ void getYPR(YPR *ypr_struct, bool degrees = true)
     }
 }
 
-void initMPU6050()
+void getAccel(MPU6050 *mpu, accel *a)
+{
+    if (!dmpReady)
+        return;
+
+}
+
+void initMPU6050(MPU6050 *mpu)
 {
     uint8_t devStatus;
     uint8_t mpuIntStatus;
-    mpu.initialize();
+    mpu->initialize();
 
     // wait for ready
     while (Serial.available() && Serial.read())
@@ -114,28 +117,28 @@ void initMPU6050()
         ; // empty buffer again
 
     // load and configure the DMP
-    devStatus = mpu.dmpInitialize();
+    devStatus = mpu->dmpInitialize();
 
     // supply your own gyro offsets here, scaled for min sensitivity
-    mpu.setXGyroOffset(220);
-    mpu.setYGyroOffset(76);
-    mpu.setZGyroOffset(-85);
-    mpu.setZAccelOffset(1788); // 1688 factory default for my test chip
+    mpu->setXGyroOffset(220);
+    mpu->setYGyroOffset(76);
+    mpu->setZGyroOffset(-85);
+    mpu->setZAccelOffset(1788); // 1688 factory default for my test chip
 
     // make sure it worked (returns 0 if so)
     if (devStatus == 0)
     {
         // Calibration Time: generate offsets and calibrate our MPU6050
-        mpu.CalibrateAccel(6);
-        mpu.CalibrateGyro(6);
-        mpu.PrintActiveOffsets();
-        mpu.setDMPEnabled(true);
+        mpu->CalibrateAccel(6);
+        mpu->CalibrateGyro(6);
+        mpu->PrintActiveOffsets();
+        mpu->setDMPEnabled(true);
 
-        mpuIntStatus = mpu.getIntStatus();
+        mpuIntStatus = mpu->getIntStatus();
         dmpReady = true;
 
         // get expected DMP packet size for later comparison
-        //packetSize = mpu.dmpGetFIFOPacketSize();
+        //packetSize = mpu->dmpGetFIFOPacketSize();
         pinMode(INTERRUPT_PIN, INPUT);
         attachInterrupt(digitalPinToInterrupt(INTERRUPT_PIN), dmpDataReady, RISING);
     }
@@ -151,4 +154,4 @@ void initMPU6050()
     }
 }
 
-#endif /* _SENSORS_H_ */
+#endif /* _MPU_HELPER_H_ */
