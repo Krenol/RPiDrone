@@ -3,14 +3,12 @@
 
 #include <Arduino.h>
 
-float BOUND(float number, float lower, float upper)
+template<typename T>
+T BOUND(T number, T lower, T upper)
 {
-    if (number > upper)
-    {
+    if(number > upper){
         return upper;
-    }
-    else if (number < lower)
-    {
+    } else if(number < lower){
         return lower;
     }
     return number;

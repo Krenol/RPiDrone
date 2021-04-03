@@ -3,7 +3,9 @@
  * developed for the Arduino MKI 1010
  */
 
-#define MSG_SIZE 256
+#define MSG_SIZE 128
+#define EOL '\n'
+#define DELIM ';'
 
 //#include "I2Cdev.h"
 #include "Wire.h"
@@ -13,31 +15,42 @@
 #include "src/PID.h"
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BMP085_U.h>
-#include "src/COMM.h"
+#include "src/config_parser.h"
+#include "src/control_parser.h"
+#include "src/serial_reader.h"
+#include "src/out_parser.h"
 
 // ================================================================
 // ===                      INITIAL SETUP                       ===
 // ================================================================
 
-ESC esc;
+// ESCs
+ESC lf, ef, lb, rb;
+int speed = 0;
+// MPU
 MPU6050 mpu;
-PID p;
-Adafruit_BMP085_Unified bmp = Adafruit_BMP085_Unified(1);
-long last = millis();
-int speed = 200;
 YPR ypr_struct;
 accel accel_struct;
-float seaLevelPressure = SENSORS_PRESSURE_SEALEVELHPA;
-float h, t;
+// controls
+PID roll_ang, roll_vel, pitch_ang, pitch_vel, yaw_vel;
+// BMP
+Adafruit_BMP085_Unified bmp = Adafruit_BMP085_Unified(1);
+float h, t, seaLevelPressure = SENSORS_PRESSURE_SEALEVELHPA;
+// COMM
+ControlParser cntrlPrs;
 char msg[MSG_SIZE];
-COMM comm;
+Controls cntrls;
+bool dataReceived;
+OutParser outPrs;
+String out;
+
 
 void setup() {
   Wire.begin();
   Wire.setClock(400000); // 400kHz I2C clock
   Serial.begin(115200);
   while (!Serial); // wait for Leonardo enumeration, others continue immediately
-  
+  ConfigParser cfgPrs;
   //esc.init(6, 800, 2100, speed, true);
   
   //initMPU6050(&mpu);
@@ -62,8 +75,7 @@ void setup() {
 // ================================================================
 
 
-bool r;
-controls c;
+
 void loop() {
   //print();
   
@@ -94,19 +106,22 @@ void loop() {
     bmp.getTemperature(&t);
     returnData(&ypr, h, t);
   }*/
-  comm.sendData(0,0,0, h, t);
-  r = comm.readControl(&c, msg, MSG_SIZE);
-  if(r) {
+  
+  outPrs.parse(msg, MSG_SIZE, EOL, DELIM, 0,0,0, h, t);
+  Serial.print(msg);
+  dataReceived = readString(msg, MSG_SIZE, EOL);
+  if(dataReceived) {
+    cntrlPrs.parse(&cntrls, msg, DELIM);
     Serial.print("\n-------\n");
     Serial.print("read:\n");
     Serial.print("yaw: ");
-    Serial.print(c.yaw_rate);
+    Serial.print(cntrls.yaw_rate);
     Serial.print("\tpitch: ");
-    Serial.print(c.pitch_angle);
+    Serial.print(cntrls.pitch_angle);
     Serial.print("\troll: ");
-    Serial.print(c.roll_angle);
+    Serial.print(cntrls.roll_angle);
     Serial.print("\tthrottle: ");
-    Serial.print(c.throttle);
+    Serial.print(cntrls.throttle);
     Serial.print("\n-------\n");
   }
   delay(1000);
