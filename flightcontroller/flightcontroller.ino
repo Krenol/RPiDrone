@@ -4,8 +4,7 @@
  */
 
 #define MSG_SIZE 128
-#define EOL '\n'
-#define DELIM ';'
+
 
 //#include "I2Cdev.h"
 #include "Wire.h"
@@ -19,30 +18,36 @@
 #include "src/control_parser.h"
 #include "src/serial_reader.h"
 #include "src/out_parser.h"
+#include "src/misc.h"
 
 // ================================================================
 // ===                      INITIAL SETUP                       ===
 // ================================================================
-
 // ESCs
-ESC lf, ef, lb, rb;
-int speed = 0;
+ESC lf, rf, lb, rb;
+int throttle = 0, lb_t, rb_t, lf_t, rf_t;
+
 // MPU
 MPU6050 mpu;
 YPR ypr_struct;
 accel accel_struct;
+
 // controls
-PID roll_ang, roll_vel, pitch_ang, pitch_vel, yaw_vel;
+PID roll_vel, roll_t, pitch_vel, pitch_t, yaw_t;
+float roll_out, pitch_out, yaw_out, roll_rate, pitch_rate;
+
 // BMP
 Adafruit_BMP085_Unified bmp = Adafruit_BMP085_Unified(1);
 float h, t, seaLevelPressure = SENSORS_PRESSURE_SEALEVELHPA;
+sensors_event_t event;
+
 // COMM
 ControlParser cntrlPrs;
 char msg[MSG_SIZE];
-Controls cntrls;
+float ypr_arr[3];
 bool dataReceived;
 OutParser outPrs;
-String out;
+const char DELIM = ';', DELIM_D = '&', EOL = '\n';
 
 
 void setup() {
@@ -51,21 +56,39 @@ void setup() {
   Serial.begin(115200);
   while (!Serial); // wait for Leonardo enumeration, others continue immediately
   ConfigParser cfgPrs;
-  //esc.init(6, 800, 2100, speed, true);
+  Config conf;
+  char conf_msg[256];
   
-  //initMPU6050(&mpu);
-//  if(!bmp.begin())
-//  {
-//    /* There was a problem detecting the BMP085 ... check your connections */
-//    Serial.print("Ooops, no BMP085 detected ... Check your wiring or I2C ADDR!");
-//    while(1);
-//  }
-//  sensors_event_t event;
-//  bmp.getEvent(&event);
-//  while(!event.pressure){
-//    bmp.getEvent(&event);
-//  }
-//  seaLevelPressure = event.pressure;
+  Serial.println(CONFIG_TOKEN);
+  dataReceived = readString(conf_msg, 256, EOL);
+  while(!dataReceived || cfgPrs.parse(&conf, conf_msg, &DELIM_D, &DELIM) == false){
+    Serial.println(CONFIG_TOKEN);
+    delay(250);
+    dataReceived = readString(conf_msg, 256, EOL);
+  }
+  Serial.println("<A>");
+  lf.init(conf.pin_lf, conf.esc_min, conf.esc_max, 100, conf.calib_esc);
+  rf.init(conf.pin_rf, conf.esc_min, conf.esc_max, 100, conf.calib_esc);
+  lb.init(conf.pin_lb, conf.esc_min, conf.esc_max, 100, conf.calib_esc);
+  rb.init(conf.pin_rb, conf.esc_min, conf.esc_max, 100, conf.calib_esc);
+  roll_vel.set(conf.kp_r_v, conf.kd_r_v, conf.ki_r_v, conf.kaw_r_v, conf.min_r_v, conf.max_r_v);
+  roll_t.set(conf.kp_r_t, conf.kd_r_t, conf.ki_r_t, conf.kaw_r_t, conf.min_r_t, conf.max_r_t);
+  pitch_vel.set(conf.kp_p_v, conf.kd_p_v, conf.ki_p_v, conf.kaw_p_v, conf.min_r_v, conf.max_p_v);
+  pitch_t.set(conf.kp_p_t, conf.kd_p_t, conf.ki_p_t, conf.kaw_p_t, conf.min_p_t, conf.max_p_t);
+  yaw_t.set(conf.kp_y_t, conf.kd_y_t, conf.ki_y_t, conf.kaw_y_t, conf.min_y_t, conf.max_y_t);
+  
+  initMPU6050(&mpu);
+  if(!bmp.begin())
+  {
+    Serial.println("error");
+    while(1);
+  }
+  bmp.getEvent(&event);
+  while(!event.pressure){
+    bmp.getEvent(&event);
+  }
+  seaLevelPressure = event.pressure;
+  Serial.println(CONTROL_TOKEN);
 }
 
 
@@ -77,52 +100,38 @@ void setup() {
 
 
 void loop() {
-  //print();
+  dataReceived = readString(msg, MSG_SIZE, EOL);
+  if(dataReceived) {
+    cntrlPrs.parse(ypr_arr, &throttle, msg, &DELIM);
+  }
   
-//  if(speed > 0) {
-//    speed-=10;
-//    esc.setSpeed(speed);
-//  }
-//  print();
-//  Serial.print("Took me: ");
-//  Serial.print(millis() - last);
-//  Serial.print("ms\n");
-//  last = millis();
- /* Get a new sensor event 
-  sensors_event_t event;
-  bmp.getEvent(&event);*/ 
+  getYPR(&mpu, &ypr_struct, true);
+  pitch_rate = pitch_vel.control(ypr_struct.pitch, ypr_arr[1]);
+  roll_rate = roll_vel.control(ypr_struct.roll, ypr_arr[2]);
 
+  getAccel(&mpu, &accel_struct);
+  roll_out = roll_t.control(accel_struct.x, roll_rate);
+  pitch_out = pitch_t.control(accel_struct.y, pitch_rate);
+  yaw_out = yaw_t.control(accel_struct.z, ypr_arr[0]);
 
-   //readString(msg, 256);
-   //Serial.println(msg);
-   getYPR(&mpu, &ypr_struct, true);
-   getAccel(&mpu, &accel_struct);
- 
- 
-  /* Display the results (barometric pressure is measure in hPa) 
+  rf_t = BOUND<int>(throttle + roll_out - pitch_out + yaw_out, 0, 100);
+  lf_t = BOUND<int>(throttle + -roll_out - pitch_out - yaw_out, 0, 100);
+  rb_t = BOUND<int>(throttle + roll_out + pitch_out - yaw_out, 0, 100);
+  lb_t = BOUND<int>(throttle + -roll_out + pitch_out + yaw_out, 0, 100);
+
+  rf.setSpeed(rf_t);
+  lf.setSpeed(lf_t);
+  rb.setSpeed(rb_t);
+  lb.setSpeed(lb_t);
+
+   //Get a new sensor event 
+  bmp.getEvent(&event);
   if (event.pressure)
   {
     h = bmp.pressureToAltitude(seaLevelPressure, event.pressure);
     bmp.getTemperature(&t);
-    returnData(&ypr, h, t);
-  }*/
-  
-  outPrs.parse(msg, MSG_SIZE, EOL, DELIM, 0,0,0, h, t);
-  Serial.print(msg);
-  dataReceived = readString(msg, MSG_SIZE, EOL);
-  if(dataReceived) {
-    cntrlPrs.parse(&cntrls, msg, DELIM);
-    Serial.print("\n-------\n");
-    Serial.print("read:\n");
-    Serial.print("yaw: ");
-    Serial.print(cntrls.yaw_rate);
-    Serial.print("\tpitch: ");
-    Serial.print(cntrls.pitch_angle);
-    Serial.print("\troll: ");
-    Serial.print(cntrls.roll_angle);
-    Serial.print("\tthrottle: ");
-    Serial.print(cntrls.throttle);
-    Serial.print("\n-------\n");
   }
-  delay(1000);
+  
+  outPrs.parse(msg, MSG_SIZE, &EOL, &DELIM, ypr_arr[0], ypr_arr[1], ypr_arr[2], h, t);
+  Serial.print(msg);
 }

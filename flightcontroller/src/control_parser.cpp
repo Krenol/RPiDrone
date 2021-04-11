@@ -3,34 +3,25 @@
 #include <stdlib.h>
 #include <string.h>
 
-void ControlParser::parse(Controls *c, char *msg, const char delim)
-{
-    c->yaw_rate = 0.0f;
-    c->pitch_angle = 0.0f;
-    c->roll_angle = 0.0f;
-    c->throttle = 0;
-    for (;; msg = NULL)
-    {
-        str = strtok_r(msg, &delim, &sptr);
 
+void ControlParser::parse(float* ypr, int *throttle, char *msg, const char *delim) 
+{
+    //msg layout: <S>Y;P;R;T\n
+    //example <S>12.1;15.21;12.12;20\n
+    if(strncmp(CONTROL_TOKEN, msg, 3) != 0) return;
+    msg = msg + 3;
+    int i;
+    for (i = 0; i < 3; msg = NULL)
+    {
+        str = strtok_r(msg, delim, &sptr);
         if (str == NULL)
-            break;
-        switch (str[0])
-        {
-        case 'Y':
-            c->yaw_rate = atof(str + 1);
-            break;
-        case 'P':
-            c->pitch_angle = atof(str + 1);
-            break;
-        case 'R':
-            c->roll_angle = atof(str + 1);
-            break;
-        case 'S':
-            c->throttle = atoi(str + 1);
-            break;
-        default:
-            break;
-        }
+            return;
+        ypr[i] = atof(str);
+        ++i;
     }
+    msg = NULL;
+    str = strtok_r(msg, delim, &sptr);
+    if (str == NULL)
+        return;
+    *throttle = atoi(str);
 }

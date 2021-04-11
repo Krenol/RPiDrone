@@ -8,6 +8,6 @@ class OutParser {
         char *str, *sptr; 
 
     public:
-        void parse(char *msg, int msg_size, char eol, char sep, float yaw, float pitch, float roll, float h, float t);
+        void parse(char *msg, int msg_size, const char *eol, const char *sep, float yaw, float pitch, float roll, float h, float t);
 };
 #endif /* _OUT_PARSER_H_ */
