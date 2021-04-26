@@ -69,26 +69,6 @@ namespace drone
         }
     };
 
-    struct SensorCalibration
-    {
-        bool calibrate = false;
-        int measurements = 1000;
-
-        SensorCalibration() {
-
-        }
-
-        SensorCalibration(bool calibrate, int measurements) {
-            this->calibrate = calibrate;
-            this->measurements = measurements;
-        }
-
-        SensorCalibration(const SensorCalibration& s) {
-            this->calibrate = s.calibrate;
-            this->measurements = s.measurements;
-        }
-    };
-
     struct GPS
     {
         std::string port = "/dev/serial0";
@@ -130,136 +110,37 @@ namespace drone
         }
     };
 
-    struct MPUKalmanAngles
-    {
-        double c1 = 1, c2 = 0, r = 0.05, q11 = 0.1, q12 = 0, q21 = 0, q22 = 0.1;
-
-        MPUKalmanAngles() {
-
-        }
-
-        MPUKalmanAngles(double c1, double c2, double r, double q11, double q12, double q21, double q22) {
-            this->c1 = c1;
-            this->c2 = c2;
-            this->q11 = q11;
-            this->q12 = q12;
-            this->q21 = q21;
-            this->q22 = q22;
-            this->r = r;
-        }
-
-        MPUKalmanAngles(const MPUKalmanAngles& m) {
-            this->c1 = m.c1;
-            this->c2 = m.c2;
-            this->q11 = m.q11;
-            this->q12 = m.q12;
-            this->q21 = m.q21;
-            this->q22 = m.q22;
-            this->r = m.r;
-        }
-    };
-
-    struct MPUKalmanVelocity
-    {
-        double q11 = 0.1, q22 = 0.1, q33 = 0.1, q44 = 0.1, q55 = 0.1, q66 = 0.1, r = 0.05;
-
-        MPUKalmanVelocity() {
-
-        }
-
-        MPUKalmanVelocity(double r, double q11, double q22, double q33, double q44, double q55, double q66) {
-            this->r = r;
-            this->q11 = q11;
-            this->q22 = q22;
-            this->q33 = q33;
-            this->q44 = q44;
-            this->q55 = q55;
-            this->q66 = q66;
-        }
-
-        MPUKalmanVelocity(const MPUKalmanVelocity& m) {
-            this->r = m.r;
-            this->q11 = m.q11;
-            this->q22 = m.q22;
-            this->q33 = m.q33;
-            this->q44 = m.q44;
-            this->q55 = m.q55;
-            this->q66 = m.q66;
-        }
-    };
-
-    struct AHRS {
-        float beta;
-        AHRS(float beta = 1.0f) {
-            this->beta = beta;
-        }
-        AHRS(const AHRS &a) {
-            this->beta = a.beta;
-        }
-    };
-
     struct MPU
     {
         int address = 104;
-        AHRS ahrs;
-        MPUKalmanVelocity kalman_velocity;
-        MPUKalmanAngles kalman_angles;
 
         MPU() {
 
         }
 
-        MPU(int address, const AHRS &a, const MPUKalmanVelocity& kv, const MPUKalmanAngles& ka) : ahrs(a), kalman_angles(ka), kalman_velocity(kv) {
+        MPU(int address) {
             this->address = address;
         }
 
-        MPU(const MPU& m) : ahrs(m.ahrs), kalman_angles(m.kalman_angles), kalman_velocity(m.kalman_velocity) {
+        MPU(const MPU& m) {
             this->address = m.address;
-        }
-    };
-
-    struct BMPKalman
-    {
-        double c1 = 1.0, c2 = 0.0, q11 = 0.001, q12 = 0, q21 = 0, q22 = 0.001;
-
-        BMPKalman() {
-
-        }
-
-        BMPKalman(double c1, double c2, double q11, double q12, double q21, double q22) {
-            this->c1 = c1;
-            this->c2 = c2;
-            this->q11 = q11;
-            this->q12 = q12;
-            this->q21 = q21;
-            this->q22 = q22;
-        }
-
-        BMPKalman(const BMPKalman& k) {
-            this->c1 = k.c1;
-            this->c2 = k.c2;
-            this->q11 = k.q11;
-            this->q12 = k.q12;
-            this->q21 = k.q21;
-            this->q22 = k.q22;
         }
     };
 
     struct BMP
     {
         int address = 119, accuracy = 1;
-        BMPKalman kalman;
 
         BMP() {
 
         }
 
-        BMP(int address, int accuracy, const BMPKalman& k) : kalman{k} {
+        BMP(int address, int accuracy) {
             this->accuracy = accuracy;
             this->address = address;
         }
 
-        BMP(const BMP& b) : kalman{b.kalman} {
+        BMP(const BMP& b) {
             this->accuracy = b.accuracy;
             this->address = b.address;
         }
@@ -349,7 +230,7 @@ namespace drone
 
     struct SensorsStruct
     {
-        SensorCalibration sensor_calibration;
+        bool calibrate;
         int decimals = 1;
         MPU mpu;
         GPS gps;
@@ -359,12 +240,14 @@ namespace drone
 
         }
 
-        SensorsStruct(const SensorCalibration& sc, const MPU& m, const GPS& g, const BMP& b, int decimals) : sensor_calibration(sc), mpu(m), gps(g), bmp(b) {
+        SensorsStruct(bool calibrate, const MPU& m, const GPS& g, const BMP& b, int decimals) : mpu(m), gps(g), bmp(b) {
             this->decimals = decimals;
+            this->calibrate = calibrate;
         }
 
-        SensorsStruct(const SensorsStruct& s) : sensor_calibration(s.sensor_calibration), mpu(s.mpu), gps(s.gps), bmp(s.bmp) {
+        SensorsStruct(const SensorsStruct& s) : mpu(s.mpu), gps(s.gps), bmp(s.bmp) {
             this->decimals = s.decimals;
+            this->calibrate = s.calibrate;
         }
     };
 

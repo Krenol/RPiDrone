@@ -16,7 +16,7 @@ namespace drone
         std::atomic_bool thread_on_;
         std::unique_ptr<rpisocket::Server> server_;
         std::queue<std::string> queue_;
-        int max_q_size_ = 100;
+        int max_q_size_;
 
         /**
          * Loop executed in thread
@@ -33,7 +33,7 @@ namespace drone
         
     public:
 
-        Connection(std::unique_ptr<rpisocket::Server> server, std::string delimiter);
+        Connection(std::unique_ptr<rpisocket::Server> server, std::string delimiter, int queue_size);
         ~Connection();
 
         /**

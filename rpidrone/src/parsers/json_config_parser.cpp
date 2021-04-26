@@ -22,19 +22,13 @@ namespace drone
     {
         auto js = j.at("sensors");
         int dec = js.at("decimal_places");
-        SensorCalibration sc(js.at("calibration").at("calibrate"), js.at("calibration").at("measurements"));
+        int calib = js.at("calibration");
         GPS gps(js.at("gps").at("port"), js.at("gps").at("baudrate"));
         auto b = js.at("bmp");
-        BMPKalman bkal(b.at("kalman").at("c1"), b.at("kalman").at("c2"), b.at("kalman").at("q11"), b.at("kalman").at("q12"), b.at("kalman").at("q21"), b.at("kalman").at("q22"));
-        BMP bmp(b.at("address"), b.at("accuracy"), bkal);
+        BMP bmp(b.at("address"), b.at("accuracy"));
         b = js.at("mpu");
-        js = b.at("ahrs");
-        AHRS a(js.at("beta"));
-        js = b.at("kalman");
-        MPUKalmanAngles ma(js.at("angles").at("c1"), js.at("angles").at("c2"), js.at("angles").at("r"), js.at("angles").at("q11"), js.at("angles").at("q12"), js.at("angles").at("q21"), js.at("angles").at("q22"));
-        MPUKalmanVelocity mv(js.at("velocity").at("r"), js.at("velocity").at("q11"), js.at("velocity").at("q22"), js.at("velocity").at("q33"), js.at("velocity").at("q44"), js.at("velocity").at("q55"), js.at("velocity").at("q66"));
-        MPU mpu(b.at("address"), a, mv, ma);
-        cfg.sensors = SensorsStruct(sc, mpu, gps, bmp, dec);
+        MPU mpu(b.at("address"));
+        cfg.sensors = SensorsStruct(calib, mpu, gps, bmp, dec);
     }
     
     void parse_control_obj(const nlohmann::json &j, Config &cfg) 
