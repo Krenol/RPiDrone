@@ -86,15 +86,13 @@ namespace drone
         PIDControl rac(kp.at("roll_rate"), kd.at("roll_rate"), ki.at("roll_rate"), kaw.at("roll_rate"), -m, m);
         m = diffs.at("pitch_rate");
         PIDControl pac(kp.at("pitch_rate"), kd.at("pitch_rate"), ki.at("pitch_rate"), kaw.at("pitch_rate"), -m, m);
-        m = diffs.at("yaw_rate");
-        PIDControl yac(kp.at("yaw_rate"), kd.at("yaw_rate"), ki.at("yaw_rate"), kaw.at("yaw_rate"), -m, m);
         m = diffs.at("roll_output");
         PIDControl rrc(kp.at("roll_output"), kd.at("roll_output"), ki.at("roll_output"), kaw.at("roll_output"), -m, m);
         m = diffs.at("pitch_output");
         PIDControl prc(kp.at("pitch_output"), kd.at("pitch_output"), ki.at("pitch_output"), kaw.at("pitch_output"), -m, m);
         m = diffs.at("yaw_output");
         PIDControl yrc(kp.at("yaw_output"), kd.at("yaw_output"), ki.at("yaw_output"), kaw.at("yaw_output"), -m, m);
-        Escs escs(rac, pac, yac, rrc, prc, yrc, min_esc, max_esc, idle, lf, rf, lb, rb, calib);
+        Escs escs(rac, pac, rrc, prc, yrc, min_esc, max_esc, idle, lf, rf, lb, rb, calib);
         cfg.controls = ControlsStruct(escs, max_p, max_r, max_y);
     }
 }

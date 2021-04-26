@@ -59,10 +59,8 @@ int main() {
     #if defined(POWER_LOGS)
     std::thread thrd([&run] () {initPowerLogs(run); });
     #endif
-    LOG(INFO) << "Loading " << CONF_FILE;
+    LOG(INFO) << "Loading " << CONF_FILE << " and starting up drone";
     drone::Loop l (CONF_DIR + "/" + CONF_FILE);
-    LOG(INFO) << "Drone startup";
-    l.startupDrone();
     LOG(INFO) << "Drone startup completed; starting main loop";
     //catchSigActions();
     l.loop();

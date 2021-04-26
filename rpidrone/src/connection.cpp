@@ -34,11 +34,10 @@ namespace drone
                     break;
                 }
             }
-            //readq_->clear();
-            //tpe_->clear();
+            clearQueue();
             if (thread_on_)
             {
-                notifyAll("{\"disconnected\": true}");
+                queue_.push("{\"disconnected\": true}");
             }
             else
             {
@@ -46,6 +45,19 @@ namespace drone
                 return;
             }
         }
+    }
+
+    void Connection::clearQueue() {
+        while(!queue_.empty()) queue_.pop();
+    }
+
+    bool Connection::hasItem() {
+        return queue_.size() > 0;
+    }
+
+    void Connection::pop(std::string &msg) {
+        msg = queue_.front();
+        queue_.pop();
     }
 
     void Connection::processServerRead(std::string &buf)
@@ -57,7 +69,8 @@ namespace drone
             msg = buf.substr(0, pos);
             pos1 = msg.find_first_of("{");
             msg.erase(0, pos1);
-            notifyAll(msg);
+            if(queue_.size() > max_q_size_) clearQueue();
+            queue_.push(msg);
             buf.erase(0, pos + delimiter_.length());
         }
     }

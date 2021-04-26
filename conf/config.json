@@ -74,7 +74,6 @@
                 "k_i": {
                     "roll_rate": 0.0,
                     "pitch_rate": 0.0,
-                    "yaw_rate": 0.0,
                     "roll_output": 0.0,
                     "pitch_output": 0.0,
                     "yaw_output": 0.00
@@ -82,7 +81,6 @@
                 "k_p": {
                     "roll_rate": 1,
                     "pitch_rate": 1,
-                    "yaw_rate": 1,
                     "roll_output": 1.0,
                     "pitch_output": 1.0,
                     "yaw_output": 1.0
@@ -90,7 +88,6 @@
                 "k_d": {
                     "roll_rate": 0.0,
                     "pitch_rate": 0.0,
-                    "yaw_rate": 0.0,
                     "roll_output": 0.0,
                     "pitch_output": 0.0,
                     "yaw_output": 0.0
@@ -98,7 +95,6 @@
                 "k_aw": {
                     "roll_rate": 0,
                     "pitch_rate": 0.0,
-                    "yaw_rate": 0.0,
                     "roll_output": 0,
                     "pitch_output": 0,
                     "yaw_output": 0
@@ -106,7 +102,6 @@
                 "max_diff": {
                     "roll_rate": 8.0,
                     "pitch_rate": 8.0,
-                    "yaw_rate": 0.0,
                     "roll_output": 50.0,
                     "pitch_output": 50.0,
                     "yaw_output": 25.0

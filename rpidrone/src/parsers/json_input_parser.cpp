@@ -43,7 +43,7 @@ namespace drone
         }
 
         i.throttle = throttle;
-        i.gps = rpicomponents::GPSCoordinates(altitude, longitude, latitude);
+        i.gps = GPSCoordinates(altitude, longitude, latitude);
         i.joystick = Joystick(degrees, offset, rot);
     }
 }

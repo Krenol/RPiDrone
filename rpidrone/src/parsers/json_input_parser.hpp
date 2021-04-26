@@ -1,6 +1,6 @@
 #include <nlohmann/json.hpp>
 #include <string>
-#include "rpicomponents/rpicomponents.hpp"
+#include "../structs/gps_struct.hpp"
 
 #ifndef DRONE_JSON_INPUT_PARSER_H
 #define DRONE_JSON_INPUT_PARSER_H
@@ -33,13 +33,13 @@ namespace drone
     struct Input {
         int throttle = 0;
         Joystick joystick;
-        rpicomponents::GPSCoordinates gps;
+        GPSCoordinates gps;
 
         Input() {
 
         }
 
-        Input(const Joystick& j, const rpicomponents::GPSCoordinates& gc, int throttle) : joystick(j), gps(gc)
+        Input(const Joystick& j, const GPSCoordinates& gc, int throttle) : joystick(j), gps(gc)
         {
             this->throttle = throttle;
         }

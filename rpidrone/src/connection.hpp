@@ -1,4 +1,4 @@
-#include "design_patterns/design_patterns.hpp"
+#include <queue>
 #include "rpisocket/rpisocket.hpp"
 #include <memory>
 #include <string>
@@ -9,12 +9,14 @@
 
 namespace drone
 {
-    class Connection : public design_patterns::Publisher<std::string> {
+    class Connection {
     private:
         const std::string delimiter_;
         std::thread thread_;
         std::atomic_bool thread_on_;
         std::unique_ptr<rpisocket::Server> server_;
+        std::queue<std::string> queue_;
+        int max_q_size_ = 100;
 
         /**
          * Loop executed in thread
@@ -26,6 +28,8 @@ namespace drone
          * @param buf the current buffer
          */
         void processServerRead(std::string& buf);
+
+        void clearQueue();
         
     public:
 
@@ -53,6 +57,11 @@ namespace drone
          * @param msg The message to be written
          */
         void writeMsg(const std::string& msg);
+
+        
+        void pop(std::string &msg);
+
+        bool hasItem();
     };
 }
 
