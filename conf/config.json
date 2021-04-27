@@ -7,6 +7,10 @@
         "bytes": 150,
         "delimiter": "\r\n"
     },
+    "flightcontroller": {
+        "port": "/dev/ttyACM0",
+        "baudrate": 115200
+    },
     "leds": {
         "on_led": 6,
         "status_led": 5

@@ -5,7 +5,7 @@
 
 bool ConfigParser::parse(Config *c, char *msg, const char *delim1, const char *delim2) 
 {
-    //msg layout: C:PID_DATA;;ESC_DATA;;\n
+    //msg layout: <C>PID_DATA&ESC_DATA\n
     // e.g.: <C>1,1,1,1,1,1;2,2,2,2,2,2;3,3,3,3,3,3;4,4,4,4,4,4;5,5,5,5,5,5&700;2100;6;7;8;9;0\n
     if(strncmp(CONFIG_TOKEN, msg, 3) != 0) return false;
     msg = msg + 3;

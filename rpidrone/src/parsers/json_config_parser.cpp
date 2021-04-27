@@ -1,6 +1,4 @@
 #include "json_config_parser.hpp"
-#include "logs/easylogging++.h"
-#include "misc.hpp"
 
 namespace drone
 {
@@ -13,6 +11,7 @@ namespace drone
         cfg.logic = Logic(j.at("logic").at("motors_off_on_disconnect"));
         cfg.server = Server(j.at("server").at("port"), j.at("server").at("bytes"), j.at("server").at("delimiter"));
         cfg.queues = Queues(j.at("queues").at("read_size"), j.at("queues").at("write_size"));
+        cfg.flightcontroller = Flightcontroller(j.at("flightcontroller").at("port"), j.at("flightcontroller").at("baudrate"));
         parse_sensor_obj(j, cfg);
         parse_control_obj(j, cfg);
     }

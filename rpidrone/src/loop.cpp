@@ -22,9 +22,9 @@ namespace drone
         //status_led_ = std::make_unique<rpicomponents::Led>(config_.leds.status_led, pin::DIGITAL_MODE, pin::DIGITAL_MODE_MAX_VAL);
         tpe_ = std::make_unique<design_patterns::ThreadPoolExecutor>(1, config_.queues.write_size);
 
-#if defined(EXEC_TIME_LOG)
+        #if defined(EXEC_TIME_LOG)
         EXEC_LOG(DEBUG) << "datetime;level;t_exec";
-#endif
+        #endif
     }
 
     Loop::~Loop()
@@ -63,7 +63,6 @@ namespace drone
                 Input in;
                 from_json(j, in);
                 //int throttle, int idle, float offset, float degrees, float max_roll, float max_pitch, float max_yawn, float rotation, GPSCoordinates &gps)
-
                 userInput = UserInput(in.throttle, config_.controls.escs.idle, config_.controls.escs.max, in.joystick.offset, in.joystick.degrees, config_.controls.max_roll, config_.controls.max_pitch, config_.controls.max_yawn, in.joystick.rotation, in.gps);
             }
         }
@@ -91,7 +90,6 @@ namespace drone
                     connection_->pop(msg);
                     parseUserInput(msg, userInput);
                 }
-
                 tpe_->enqueue([this, &delimiter]() {
                     if (connection_->hasConnection())
                     {

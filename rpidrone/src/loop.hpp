@@ -1,14 +1,14 @@
+#ifndef DRONE_LOOP_H
+#define DRONE_LOOP_H
+
 #include "rpisocket/rpisocket.hpp"
 #include "connection.hpp"
 #include <memory>
 #include <string>
 #include <atomic>
-#include "parsers/json_config_parser.hpp"
+#include "parsers/json_config_parser.hpp" 
 #include "parsers/json_input_parser.hpp"
 #include "structs/user_input.hpp"
-
-#ifndef DRONE_LOOP_H
-#define DRONE_LOOP_H
 
 using json = nlohmann::json;
 

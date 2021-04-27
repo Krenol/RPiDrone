@@ -16,7 +16,7 @@ def run():
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     while True:
         try:
-            s.connect(("raspberrypi", 8889))
+            s.connect(("192.168.178.61", 8889))
             break
         except KeyboardInterrupt:
             return

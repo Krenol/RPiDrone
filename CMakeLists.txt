@@ -32,8 +32,6 @@ configure_file(
 
 # ENABLE THREAD SAFETY FOR EASYLOGGING
 target_compile_definitions(rpidrone PRIVATE ELPP_THREAD_SAFE)
-# ENABLE PID LOGS BY
-target_compile_definitions(rpidrone PRIVATE PID_LOGS)
 # ENABLE POWER LOGS 
 target_compile_definitions(rpidrone PRIVATE POWER_LOGS)
 # ENABLE NETWORK DEBUG LOGS

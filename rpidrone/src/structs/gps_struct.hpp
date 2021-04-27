@@ -1,5 +1,5 @@
-#ifndef DRONE_GPS_STRUCT_H
-#define DRONE_GPS_STRUCT_H
+#ifndef DRONE_STRUCT_GPS_H
+#define DRONE_STRUCT_GPS_H
 
 struct GPSCoordinates {
     float longitude = 0, latitude = 0, altitude = 0;

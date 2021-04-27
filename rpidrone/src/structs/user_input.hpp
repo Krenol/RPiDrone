@@ -1,11 +1,11 @@
+#ifndef DRONE_STRUCT_INPUT_H
+#define DRONE_STRUCT_INPUT_H
+
 #include "parsers/json_input_parser.hpp"
 #include "parsers/json_config_parser.hpp"
 #include "gps_struct.hpp"
 #include "globals.hpp"
 #include <cmath>
-
-#ifndef DRONE_INPUT_PARSER_H
-#define DRONE_INPUT_PARSER_H
 
 
 namespace drone
@@ -37,8 +37,6 @@ namespace drone
             this->gps = i.gps;
         }
     };
-    
-
 }
 
 #endif
