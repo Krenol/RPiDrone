@@ -1,11 +1,10 @@
+#ifndef DRONE_CONNECTION_H
+#define DRONE_CONNECTION_H
+
 #include <queue>
 #include "rpisocket/rpisocket.hpp"
 #include <memory>
 #include <string>
-#include <atomic>
-
-#ifndef DRONE_CONNECTION_H
-#define DRONE_CONNECTION_H
 
 namespace drone
 {

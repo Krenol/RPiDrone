@@ -4,6 +4,11 @@
 #include <future>
 #include "logs/easylogging++.h"
 #include "misc.hpp"
+#include "wiringSerial.h"
+#include "parsers/arduino_config_parser.hpp"
+#include "parsers/arduino_input_parser.hpp"
+#include "parsers/arduino_output_parser.hpp"
+#include "structs/output.hpp"
 
 #define NETWORK_LOG(LEVEL) CLOG(LEVEL, "network")  //define network log
 #define CONTROL_LOG(LEVEL) CLOG(LEVEL, "controls") //define control log
@@ -20,7 +25,7 @@ namespace drone
         connection_ = std::make_unique<Connection>(std::make_unique<rpisocket::WiFiServer>(config_.server.port, config_.server.bytes), config_.server.delimiter, config_.queues.read_size);
         //on_led_ = std::make_unique<rpicomponents::Led>(config_.leds.on_led, pin::DIGITAL_MODE, pin::DIGITAL_MODE_MAX_VAL);
         //status_led_ = std::make_unique<rpicomponents::Led>(config_.leds.status_led, pin::DIGITAL_MODE, pin::DIGITAL_MODE_MAX_VAL);
-        tpe_ = std::make_unique<design_patterns::ThreadPoolExecutor>(1, config_.queues.write_size);
+        //tpe_ = std::make_unique<design_patterns::ThreadPoolExecutor>(1, config_.queues.write_size);
 
         #if defined(EXEC_TIME_LOG)
         EXEC_LOG(DEBUG) << "datetime;level;t_exec";
@@ -74,8 +79,12 @@ namespace drone
 
     void Loop::loop()
     {
-        std::string delimiter = config_.server.delimiter, msg;
+        std::string msg;
+        char out[OUT_MSG_SIZE];
         UserInput userInput;
+        Output output_struct;
+        GPSCoordinates c;
+        json j;
         connection_->startThread();
         CONTROL_LOG(INFO) << "starting main control loop";
         #if defined(EXEC_TIME_LOG)
@@ -89,20 +98,22 @@ namespace drone
                 {
                     connection_->pop(msg);
                     parseUserInput(msg, userInput);
+                    parse_input(userInput, msg);
+                    serialPuts(fd_ard_, msg.c_str());
                 }
-                tpe_->enqueue([this, &delimiter]() {
-                    if (connection_->hasConnection())
-                    {
-                        GPSCoordinates c;
-                        json j;
-                        createOutputJson(1, 1, c, j);
-                        std::string msg = j.dump();
-                        #if defined(NETWORK_DEBUG_LOGS)
-                        NETWORK_LOG(DEBUG) << "writing " << msg;
-                        #endif
-                        connection_->writeMsg(msg + delimiter);
-                    }
-                });
+                serialGetStr(fd_ard_, out, OUT_MSG_SIZE, '\n');
+                msg = out;
+                parse_output(msg, output_struct);
+                if (connection_->hasConnection())
+                {
+                    
+                    createOutputJson(output_struct.roll, output_struct.pitch, c, j);
+                    msg = j.dump();
+                    #if defined(NETWORK_DEBUG_LOGS)
+                    NETWORK_LOG(DEBUG) << "writing " << msg;
+                    #endif
+                    connection_->writeMsg(msg + config_.server.delimiter);
+                }
             }
             catch (const std::exception &exc)
             {
@@ -126,7 +137,27 @@ namespace drone
 
     void Loop::loadConfig(const std::string &file)
     {
+        std::string out, out1;
+        char out_c[OUT_MSG_SIZE];
         std::ifstream ifs(file);
         config_ = json::parse(ifs);
+        fd_ard_ = serialOpen(config_.flightcontroller.port.c_str(), config_.flightcontroller.baudrate);
+        parse_config(config_, out);
+
+        LOG(INFO) << "Setting up flightcontroller with parsed config " << out;
+        do {
+            serialFlush(fd_ard_);
+            serialPuts(fd_ard_, out.c_str());
+            serialGetStr(fd_ard_, out_c, OUT_MSG_SIZE, '\n');
+            out1 = out_c;
+        } while(out1.find("<A>") == std::string::npos);
+        LOG(INFO) << "flightcontroller acknowledged config; waiting for successful sensor & motor setup";
+        
+        //await go from flightcontroller
+        do {
+            serialGetStr(fd_ard_, out_c, OUT_MSG_SIZE, '\n');
+            out = out_c;
+        } while(out.find(CONTROL_TOKEN) == std::string::npos);
+        LOG(INFO) << "flightcontroller setup is completed";
     }
 }

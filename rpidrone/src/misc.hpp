@@ -1,6 +1,7 @@
 #include <nlohmann/json.hpp>
 #include <cmath>
 #include <string>
+#include <sstream>
 
 using json = nlohmann::json;
 
@@ -25,4 +26,13 @@ T BOUND(T number, T lower, T upper)
         return lower;
     }
     return number;
+}
+
+template <typename T>
+std::string TO_STRING(const T a_value, const int n = 1)
+{
+    std::ostringstream out;
+    out.precision(n);
+    out << std::fixed << a_value;
+    return out.str();
 }

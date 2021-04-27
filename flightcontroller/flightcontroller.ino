@@ -51,20 +51,23 @@ const char DELIM = ';', DELIM_D = '&', EOL = '\n';
 
 
 void setup() {
+  pinMode(LED_BUILTIN, OUTPUT);
+  digitalWrite(LED_BUILTIN, HIGH);
   Wire.begin();
   Wire.setClock(400000); // 400kHz I2C clock
-  Serial.begin(115200);
+  Serial.begin(9600);
   while (!Serial); // wait for Leonardo enumeration, others continue immediately
   ConfigParser cfgPrs;
   Config conf;
   char conf_msg[256];
-  
   Serial.println(CONFIG_TOKEN);
   dataReceived = readString(conf_msg, 256, EOL);
   while(!dataReceived || cfgPrs.parse(&conf, conf_msg, &DELIM_D, &DELIM) == false){
+    digitalWrite(LED_BUILTIN, HIGH);
     Serial.println(CONFIG_TOKEN);
-    delay(250);
+    delay(1000);
     dataReceived = readString(conf_msg, 256, EOL);
+    digitalWrite(LED_BUILTIN, LOW);
   }
   Serial.println("<A>");
   lf.init(conf.pin_lf, conf.esc_min, conf.esc_max, 100, conf.calib_esc);
@@ -89,6 +92,7 @@ void setup() {
   }
   seaLevelPressure = event.pressure;
   Serial.println(CONTROL_TOKEN);
+  digitalWrite(LED_BUILTIN, HIGH);
 }
 
 

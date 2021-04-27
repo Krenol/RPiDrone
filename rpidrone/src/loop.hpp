@@ -5,10 +5,12 @@
 #include "connection.hpp"
 #include <memory>
 #include <string>
-#include <atomic>
 #include "parsers/json_config_parser.hpp" 
 #include "parsers/json_input_parser.hpp"
 #include "structs/user_input.hpp"
+
+#define OUT_MSG_SIZE 64
+#define CONTROL_TOKEN "<S>"
 
 using json = nlohmann::json;
 
@@ -32,12 +34,11 @@ namespace drone {
             void loop();
             
         private:
-
             //std::unique_ptr<rpicomponents::Led> on_led_, status_led_;
             Config config_;
-            std::unique_ptr<Connection> connection_;
-            std::unique_ptr<design_patterns::ThreadPoolExecutor> tpe_;      
+            std::unique_ptr<Connection> connection_; 
             Input last_input_;
+            int fd_ard_;
 
             /**
              * Method to load the config file

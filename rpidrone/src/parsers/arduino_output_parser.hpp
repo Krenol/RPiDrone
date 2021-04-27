@@ -1,5 +1,5 @@
-#ifndef DRONE_ARDUINO_INPUT_PARSER_H
-#define DRONE_ARDUINO_INPUT_PARSER_H
+#ifndef DRONE_ARDUINO_OUTPUT_PARSER_H
+#define DRONE_ARDUINO_OUTPUT_PARSER_H
 
 #include <string>
 #include "../structs/output.hpp"

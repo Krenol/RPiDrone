@@ -12,19 +12,19 @@ namespace drone
         {
             token = out.substr(0, pos);
             if(i == 0) {
-                output.yaw = atof(token);
+                output.yaw = atof(token.c_str());
             } else if(i == 1) {
-                output.pitch = atof(token);
+                output.pitch = atof(token.c_str());
             } else if(i == 2) {
-                output.roll = atof(token);
+                output.roll = atof(token.c_str());
             } else if(i == 3) {
-                output.height = atof(token);
+                output.height = atof(token.c_str());
             } else if(i == 4) {
-                output.temperature = atof(token);
+                output.temperature = atof(token.c_str());
             } else {
                 break;
             }
-            out.erase(0, pos + DELIM_ITEM.length());
+            out.erase(0, pos + std::string(DELIM_ITEM).length());
             ++i;
         }
     }

@@ -15,6 +15,9 @@ ${PROJECT_SOURCE_DIR}/main.cpp
 ${PROJECT_SOURCE_DIR}/logs/easylogging++.cc
 ${PROJECT_SOURCE_DIR}/parsers/json_config_parser.cpp
 ${PROJECT_SOURCE_DIR}/parsers/json_input_parser.cpp
+${PROJECT_SOURCE_DIR}/parsers/arduino_config_parser.cpp
+${PROJECT_SOURCE_DIR}/parsers/arduino_input_parser.cpp
+${PROJECT_SOURCE_DIR}/parsers/arduino_output_parser.cpp
 ${PROJECT_SOURCE_DIR}/connection.cpp
 ${PROJECT_SOURCE_DIR}/wiringSerial.c
 )

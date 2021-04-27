@@ -223,3 +223,16 @@ int serialGetchar (const int fd)
 
   return ((int)x) & 0xFF ;
 }
+
+int serialGetStr (const int fd, char *s, const int buff_size, const char eol)
+{
+    int i = 0;
+    memset(s, 0, buff_size);
+    do
+    {
+        s[i] = serialGetchar(fd);
+        ++i;
+    } while (serialDataAvail(fd) > 0 && i < buff_size - 1 && s[i - 1] != eol);
+    s[i] = '\0';
+    return i;
+}
