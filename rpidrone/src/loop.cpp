@@ -107,7 +107,7 @@ namespace drone
                 if (connection_->hasConnection())
                 {
                     
-                    createOutputJson(output_struct.roll, output_struct.pitch, c, j);
+                    createOutputJson(output_struct.roll, output_struct.pitch, output_struct.yaw, output_struct.height, c, j);
                     msg = j.dump();
                     #if defined(NETWORK_DEBUG_LOGS)
                     NETWORK_LOG(DEBUG) << "writing " << msg;
@@ -127,12 +127,12 @@ namespace drone
         }
     }
 
-    void Loop::createOutputJson(float roll, float pitch, const GPSCoordinates &c, json &j)
+    void Loop::createOutputJson(float roll, float pitch, float yaw, float h, const GPSCoordinates &c, json &j)
     {
         j = {
-            {"angles", {{"yaw", 0}, {"pitch", pitch}, {"roll", roll}}},
+            {"angles", {{"yaw", yaw}, {"pitch", pitch}, {"roll", roll}}},
             {"position", {{"latitude", c.latitude}, {"longitude", c.longitude}, {"altitude", c.altitude}}},
-            {"sensors", {{"barometric_height", 0}}}};
+            {"sensors", {{"barometric_height", h}}}};
     }
 
     void Loop::loadConfig(const std::string &file)

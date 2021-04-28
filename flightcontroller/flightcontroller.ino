@@ -30,16 +30,11 @@ int throttle = 0, lb_t, rb_t, lf_t, rf_t;
 // MPU
 MPU6050 mpu;
 YPR ypr_struct;
-accel accel_struct;
+rotation accel_struct;
 
 // controls
 PID roll_vel, roll_t, pitch_vel, pitch_t, yaw_t;
 float roll_out, pitch_out, yaw_out, roll_rate, pitch_rate;
-
-// BMP
-Adafruit_BMP085_Unified bmp = Adafruit_BMP085_Unified(1);
-float h, t, seaLevelPressure = SENSORS_PRESSURE_SEALEVELHPA;
-sensors_event_t event;
 
 // COMM
 ControlParser cntrlPrs;
@@ -55,7 +50,7 @@ void setup() {
   digitalWrite(LED_BUILTIN, HIGH);
   Wire.begin();
   Wire.setClock(400000); // 400kHz I2C clock
-  Serial.begin(9600);
+  Serial.begin(115200);
   while (!Serial); // wait for Leonardo enumeration, others continue immediately
   ConfigParser cfgPrs;
   Config conf;
@@ -63,11 +58,9 @@ void setup() {
   Serial.println(CONFIG_TOKEN);
   dataReceived = readString(conf_msg, 256, EOL);
   while(!dataReceived || cfgPrs.parse(&conf, conf_msg, &DELIM_D, &DELIM) == false){
-    digitalWrite(LED_BUILTIN, HIGH);
     Serial.println(CONFIG_TOKEN);
-    delay(1000);
+    delay(200);
     dataReceived = readString(conf_msg, 256, EOL);
-    digitalWrite(LED_BUILTIN, LOW);
   }
   Serial.println("<A>");
   lf.init(conf.pin_lf, conf.esc_min, conf.esc_max, 100, conf.calib_esc);
@@ -79,20 +72,11 @@ void setup() {
   pitch_vel.set(conf.kp_p_v, conf.kd_p_v, conf.ki_p_v, conf.kaw_p_v, conf.min_r_v, conf.max_p_v);
   pitch_t.set(conf.kp_p_t, conf.kd_p_t, conf.ki_p_t, conf.kaw_p_t, conf.min_p_t, conf.max_p_t);
   yaw_t.set(conf.kp_y_t, conf.kd_y_t, conf.ki_y_t, conf.kaw_y_t, conf.min_y_t, conf.max_y_t);
-  
+  Serial.println("<A1>");
   initMPU6050(&mpu);
-  if(!bmp.begin())
-  {
-    Serial.println("error");
-    while(1);
-  }
-  bmp.getEvent(&event);
-  while(!event.pressure){
-    bmp.getEvent(&event);
-  }
-  seaLevelPressure = event.pressure;
+  Serial.println("<A2>");
   Serial.println(CONTROL_TOKEN);
-  digitalWrite(LED_BUILTIN, HIGH);
+  digitalWrite(LED_BUILTIN, LOW);
 }
 
 
@@ -101,19 +85,19 @@ void setup() {
 // ===                    MAIN PROGRAM LOOP                     ===
 // ================================================================
 
-
+int t1 = millis();
 
 void loop() {
   dataReceived = readString(msg, MSG_SIZE, EOL);
   if(dataReceived) {
     cntrlPrs.parse(ypr_arr, &throttle, msg, &DELIM);
   }
-  
-  getYPR(&mpu, &ypr_struct, true);
+
+  //getYPR(&mpu, &ypr_struct, true);
+  getMeasurements(&mpu, &accel_struct, &ypr_struct, true);
   pitch_rate = pitch_vel.control(ypr_struct.pitch, ypr_arr[1]);
   roll_rate = roll_vel.control(ypr_struct.roll, ypr_arr[2]);
 
-  getAccel(&mpu, &accel_struct);
   roll_out = roll_t.control(accel_struct.x, roll_rate);
   pitch_out = pitch_t.control(accel_struct.y, pitch_rate);
   yaw_out = yaw_t.control(accel_struct.z, ypr_arr[0]);
@@ -128,14 +112,8 @@ void loop() {
   rb.setSpeed(rb_t);
   lb.setSpeed(lb_t);
 
-   //Get a new sensor event 
-  bmp.getEvent(&event);
-  if (event.pressure)
-  {
-    h = bmp.pressureToAltitude(seaLevelPressure, event.pressure);
-    bmp.getTemperature(&t);
-  }
-  
-  outPrs.parse(msg, MSG_SIZE, &EOL, &DELIM, ypr_arr[0], ypr_arr[1], ypr_arr[2], h, t);
+
+  outPrs.parse(msg, MSG_SIZE, EOL, DELIM, ypr_struct.yaw, ypr_struct.pitch, ypr_struct.roll, millis() - t1, accel_struct.x, accel_struct.y, accel_struct.z, rf_t, rb_t, lf_t, lb_t);
   Serial.print(msg);
+  t1 = millis();
 }
