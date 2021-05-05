@@ -22,16 +22,9 @@
     "sensors": {
         "calibration": true,
         "decimal_places": 1,
-        "mpu": {
-            "address": 104
-        },
         "gps": {
             "port": "/dev/serial0",
             "baudrate": 9600
-        },
-        "bmp": {
-            "address": 119,
-            "accuracy": 1
         }
     },
     "controls": {
@@ -83,19 +76,19 @@
             "pins": [
                 {
                     "pos": "lf",
-                    "pin": 26
+                    "pin": 9
                 },
                 {
                     "pos": "rf",
-                    "pin": 21
+                    "pin": 10
                 },
                 {
                     "pos": "lb",
-                    "pin": 19
+                    "pin": 7
                 },
                 {
                     "pos": "rb",
-                    "pin": 13
+                    "pin": 8
                 }
             ]
         }

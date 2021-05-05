@@ -38,3 +38,5 @@ target_compile_definitions(rpidrone PRIVATE POWER_LOGS)
 target_compile_definitions(rpidrone PRIVATE NETWORK_DEBUG_LOGS)
 # ENABLE LOG OF MAIN LOOP EXEC TIME 
 target_compile_definitions(rpidrone PRIVATE EXEC_TIME_LOG)
+# ENABLE LOGS FOR FLIGHTCONTROLLER
+target_compile_definitions(rpidrone PRIVATE FLIGHTCONTROLLER_LOGS)

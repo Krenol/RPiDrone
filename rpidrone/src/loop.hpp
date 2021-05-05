@@ -9,7 +9,7 @@
 #include "parsers/json_input_parser.hpp"
 #include "structs/user_input.hpp"
 
-#define OUT_MSG_SIZE 64
+#define OUT_MSG_SIZE 90
 #define CONTROL_TOKEN "<S>"
 
 using json = nlohmann::json;
@@ -51,7 +51,7 @@ namespace drone {
              */
             void connectionHandler();
 
-            void createOutputJson(float roll, float pitch, const GPSCoordinates& c, json& j);
+            void createOutputJson(float roll, float pitch, float yaw, const GPSCoordinates& c, json& j);
 
             void parseUserInput(std::string &msg, UserInput &userInput);
 

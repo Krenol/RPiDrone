@@ -11,9 +11,11 @@
 #include "structs/output.hpp"
 
 #define NETWORK_LOG(LEVEL) CLOG(LEVEL, "network")  //define network log
-#define CONTROL_LOG(LEVEL) CLOG(LEVEL, "controls") //define control log
 #if defined(EXEC_TIME_LOG)
 #define EXEC_LOG(LEVEL) CLOG(LEVEL, "exec") //define exec time log
+#endif
+#if defined(FLIGHTCONTROLLER_LOGS)
+#define FLIGHT_LOG(LEVEL) CLOG(LEVEL, "flightcontroller")
 #endif
 
 namespace drone
@@ -29,6 +31,9 @@ namespace drone
 
         #if defined(EXEC_TIME_LOG)
         EXEC_LOG(DEBUG) << "datetime;level;t_exec";
+        #endif
+        #if defined(FLIGHTCONTROLLER_LOGS)
+        FLIGHT_LOG(DEBUG) << "datetime;level;yaw;pitch;roll;t_exec;ax;ay;az;rf_t,;rb_t;lf_t;lb_t";
         #endif
     }
 
@@ -86,7 +91,7 @@ namespace drone
         GPSCoordinates c;
         json j;
         connection_->startThread();
-        CONTROL_LOG(INFO) << "starting main control loop";
+        LOG(INFO) << "starting main control loop";
         #if defined(EXEC_TIME_LOG)
         std::chrono::steady_clock::time_point last_call = std::chrono::steady_clock::now(), now;
         #endif
@@ -103,11 +108,13 @@ namespace drone
                 }
                 serialGetStr(fd_ard_, out, OUT_MSG_SIZE, '\n');
                 msg = out;
+                #if defined(FLIGHTCONTROLLER_LOGS)
+                FLIGHT_LOG(INFO) << msg;
+                #endif
                 parse_output(msg, output_struct);
                 if (connection_->hasConnection())
                 {
-                    
-                    createOutputJson(output_struct.roll, output_struct.pitch, output_struct.yaw, output_struct.height, c, j);
+                    createOutputJson(output_struct.roll, output_struct.pitch, output_struct.yaw, c, j);
                     msg = j.dump();
                     #if defined(NETWORK_DEBUG_LOGS)
                     NETWORK_LOG(DEBUG) << "writing " << msg;
@@ -117,7 +124,7 @@ namespace drone
             }
             catch (const std::exception &exc)
             {
-                CONTROL_LOG(ERROR) << exc.what();
+                LOG(ERROR) << exc.what();
             }
             #if defined(EXEC_TIME_LOG)
             now = std::chrono::steady_clock::now();
@@ -127,12 +134,12 @@ namespace drone
         }
     }
 
-    void Loop::createOutputJson(float roll, float pitch, float yaw, float h, const GPSCoordinates &c, json &j)
+    void Loop::createOutputJson(float roll, float pitch, float yaw, const GPSCoordinates &c, json &j)
     {
         j = {
             {"angles", {{"yaw", yaw}, {"pitch", pitch}, {"roll", roll}}},
             {"position", {{"latitude", c.latitude}, {"longitude", c.longitude}, {"altitude", c.altitude}}},
-            {"sensors", {{"barometric_height", h}}}};
+            {"sensors", {{"barometric_height", 0}}}};
     }
 
     void Loop::loadConfig(const std::string &file)

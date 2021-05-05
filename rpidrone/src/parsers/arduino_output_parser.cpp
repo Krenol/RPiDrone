@@ -18,9 +18,21 @@ namespace drone
             } else if(i == 2) {
                 output.roll = atof(token.c_str());
             } else if(i == 3) {
-                output.height = atof(token.c_str());
+                output.exec_time = atoi(token.c_str());
             } else if(i == 4) {
-                output.temperature = atof(token.c_str());
+                output.ax = atof(token.c_str());
+            } else if(i == 5) {
+                output.ay = atof(token.c_str());
+            } else if(i == 6) {
+                output.az = atof(token.c_str());
+            } else if(i == 7) {
+                output.rf_t = atoi(token.c_str());
+            } else if(i == 8) {
+                output.rb_t = atoi(token.c_str());
+            } else if(i == 9) {
+                output.lf_t = atoi(token.c_str());
+            } else if(i == 10) {
+                output.lb_t = atoi(token.c_str());
             } else {
                 break;
             }

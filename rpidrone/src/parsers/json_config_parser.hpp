@@ -97,46 +97,6 @@ namespace drone
         }
     };
 
-    struct MPU
-    {
-        int address = 104;
-
-        MPU()
-        {
-        }
-
-        MPU(int address)
-        {
-            this->address = address;
-        }
-
-        MPU(const MPU &m)
-        {
-            this->address = m.address;
-        }
-    };
-
-    struct BMP
-    {
-        int address = 119, accuracy = 1;
-
-        BMP()
-        {
-        }
-
-        BMP(int address, int accuracy)
-        {
-            this->accuracy = accuracy;
-            this->address = address;
-        }
-
-        BMP(const BMP &b)
-        {
-            this->accuracy = b.accuracy;
-            this->address = b.address;
-        }
-    };
-
     struct PIDControl
     {
         double k_p = 1.0, k_d = 1.0, k_i = 0.0, k_aw = 0.0, max = 0.0, min = 0.0;
@@ -229,21 +189,19 @@ namespace drone
     {
         bool calibrate;
         int decimals = 1;
-        MPU mpu;
         GPS gps;
-        BMP bmp;
 
         SensorsStruct()
         {
         }
 
-        SensorsStruct(bool calibrate, const MPU &m, const GPS &g, const BMP &b, int decimals) : mpu(m), gps(g), bmp(b)
+        SensorsStruct(bool calibrate, const GPS &g, int decimals) :  gps(g)
         {
             this->decimals = decimals;
             this->calibrate = calibrate;
         }
 
-        SensorsStruct(const SensorsStruct &s) : mpu(s.mpu), gps(s.gps), bmp(s.bmp)
+        SensorsStruct(const SensorsStruct &s) : gps(s.gps)
         {
             this->decimals = s.decimals;
             this->calibrate = s.calibrate;

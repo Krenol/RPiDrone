@@ -233,6 +233,6 @@ int serialGetStr (const int fd, char *s, const int buff_size, const char eol)
         s[i] = serialGetchar(fd);
         ++i;
     } while (serialDataAvail(fd) > 0 && i < buff_size - 1 && s[i - 1] != eol);
-    s[i] = '\0';
+    s[i - 1] = '\0'; //last char is the eol char
     return i;
 }

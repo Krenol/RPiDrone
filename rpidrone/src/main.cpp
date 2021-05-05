@@ -31,11 +31,9 @@ static void mvFile(const std::string& file, const std::string& newFile){
 static void initLogging()
 {
     auto t = std::to_string(std::time(0));
-    mvFile(LOG_DIR + "/pid.csv", OLD_LOG_DIR + "/pid_" + t + ".csv");
+    mvFile(LOG_DIR + "/flightcontroller.csv", OLD_LOG_DIR + "/flightcontroller_" + t + ".csv");
     mvFile(LOG_DIR + "/network.log", OLD_LOG_DIR + "/network_" + t + ".log");
     mvFile(LOG_DIR + "/default.log", OLD_LOG_DIR + "/default_" + t + ".log");
-    mvFile(LOG_DIR + "/sensors.log", OLD_LOG_DIR + "/sensors_" + t + ".log");
-    mvFile(LOG_DIR + "/controls.log", OLD_LOG_DIR + "/controls_" + t + ".log");
     mvFile(LOG_DIR + "/power.csv", OLD_LOG_DIR + "/power_" + t + ".csv");
     mvFile(LOG_DIR + "/exec.csv", OLD_LOG_DIR + "/exec_" + t + ".csv");
     //enable multi loggers

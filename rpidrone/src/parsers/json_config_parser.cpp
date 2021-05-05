@@ -23,11 +23,7 @@ namespace drone
         int dec = js.at("decimal_places");
         int calib = js.at("calibration");
         GPS gps(js.at("gps").at("port"), js.at("gps").at("baudrate"));
-        auto b = js.at("bmp");
-        BMP bmp(b.at("address"), b.at("accuracy"));
-        b = js.at("mpu");
-        MPU mpu(b.at("address"));
-        cfg.sensors = SensorsStruct(calib, mpu, gps, bmp, dec);
+        cfg.sensors = SensorsStruct(calib, gps, dec);
     }
     
     void parse_control_obj(const nlohmann::json &j, Config &cfg) 
