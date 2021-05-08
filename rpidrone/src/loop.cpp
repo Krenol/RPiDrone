@@ -26,11 +26,7 @@ namespace drone
     Loop::Loop(const std::string &config_path)
     {
         loadConfig(config_path);
-        //pin::initGPIOs();
         connection_ = std::make_unique<Connection>(std::make_unique<rpisocket::WiFiServer>(config_.server.port, config_.server.bytes), config_.server.delimiter, config_.queues.read_size);
-        //on_led_ = std::make_unique<rpicomponents::Led>(config_.leds.on_led, pin::DIGITAL_MODE, pin::DIGITAL_MODE_MAX_VAL);
-        //status_led_ = std::make_unique<rpicomponents::Led>(config_.leds.status_led, pin::DIGITAL_MODE, pin::DIGITAL_MODE_MAX_VAL);
-        //tpe_ = std::make_unique<design_patterns::ThreadPoolExecutor>(1, config_.queues.write_size);
 
         #if defined(EXEC_TIME_LOG)
         EXEC_LOG(DEBUG) << "datetime;level;t_exec";
@@ -45,10 +41,7 @@ namespace drone
 
     Loop::~Loop()
     {
-        //on_led_->TurnOff();
-        //status_led_->TurnOff();
         connection_->stopThread();
-        //pin::terminateGPIOs();
     }
 
     void Loop::parseUserInput(std::string &msg, UserInput &userInput)
@@ -78,7 +71,6 @@ namespace drone
             {
                 Input in;
                 from_json(j, in);
-                //int throttle, int idle, float offset, float degrees, float max_roll, float max_pitch, float max_yawn, float rotation, GPSCoordinates &gps)
                 userInput = UserInput(in.throttle, in.joystick.offset, in.joystick.degrees, config_.controls.max_roll, config_.controls.max_pitch, config_.controls.max_yawn, in.joystick.rotation, in.gps);
             }
         }

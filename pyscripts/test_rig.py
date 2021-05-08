@@ -37,8 +37,8 @@ def run():
         print("received string " + read_str)
         if read_str.isdigit():
             throttle = int(read_str)
-        data = {"gps":{"altitude":0,"latitude":0,"longitude":0},"joystick":{"degrees":0,"offset":0, "rotation": 0.0},"throttle": throttle}
-        send(s, data, delim)
+            data = {"gps":{"altitude":0,"latitude":0,"longitude":0},"joystick":{"degrees":0,"offset":0, "rotation": 0.0},"throttle": throttle}
+            send(s, data, delim)
 
     data = {"gps":{"altitude":0,"latitude":0,"longitude":0},"joystick":{"degrees":0,"offset":0, "rotation": 0.0},"throttle": 0}
     send(s, data, delim)
