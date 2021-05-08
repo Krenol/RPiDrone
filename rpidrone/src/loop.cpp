@@ -17,6 +17,9 @@
 #if defined(FLIGHTCONTROLLER_LOGS)
 #define FLIGHT_LOG(LEVEL) CLOG(LEVEL, "flightcontroller")
 #endif
+#if defined(RPI_LOGS)
+#define RPI_LOG(LEVEL) CLOG(LEVEL, "rpi")
+#endif
 
 namespace drone
 {
@@ -33,7 +36,10 @@ namespace drone
         EXEC_LOG(DEBUG) << "datetime;level;t_exec";
         #endif
         #if defined(FLIGHTCONTROLLER_LOGS)
-        FLIGHT_LOG(DEBUG) << "datetime;level;yaw;pitch;roll;t_exec;ax;ay;az;rf_t,;rb_t;lf_t;lb_t";
+        FLIGHT_LOG(DEBUG) << "datetime;level;yaw;pitch;roll;t_exec;ax;ay;az;rf_t,;rb_t;lf_t;lb_t;throttle";
+        #endif
+        #if defined(RPI_LOGS)
+        RPI_LOG(DEBUG) << "datetime;level;yaw_vel;pitch_angle;roll_angle;throttle";
         #endif
     }
 
@@ -104,6 +110,9 @@ namespace drone
                     connection_->pop(msg);
                     parseUserInput(msg, userInput);
                     parse_input(userInput, msg);
+                    #if defined(RPI_LOGS)
+                    RPI_LOG(INFO) << msg;
+                    #endif
                     serialPuts(fd_ard_, msg.c_str());
                 }
                 serialGetStr(fd_ard_, out, OUT_MSG_SIZE, '\n');
