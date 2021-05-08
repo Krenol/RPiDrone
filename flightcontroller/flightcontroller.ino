@@ -4,7 +4,8 @@
  */
 
 #define MSG_SIZE 128
-
+#define THROTTLE_MAX 100
+#define ESC_MAX 120 // we need buffer to still be able to control the drone at top speed
 
 //#include "I2Cdev.h"
 #include "Wire.h"
@@ -63,10 +64,10 @@ void setup() {
     dataReceived = readString(conf_msg, 256, EOL);
   }
   Serial.println("<A>");
-  lf.init(conf.pin_lf, conf.esc_min, conf.esc_max, 100, conf.calib_esc);
-  rf.init(conf.pin_rf, conf.esc_min, conf.esc_max, 100, conf.calib_esc);
-  lb.init(conf.pin_lb, conf.esc_min, conf.esc_max, 100, conf.calib_esc);
-  rb.init(conf.pin_rb, conf.esc_min, conf.esc_max, 100, conf.calib_esc);
+  lf.init(conf.pin_lf, conf.esc_min, conf.esc_max, ESC_MAX, conf.calib_esc);
+  rf.init(conf.pin_rf, conf.esc_min, conf.esc_max, ESC_MAX, conf.calib_esc);
+  lb.init(conf.pin_lb, conf.esc_min, conf.esc_max, ESC_MAX, conf.calib_esc);
+  rb.init(conf.pin_rb, conf.esc_min, conf.esc_max, ESC_MAX, conf.calib_esc);
   roll_vel.set(conf.kp_r_v, conf.kd_r_v, conf.ki_r_v, conf.kaw_r_v, conf.min_r_v, conf.max_r_v);
   roll_t.set(conf.kp_r_t, conf.kd_r_t, conf.ki_r_t, conf.kaw_r_t, conf.min_r_t, conf.max_r_t);
   pitch_vel.set(conf.kp_p_v, conf.kd_p_v, conf.ki_p_v, conf.kaw_p_v, conf.min_r_v, conf.max_p_v);
@@ -91,6 +92,7 @@ void loop() {
   dataReceived = readString(msg, MSG_SIZE, EOL);
   if(dataReceived) {
     cntrlPrs.parse(ypr_arr, &throttle, msg, &DELIM);
+    throttle = BOUND<int>(throttle, 0, THROTTLE_MAX);
   }
 
   //getYPR(&mpu, &ypr_struct, true);
@@ -102,10 +104,10 @@ void loop() {
   pitch_out = pitch_t.control(accel_struct.y, pitch_rate);
   yaw_out = yaw_t.control(accel_struct.z, ypr_arr[0]);
 
-  rf_t = BOUND<int>(throttle + roll_out - pitch_out + yaw_out, 0, 100);
-  lf_t = BOUND<int>(throttle + -roll_out - pitch_out - yaw_out, 0, 100);
-  rb_t = BOUND<int>(throttle + roll_out + pitch_out - yaw_out, 0, 100);
-  lb_t = BOUND<int>(throttle + -roll_out + pitch_out + yaw_out, 0, 100);
+  rf_t = BOUND<int>(throttle + roll_out - pitch_out + yaw_out, 0, ESC_MAX);
+  lf_t = BOUND<int>(throttle + -roll_out - pitch_out - yaw_out, 0, ESC_MAX);
+  rb_t = BOUND<int>(throttle + roll_out + pitch_out - yaw_out, 0, ESC_MAX);
+  lb_t = BOUND<int>(throttle + -roll_out + pitch_out + yaw_out, 0, ESC_MAX);
 
   rf.setSpeed(rf_t);
   lf.setSpeed(lf_t);
