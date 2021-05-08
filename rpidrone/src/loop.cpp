@@ -73,7 +73,7 @@ namespace drone
                 Input in;
                 from_json(j, in);
                 //int throttle, int idle, float offset, float degrees, float max_roll, float max_pitch, float max_yawn, float rotation, GPSCoordinates &gps)
-                userInput = UserInput(in.throttle, config_.controls.escs.idle, config_.controls.escs.max, in.joystick.offset, in.joystick.degrees, config_.controls.max_roll, config_.controls.max_pitch, config_.controls.max_yawn, in.joystick.rotation, in.gps);
+                userInput = UserInput(in.throttle, in.joystick.offset, in.joystick.degrees, config_.controls.max_roll, config_.controls.max_pitch, config_.controls.max_yawn, in.joystick.rotation, in.gps);
             }
         }
         catch (const std::exception &exc)
