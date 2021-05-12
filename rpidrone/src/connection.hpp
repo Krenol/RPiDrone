@@ -14,7 +14,7 @@ namespace drone
         std::thread thread_;
         std::atomic_bool thread_on_;
         std::unique_ptr<rpisocket::Server> server_;
-        std::queue<std::string> queue_;
+        design_patterns::Queue<std::string>* queue_;
         int max_q_size_;
 
         /**
@@ -27,12 +27,10 @@ namespace drone
          * @param buf the current buffer
          */
         void processServerRead(std::string& buf);
-
-        void clearQueue();
         
     public:
 
-        Connection(std::unique_ptr<rpisocket::Server> server, std::string delimiter, int queue_size);
+        Connection(std::unique_ptr<rpisocket::Server> server, std::string delimiter, design_patterns::Queue<std::string>* queue, int queue_size);
         ~Connection();
 
         /**
@@ -56,11 +54,6 @@ namespace drone
          * @param msg The message to be written
          */
         void writeMsg(const std::string& msg);
-
-        
-        void pop(std::string &msg);
-
-        bool hasItem();
     };
 }
 

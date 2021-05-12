@@ -34,10 +34,10 @@ namespace drone
                     break;
                 }
             }
-            clearQueue();
+            queue_->clear();
             if (thread_on_)
             {
-                queue_.push("{\"disconnected\": true}");
+                queue_->push("{\"disconnected\": true}");
             }
             else
             {
@@ -45,19 +45,6 @@ namespace drone
                 return;
             }
         }
-    }
-
-    void Connection::clearQueue() {
-        while(!queue_.empty()) queue_.pop();
-    }
-
-    bool Connection::hasItem() {
-        return queue_.size() > 0;
-    }
-
-    void Connection::pop(std::string &msg) {
-        msg = queue_.front();
-        queue_.pop();
     }
 
     void Connection::processServerRead(std::string &buf)
@@ -69,8 +56,8 @@ namespace drone
             msg = buf.substr(0, pos);
             pos1 = msg.find_first_of("{");
             msg.erase(0, pos1);
-            if(queue_.size() > max_q_size_) clearQueue();
-            queue_.push(msg);
+            if(queue_->item_count() > max_q_size_) queue_->clear();
+            queue_->push(msg);
             buf.erase(0, pos + delimiter_.length());
         }
     }
@@ -103,8 +90,9 @@ namespace drone
         return server_->hasConnection();
     }
 
-    Connection::Connection(std::unique_ptr<rpisocket::Server> server, std::string delimiter, int queue_size) : delimiter_{delimiter}, server_{std::move(server)}, thread_on_{false}, max_q_size_{queue_size}
+    Connection::Connection(std::unique_ptr<rpisocket::Server> server, std::string delimiter, design_patterns::Queue<std::string>* queue, int queue_size) : delimiter_{delimiter}, server_{std::move(server)}, thread_on_{false}, max_q_size_{queue_size}
     {
+        queue_ = queue;
     }
 
     void Connection::writeMsg(const std::string &msg)

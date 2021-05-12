@@ -1,7 +1,6 @@
 #include "loop.hpp"
 #include <unistd.h>
 #include <fstream>
-#include <future>
 #include "logs/easylogging++.h"
 #include "misc.hpp"
 #include "wiringSerial.h"
@@ -26,7 +25,7 @@ namespace drone
     Loop::Loop(const std::string &config_path)
     {
         loadConfig(config_path);
-        connection_ = std::make_unique<Connection>(std::make_unique<rpisocket::WiFiServer>(config_.server.port, config_.server.bytes), config_.server.delimiter, config_.queues.read_size);
+        server_ = std::make_unique<rpisocket::WiFiServer>(config_.server.port, config_.server.bytes);
 
         #if defined(EXEC_TIME_LOG)
         EXEC_LOG(DEBUG) << "datetime;level;t_exec";
@@ -41,7 +40,7 @@ namespace drone
 
     Loop::~Loop()
     {
-        connection_->stopThread();
+        server_->disconnect();
     }
 
     void Loop::parseUserInput(std::string &msg, UserInput &userInput)
@@ -80,58 +79,87 @@ namespace drone
         }
     }
 
-    void Loop::loop()
+    bool Loop::parseBuffer(std::string &buf, std::string &msg) {
+        std::size_t pos;
+        if ((pos = buf.find(config_.server.delimiter)) != std::string::npos)
+        {
+            msg = buf.substr(0, pos);
+
+            buf.erase(0, pos + config_.server.delimiter.length());
+            pos = msg.find_first_of("{");
+            msg.erase(0, pos);
+        }
+    }
+
+    void Loop::readFromSocket(std::string &buf, int max_iter) 
     {
         std::string msg;
+        do 
+        {
+            server_->readBytes(msg);
+            buf += msg;
+            if(buf.find(config_.server.delimiter) != std::string::npos) return;
+            --max_iter;
+        } while (max_iter > 0);
+    }
+
+    void Loop::loop()
+    {
+        std::string msg, buf = "";
         char out[OUT_MSG_SIZE];
         UserInput userInput;
         Output output_struct;
         GPSCoordinates c;
         json j;
-        connection_->startThread();
         LOG(INFO) << "starting main control loop";
         #if defined(EXEC_TIME_LOG)
         std::chrono::steady_clock::time_point last_call = std::chrono::steady_clock::now(), now;
         #endif
         while (1)
         {
-            try
-            {
-                if (connection_->hasItem())
+            server_->connect();
+            while(server_->hasConnection()){
+                try
                 {
-                    connection_->pop(msg);
-                    parseUserInput(msg, userInput);
-                    parse_input(userInput, msg);
-                    #if defined(RPI_LOGS)
-                    RPI_LOG(INFO) << msg;
+                    if (server_->hasData())
+                    {
+                        readFromSocket(buf, 3);
+                        LOG(INFO) << buf;
+                    }
+                    if(parseBuffer(buf, msg)) 
+                    {
+                        parseUserInput(msg, userInput);
+                        parse_input(userInput, msg);
+                        #if defined(RPI_LOGS)
+                        RPI_LOG(INFO) << msg;
+                        #endif
+                        LOG(INFO) << msg;
+                        serialPuts(fd_ard_, msg.c_str());
+                    }
+                    serialGetStr(fd_ard_, out, OUT_MSG_SIZE, '\n');
+                    msg = out;
+                    #if defined(FLIGHTCONTROLLER_LOGS)
+                    FLIGHT_LOG(INFO) << msg;
                     #endif
-                    serialPuts(fd_ard_, msg.c_str());
-                }
-                serialGetStr(fd_ard_, out, OUT_MSG_SIZE, '\n');
-                msg = out;
-                #if defined(FLIGHTCONTROLLER_LOGS)
-                FLIGHT_LOG(INFO) << msg;
-                #endif
-                parse_output(msg, output_struct);
-                if (connection_->hasConnection())
-                {
+                    parse_output(msg, output_struct);
                     createOutputJson(output_struct.roll, output_struct.pitch, output_struct.yaw, c, j);
                     msg = j.dump();
                     #if defined(NETWORK_DEBUG_LOGS)
                     NETWORK_LOG(DEBUG) << "writing " << msg;
                     #endif
-                    connection_->writeMsg(msg + config_.server.delimiter);
+                    server_->writeBytes(msg + config_.server.delimiter);
+                    
                 }
+                catch (const std::exception &exc)
+                {
+                    LOG(ERROR) << exc.what();
+                }
+                #if defined(EXEC_TIME_LOG)
+                now = std::chrono::steady_clock::now();
+                EXEC_LOG(INFO) << std::chrono::duration_cast<std::chrono::milliseconds>(now - last_call).count();
+                last_call = now;
+                #endif
             }
-            catch (const std::exception &exc)
-            {
-                LOG(ERROR) << exc.what();
-            }
-            #if defined(EXEC_TIME_LOG)
-            now = std::chrono::steady_clock::now();
-            EXEC_LOG(INFO) << std::chrono::duration_cast<std::chrono::milliseconds>(now - last_call).count();
-            last_call = now;
-            #endif
         }
     }
 

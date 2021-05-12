@@ -36,8 +36,8 @@ namespace drone {
         private:
             //std::unique_ptr<rpicomponents::Led> on_led_, status_led_;
             Config config_;
-            std::unique_ptr<Connection> connection_; 
             Input last_input_;
+            std::unique_ptr<rpisocket::WiFiServer> server_;
             int fd_ard_;
 
             /**
@@ -55,6 +55,9 @@ namespace drone {
 
             void parseUserInput(std::string &msg, UserInput &userInput);
 
+            void readFromSocket(std::string &buf, int max_iter = 10);
+
+            bool parseBuffer(std::string &buf, std::string &msg);
     };
 }
 
