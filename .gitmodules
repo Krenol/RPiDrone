@@ -1,12 +1,6 @@
 [submodule "rpidrone/external/RPiSocket"]
 	path = rpidrone/external/RPiSocket
 	url = git@github.com:Krenol/RPiSocket.git
-[submodule "rpidrone/external/RPiComponents"]
-	path = rpidrone/external/RPiComponents
-	url = git@github.com:Krenol/RPiComponents.git
-[submodule "rpidrone/external/doctest"]
-	path = rpidrone/external/doctest
-	url = https://github.com/onqtam/doctest.git
 [submodule "rpidrone/external/json"]
 	path = rpidrone/external/json
 	url = https://github.com/nlohmann/json.git
