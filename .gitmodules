@@ -4,3 +4,6 @@
 [submodule "rpidrone/external/json"]
 	path = rpidrone/external/json
 	url = https://github.com/nlohmann/json.git
+[submodule "rpidrone/external/RPiPins"]
+	path = rpidrone/external/RPiPins
+	url = git@github.com:Krenol/RPiPins.git

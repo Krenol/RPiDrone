@@ -1,6 +1,7 @@
 {
     "logic": {
-        "motors_off_on_disconnect": true
+        "motors_off_on_disconnect": true,
+        "rpi_reset_pin": 29
     },
     "server": {
         "port": 8889,

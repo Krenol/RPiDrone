@@ -8,6 +8,7 @@
 #include "parsers/json_config_parser.hpp" 
 #include "parsers/json_input_parser.hpp"
 #include "structs/user_input.hpp"
+#include "pin/pins.hpp"
 
 #define OUT_MSG_SIZE 90
 #define CONTROL_TOKEN "<S>"
@@ -39,6 +40,7 @@ namespace drone {
             Input last_input_;
             std::unique_ptr<rpisocket::WiFiServer> server_;
             int fd_ard_;
+            std::unique_ptr<pin::DigitalPin> resetPin_;
 
             /**
              * Method to load the config file
@@ -58,6 +60,8 @@ namespace drone {
             void readFromSocket(std::string &buf, int max_iter = 10);
 
             bool parseBuffer(std::string &buf, std::string &msg);
+
+            void initArduino();
     };
 }
 

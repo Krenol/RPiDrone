@@ -37,15 +37,12 @@ add_subdirectory (external/RPiSocket)
 endif ()
 
 
-#if (NOT TARGET rpicomponents)
-#    add_subdirectory (external/RPiComponents)
-#endif ()
+if (NOT TARGET rpicomponents)
+    add_subdirectory (external/RPiPins)
+endif ()
 if (NOT TARGET design_patterns)
     add_subdirectory (external/CppDesignPatterns)
 endif ()
-#if (NOT TARGET utils)
-#  add_subdirectory (external/CppUtils)
-#endif ()
 
 if (NOT TARGET nlohmann_json::nlohmann_json)
     add_subdirectory (external/json EXCLUDE_FROM_ALL)
@@ -56,16 +53,14 @@ endif ()
 add_executable (rpidrone ${RPICDRONE_PROJECT_SRCS})
 
 # Own libs
-#find_library(rpicomponents REQUIRED)
-#find_library(rpipins REQUIRED)
+
+find_library(rpipins REQUIRED)
 find_library(rpisocket REQUIRED)
 find_library(design_patterns REQUIRED)
-#find_library(utils REQUIRED)
-#target_link_libraries(${PROJECT_NAME} rpicomponents)
 target_link_libraries(${PROJECT_NAME} rpisocket)
-#target_link_libraries(${PROJECT_NAME} rpipins)
+target_link_libraries(${PROJECT_NAME} rpipins)
 target_link_libraries(${PROJECT_NAME} design_patterns)
-#target_link_libraries(${PROJECT_NAME} utils)
+
 #System libs
 find_library(pigpio REQUIRED)
 find_library(pthread REQUIRED)

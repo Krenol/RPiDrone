@@ -24,9 +24,11 @@ namespace drone
 {
     Loop::Loop(const std::string &config_path)
     {
+        pin::initGPIOs();
         loadConfig(config_path);
+        resetPin_ = std::make_unique<pin::DigitalPin>(config_.logic.resetPin);
         server_ = std::make_unique<rpisocket::WiFiServer>(config_.server.port, config_.server.bytes);
-
+        initArduino();
         #if defined(EXEC_TIME_LOG)
         EXEC_LOG(DEBUG) << "datetime;level;t_exec";
         #endif
@@ -40,6 +42,7 @@ namespace drone
 
     Loop::~Loop()
     {
+        pin::terminateGPIOs();
         server_->disconnect();
     }
 
@@ -173,10 +176,21 @@ namespace drone
 
     void Loop::loadConfig(const std::string &file)
     {
-        std::string out, out1;
-        char out_c[OUT_MSG_SIZE];
         std::ifstream ifs(file);
         config_ = json::parse(ifs);
+    }
+
+    void Loop::initArduino()
+    {
+        std::string out, out1;
+        char out_c[OUT_MSG_SIZE];
+
+        // reset Arduino
+        resetPin_->OutputOn();
+        sleep(1);
+        resetPin_->OutputOff();
+        sleep(3);
+
         fd_ard_ = serialOpen(config_.flightcontroller.port.c_str(), config_.flightcontroller.baudrate);
         parse_config(config_, out);
 
