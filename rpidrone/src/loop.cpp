@@ -92,7 +92,9 @@ namespace drone
             buf.erase(0, pos + config_.server.delimiter.length());
             pos = msg.find_first_of("{");
             msg.erase(0, pos);
+            return true;
         }
+        return false;
     }
 
     void Loop::readFromSocket(std::string &buf, int max_iter) 
