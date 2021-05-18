@@ -27,6 +27,7 @@ namespace drone
         pin::initGPIOs();
         loadConfig(config_path);
         resetPin_ = std::make_unique<pin::DigitalPin>(config_.logic.resetPin);
+        resetPin_->OutputOn();
         server_ = std::make_unique<rpisocket::WiFiServer>(config_.server.port, config_.server.bytes);
         initArduino();
         #if defined(EXEC_TIME_LOG)
@@ -131,13 +132,7 @@ namespace drone
                     }
                     if(parseBuffer(buf, msg)) 
                     {
-                        parseUserInput(msg, userInput);
-                        parse_input(userInput, msg);
-                        #if defined(RPI_LOGS)
-                        RPI_LOG(INFO) << msg;
-                        #endif
-                        LOG(INFO) << msg;
-                        serialPuts(fd_ard_, msg.c_str());
+                        sendToFlightcontroller(msg, userInput);
                     }
                     serialGetStr(fd_ard_, out, OUT_MSG_SIZE, '\n');
                     msg = out;
@@ -163,7 +158,18 @@ namespace drone
                 last_call = now;
                 #endif
             }
+            msg = "{\"disconnected\": true}";
+            sendToFlightcontroller(msg, userInput);
         }
+    }
+
+    void Loop::sendToFlightcontroller(std::string &msg, UserInput &userInput) {
+        parseUserInput(msg, userInput);
+        parse_input(userInput, msg);
+        #if defined(RPI_LOGS)
+        RPI_LOG(INFO) << msg;
+        #endif
+        serialPuts(fd_ard_, msg.c_str());
     }
 
     void Loop::createOutputJson(float roll, float pitch, float yaw, const GPSCoordinates &c, json &j)
@@ -186,9 +192,9 @@ namespace drone
         char out_c[OUT_MSG_SIZE];
 
         // reset Arduino
-        resetPin_->OutputOn();
-        sleep(1);
         resetPin_->OutputOff();
+        sleep(2);
+        resetPin_->OutputOn();
         sleep(3);
 
         fd_ard_ = serialOpen(config_.flightcontroller.port.c_str(), config_.flightcontroller.baudrate);

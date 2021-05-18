@@ -62,6 +62,8 @@ namespace drone {
             bool parseBuffer(std::string &buf, std::string &msg);
 
             void initArduino();
+
+            void sendToFlightcontroller(std::string &msg, UserInput &userInput);
     };
 }
 
