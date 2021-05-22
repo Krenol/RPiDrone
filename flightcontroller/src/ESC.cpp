@@ -15,6 +15,9 @@ void ESC::init(uint8_t pin, uint16_t min_pulse_w, uint16_t max_pulse_w, uint16_t
     if (calibrate)
         calibrateESC();
     initialized_ = true;
+    setSpeed(1);
+    delay(200); 
+    setSpeed(0);
 }
 
 void ESC::calibrateESC()

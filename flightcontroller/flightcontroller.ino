@@ -13,8 +13,6 @@
 #include "src/ESC.h"
 #include "Servo.h"
 #include "src/PID.h"
-#include <Adafruit_Sensor.h>
-#include <Adafruit_BMP085_U.h>
 #include "src/config_parser.h"
 #include "src/control_parser.h"
 #include "src/serial_reader.h"
@@ -78,6 +76,7 @@ void setup() {
   Serial.println("<A2>");
   Serial.println(CONTROL_TOKEN);
   digitalWrite(LED_BUILTIN, LOW);
+  delay(5000);
 }
 
 
