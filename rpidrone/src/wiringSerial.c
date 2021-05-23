@@ -236,3 +236,21 @@ int serialGetStr (const int fd, char *s, const int buff_size, const char eol)
     s[i - 1] = '\0'; //last char is the eol char
     return i;
 }
+
+void clearBuffer(const int fd)
+{
+  usleep(1000); // 1ms
+  ioctl(fd, TCFLSH, 2); // flush both buffers
+}
+
+void clearReceiveBuffer(const int fd)
+{
+  usleep(1000); // 1ms
+  ioctl(fd, TCFLSH, 0); // flush receive
+}
+
+void clearTransmitBuffer(const int fd)
+{
+  usleep(1000); // 1ms
+  ioctl(fd, TCFLSH, 1); // flush transmit
+}

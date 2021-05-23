@@ -10,7 +10,8 @@
     },
     "flightcontroller": {
         "port": "/dev/ttyACM0",
-        "baudrate": 115200
+        "baudrate": 115200,
+        "max_serial_buffer": 200
     },
     "leds": {
         "on_led": 6,

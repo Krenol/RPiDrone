@@ -88,7 +88,6 @@ namespace drone
         if ((pos = buf.find(config_.server.delimiter)) != std::string::npos)
         {
             msg = buf.substr(0, pos);
-
             buf.erase(0, pos + config_.server.delimiter.length());
             pos = msg.find_first_of("{");
             msg.erase(0, pos);
@@ -123,7 +122,7 @@ namespace drone
         #endif
         while (1)
         {
-            server_->connect();
+            server_->connect(); //use async?
             while(server_->hasConnection()){
                 try
                 {
@@ -135,6 +134,9 @@ namespace drone
                     if(parseBuffer(buf, msg)) 
                     {
                         sendToFlightcontroller(msg, userInput);
+                    }
+                    if(serialDataAvail(fd_ard_) > config_.flightcontroller.max_serial_buffer) {
+                        clearReceiveBuffer(fd_ard_);
                     }
                     serialGetStr(fd_ard_, out, OUT_MSG_SIZE, '\n');
                     msg = out;
@@ -162,6 +164,7 @@ namespace drone
             }
             msg = "{\"disconnected\": true}";
             sendToFlightcontroller(msg, userInput);
+            clearReceiveBuffer(fd_ard_);
         }
     }
 

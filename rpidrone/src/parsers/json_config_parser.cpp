@@ -11,7 +11,7 @@ namespace drone
         cfg.logic = Logic(j.at("logic").at("motors_off_on_disconnect"), j.at("logic").at("rpi_reset_pin"));
         cfg.server = Server(j.at("server").at("port"), j.at("server").at("bytes"), j.at("server").at("delimiter"));
         cfg.queues = Queues(j.at("queues").at("read_size"), j.at("queues").at("write_size"));
-        cfg.flightcontroller = Flightcontroller(j.at("flightcontroller").at("port"), j.at("flightcontroller").at("baudrate"));
+        cfg.flightcontroller = Flightcontroller(j.at("flightcontroller").at("port"), j.at("flightcontroller").at("baudrate"), j.at("flightcontroller").at("max_serial_buffer"));
         parse_sensor_obj(j, cfg);
         parse_control_obj(j, cfg);
     }
