@@ -136,8 +136,8 @@ namespace drone
                     {
                         sendToFlightcontroller(msg, userInput);
                     }
-                    if(serialDataAvail(fd_ard_) > config_.flightcontroller.max_serial_buffer) {
-                        clearReceiveBuffer(fd_ard_);
+                    if(fc_->dataAvailable() > config_.flightcontroller.max_serial_buffer) {
+                        fc_->clearReceiveBuffer();
                     }
                     fc_->serialRead(out, '\n');
                     msg = out;

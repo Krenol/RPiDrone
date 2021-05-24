@@ -21,6 +21,10 @@ namespace drone
 
             void reset();
 
+            int dataAvailable();
+
+            void clearReceiveBuffer();
+
         private:
             const int fd_ard_;
             std::unique_ptr<pin::DigitalPin> resetPin_;
