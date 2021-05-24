@@ -24,12 +24,13 @@ namespace drone
 {
     Loop::Loop(const std::string &config_path)
     {
+        std::string conf;
         pin::initGPIOs();
         loadConfig(config_path);
-        resetPin_ = std::make_unique<pin::DigitalPin>(config_.logic.resetPin);
-        resetPin_->OutputOn();
         server_ = std::make_unique<rpisocket::WiFiServer>(config_.server.port, config_.server.bytes);
-        initArduino();
+        fc_ = std::make_unique<drone::Arduino>(config_.flightcontroller.port, config_.flightcontroller.baudrate, config_.logic.resetPin);
+        parse_config(config_, conf);
+        fc_->init(conf);
         #if defined(EXEC_TIME_LOG)
         EXEC_LOG(DEBUG) << "datetime;level;t_exec";
         #endif
@@ -138,7 +139,7 @@ namespace drone
                     if(serialDataAvail(fd_ard_) > config_.flightcontroller.max_serial_buffer) {
                         clearReceiveBuffer(fd_ard_);
                     }
-                    serialGetStr(fd_ard_, out, OUT_MSG_SIZE, '\n');
+                    fc_->serialRead(out, '\n');
                     msg = out;
                     #if defined(FLIGHTCONTROLLER_LOGS)
                     FLIGHT_LOG(INFO) << msg;
@@ -174,7 +175,7 @@ namespace drone
         #if defined(RPI_LOGS)
         RPI_LOG(INFO) << msg;
         #endif
-        serialPuts(fd_ard_, msg.c_str());
+        fc_->serialSend(msg);
     }
 
     void Loop::createOutputJson(float roll, float pitch, float yaw, const GPSCoordinates &c, json &j)
@@ -189,36 +190,5 @@ namespace drone
     {
         std::ifstream ifs(file);
         config_ = json::parse(ifs);
-    }
-
-    void Loop::initArduino()
-    {
-        std::string out, out1;
-        char out_c[OUT_MSG_SIZE];
-
-        // reset Arduino
-        resetPin_->OutputOff();
-        sleep(2);
-        resetPin_->OutputOn();
-        sleep(3);
-
-        fd_ard_ = serialOpen(config_.flightcontroller.port.c_str(), config_.flightcontroller.baudrate);
-        parse_config(config_, out);
-
-        LOG(INFO) << "Setting up flightcontroller with parsed config " << out;
-        do {
-            serialFlush(fd_ard_);
-            serialPuts(fd_ard_, out.c_str());
-            serialGetStr(fd_ard_, out_c, OUT_MSG_SIZE, '\n');
-            out1 = out_c;
-        } while(out1.find("<A>") == std::string::npos);
-        LOG(INFO) << "flightcontroller acknowledged config; waiting for successful sensor & motor setup";
-        
-        //await go from flightcontroller
-        do {
-            serialGetStr(fd_ard_, out_c, OUT_MSG_SIZE, '\n');
-            out = out_c;
-        } while(out.find(CONTROL_TOKEN) == std::string::npos);
-        LOG(INFO) << "flightcontroller setup is completed";
     }
 }
