@@ -20,6 +20,7 @@ ${PROJECT_SOURCE_DIR}/parsers/arduino_input_parser.cpp
 ${PROJECT_SOURCE_DIR}/parsers/arduino_output_parser.cpp
 ${PROJECT_SOURCE_DIR}/connection.cpp
 ${PROJECT_SOURCE_DIR}/wiringSerial.c
+${PROJECT_SOURCE_DIR}/arduino.cpp
 )
 
 include_directories(${PROJECT_INCLUDE_DIR})

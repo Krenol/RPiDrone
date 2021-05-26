@@ -2,7 +2,6 @@
 #define DRONE_ARDUINO_H
 
 #include <string>
-#include "pin/pins.hpp"
 
 #define OUT_MSG_SIZE 90
 #define CONTROL_TOKEN "<S>"
@@ -11,7 +10,7 @@ namespace drone
 {
     class Arduino{
         public:
-            Arduino(const std::string &serial, int baudrate, int resetPin);
+            Arduino(const std::string &serial, int baudrate);
 
             void init(const std::string &conf);
 
@@ -19,15 +18,12 @@ namespace drone
 
             void serialRead(char *msg, const char EOL = '\n');
 
-            void reset();
+            int availableData();
 
-            int dataAvailable();
-
-            void clearReceiveBuffer();
+            void clearReceiverBuffer();
 
         private:
             const int fd_ard_;
-            std::unique_ptr<pin::DigitalPin> resetPin_;
             bool initialized_ = false;
 
     };

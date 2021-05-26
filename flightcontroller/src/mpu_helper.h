@@ -94,7 +94,7 @@ void initMPU6050(MPU6050 *mpu)
     mpu->initialize();
     Serial.println(mpu->testConnection() ? F("MPU6050 connection successful") : F("MPU6050 connection failed"));
     // load and configure the DMP
-    devStatus = mpu->dmpInitialize(4);
+    devStatus = mpu->dmpInitialize(10);
 
     // supply your own gyro offsets here, scaled for min sensitivity
     mpu->setXGyroOffset(220);

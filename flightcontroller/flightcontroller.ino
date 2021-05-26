@@ -43,6 +43,9 @@ bool dataReceived;
 OutParser outPrs;
 const char DELIM = ';', DELIM_D = '&', EOL = '\n';
 
+//timing
+int timestamp;
+
 
 void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
@@ -74,9 +77,11 @@ void setup() {
   Serial.println("<A1>");
   initMPU6050(&mpu);
   Serial.println("<A2>");
-  Serial.println(CONTROL_TOKEN);
-  digitalWrite(LED_BUILTIN, LOW);
   delay(5000);
+  digitalWrite(LED_BUILTIN, LOW);
+  mpu.resetFIFO();
+  Serial.println(CONTROL_TOKEN);
+  timestamp = millis();
 }
 
 
@@ -84,8 +89,6 @@ void setup() {
 // ================================================================
 // ===                    MAIN PROGRAM LOOP                     ===
 // ================================================================
-
-int t1 = millis();
 
 void loop() {
   dataReceived = readString(msg, MSG_SIZE, EOL);
@@ -114,7 +117,7 @@ void loop() {
   lb.setSpeed(lb_t);
 
 
-  outPrs.parse(msg, MSG_SIZE, EOL, DELIM, ypr_struct.yaw, ypr_struct.pitch, ypr_struct.roll, millis() - t1, accel_struct.x, accel_struct.y, accel_struct.z, rf_t, rb_t, lf_t, lb_t, throttle);
+  outPrs.parse(msg, MSG_SIZE, EOL, DELIM, ypr_struct.yaw, ypr_struct.pitch, ypr_struct.roll, millis() - timestamp, accel_struct.x, accel_struct.y, accel_struct.z, rf_t, rb_t, lf_t, lb_t, throttle);
   Serial.print(msg);
-  t1 = millis();
+  timestamp = millis();
 }

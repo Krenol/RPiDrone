@@ -4,19 +4,20 @@
 
 namespace drone
 {
-    Arduino::Arduino(const std::string &serial, int baudrate, int resetPin) : fd_ard_{serialOpen(serial.c_str(), baudrate)}
+    Arduino::Arduino(const std::string &serial, int baudrate) : fd_ard_{serialOpen(serial.c_str(), baudrate)}
     {
-        resetPin_ = std::make_unique<pin::DigitalPin>(resetPin);
-        resetPin_->OutputOn();
         initialized_ = false;
+        if(fd_ard_ < 0) {
+            throw std::bad_alloc();
+        }
     }
 
     void Arduino::init(const std::string &conf) 
     {
         char out_c[OUT_MSG_SIZE];
         std::string out;
-        reset();
         LOG(INFO) << "Setting up arduino with parsed config " << conf;
+        
         do {
             serialFlush(fd_ard_);
             serialPuts(fd_ard_, conf.c_str());
@@ -45,23 +46,13 @@ namespace drone
         if(!initialized_) return;
         serialGetStr(fd_ard_, msg, OUT_MSG_SIZE, EOL);
     }
-    
-    void Arduino::reset() 
-    {
-        LOG(INFO) << "arduino is being resetted";
-        resetPin_->OutputOff();
-        sleep(2);
-        resetPin_->OutputOn();
-        sleep(3);
-        LOG(INFO) << "arduino reset is complete"
-    }
-    
-    int Arduino::dataAvailable() 
+
+    int Arduino::availableData() 
     {
         return serialDataAvail(fd_ard_);
     }
     
-    void Arduino::clearReceiveBuffer() 
+    void Arduino::clearReceiverBuffer() 
     {
         clearReceiveBuffer(fd_ard_);
     }

@@ -25,10 +25,9 @@ namespace drone
     Loop::Loop(const std::string &config_path)
     {
         std::string conf;
-        pin::initGPIOs();
         loadConfig(config_path);
         server_ = std::make_unique<rpisocket::WiFiServer>(config_.server.port, config_.server.bytes);
-        fc_ = std::make_unique<drone::Arduino>(config_.flightcontroller.port, config_.flightcontroller.baudrate, config_.logic.resetPin);
+        fc_ = std::make_unique<drone::Arduino>(config_.flightcontroller.port, config_.flightcontroller.baudrate);
         parse_config(config_, conf);
         fc_->init(conf);
         #if defined(EXEC_TIME_LOG)
@@ -44,7 +43,6 @@ namespace drone
 
     Loop::~Loop()
     {
-        pin::terminateGPIOs();
         server_->disconnect();
     }
 
@@ -136,8 +134,8 @@ namespace drone
                     {
                         sendToFlightcontroller(msg, userInput);
                     }
-                    if(fc_->dataAvailable() > config_.flightcontroller.max_serial_buffer) {
-                        fc_->clearReceiveBuffer();
+                    if(fc_->availableData() > config_.flightcontroller.max_serial_buffer) {
+                        fc_->clearReceiverBuffer();
                     }
                     fc_->serialRead(out, '\n');
                     msg = out;
