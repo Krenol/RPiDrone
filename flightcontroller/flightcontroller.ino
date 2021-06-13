@@ -116,7 +116,6 @@ void loop() {
   rb.setSpeed(rb_t);
   lb.setSpeed(lb_t);
 
-
   outPrs.parse(msg, MSG_SIZE, EOL, DELIM, ypr_struct.yaw, ypr_struct.pitch, ypr_struct.roll, millis() - timestamp, accel_struct.x, accel_struct.y, accel_struct.z, rf_t, rb_t, lf_t, lb_t, throttle);
   Serial.print(msg);
   timestamp = millis();
