@@ -9,7 +9,7 @@
 
 //#include "I2Cdev.h"
 #include "Wire.h"
-#include "src/mpu_helper.h"
+//#include "src/mpu_helper.h"
 #include "src/ESC.h"
 #include "Servo.h"
 #include "src/PID.h"
@@ -18,6 +18,10 @@
 #include "src/serial_reader.h"
 #include "src/out_parser.h"
 #include "src/misc.h"
+#include "src/kalman.h"
+#include <Adafruit_MPU6050.h>
+#include <cmath>
+
 
 // ================================================================
 // ===                      INITIAL SETUP                       ===
@@ -27,9 +31,10 @@ ESC lf, rf, lb, rb;
 int throttle = 0, lb_t, rb_t, lf_t, rf_t;
 
 // MPU
-MPU6050 mpu;
-YPR ypr_struct;
-rotation accel_struct;
+//MPU6050 mpu;
+Adafruit_MPU6050 mpu;
+Adafruit_Sensor *mpu_accel, *mpu_gyro;
+Kalman k_roll, k_pitch;
 
 // controls
 PID roll_vel, roll_t, pitch_vel, pitch_t, yaw_t;
@@ -75,13 +80,35 @@ void setup() {
   pitch_t.set(conf.kp_p_t, conf.kd_p_t, conf.ki_p_t, conf.kaw_p_t, conf.min_p_t, conf.max_p_t);
   yaw_t.set(conf.kp_y_t, conf.kd_y_t, conf.ki_y_t, conf.kaw_y_t, conf.min_y_t, conf.max_y_t);
   Serial.println("<A1>");
-  initMPU6050(&mpu);
+  //initMPU6050(&mpu);
+  if (!mpu.begin()) {
+    Serial.println("Failed to find MPU6050 chip");
+    while (1) {
+      delay(10);
+    }
+  }
+  mpu.setFilterBandwidth(MPU6050_BAND_21_HZ);
+  Serial.println("MPU6050 Found!");
+  mpu_accel = mpu.getAccelerometerSensor();
+  mpu_accel->printSensorDetails();
+  
+  mpu_gyro = mpu.getGyroSensor();
+  mpu_gyro->printSensorDetails();
+  //setup kalman filters
+  double xHat[2] = {0.0, 0.0};
+  double p[2][2] = {{1.0, 1.0}, {1.0, 1.0}};
+  double q[2][2] = {{0.001, 0.001}, {0.001, 0.001}};
+  double r = 0.25;
+  k_roll.init(xHat, p, q, r);
+  k_pitch.init(xHat, p, q, r);
   Serial.println("<A2>");
   delay(5000);
   digitalWrite(LED_BUILTIN, LOW);
-  mpu.resetFIFO();
+  //mpu.resetFIFO();
   Serial.println(CONTROL_TOKEN);
   timestamp = millis();
+  k_roll.zeroTime();
+  k_pitch.zeroTime();
 }
 
 
@@ -96,15 +123,23 @@ void loop() {
     cntrlPrs.parse(ypr_arr, &throttle, msg, &DELIM);
     throttle = BOUND<int>(throttle, 0, THROTTLE_MAX);
   }
-
   //getYPR(&mpu, &ypr_struct, true);
-  getMeasurements(&mpu, &accel_struct, &ypr_struct, true);
-  pitch_rate = pitch_vel.control(ypr_struct.pitch, ypr_arr[1]);
-  roll_rate = roll_vel.control(ypr_struct.roll, ypr_arr[2]);
+  //getMeasurements(&mpu, &accel_struct, &ypr_struct, true);
+  sensors_event_t accel;
+  sensors_event_t gyro;
+  mpu_accel->getEvent(&accel);
+  mpu_gyro->getEvent(&gyro);
 
-  roll_out = roll_t.control(accel_struct.x, roll_rate);
-  pitch_out = pitch_t.control(accel_struct.y, pitch_rate);
-  yaw_out = yaw_t.control(accel_struct.z, ypr_arr[0]);
+  float roll = atan2(-accel.acceleration.x, sqrt(powf(accel.acceleration.y, 2.0) + powf(accel.acceleration.z, 2.0)));
+  float pitch = atan2(accel.acceleration.y, accel.acceleration.z);
+  //roll = k_roll.getAngles(gyro.gyro.x, roll);
+  //pitch = k_pitch.getAngles(gyro.gyro.y, pitch);
+  pitch_rate = pitch_vel.control(pitch, ypr_arr[1]);
+  roll_rate = roll_vel.control(roll, ypr_arr[2]);
+
+  roll_out = roll_t.control(accel.acceleration.x, roll_rate);
+  pitch_out = pitch_t.control(accel.acceleration.y, pitch_rate);
+  yaw_out = yaw_t.control(accel.acceleration.z, ypr_arr[0]);
 
   rf_t = BOUND<int>(throttle + roll_out - pitch_out + yaw_out, 0, ESC_MAX);
   lf_t = BOUND<int>(throttle + -roll_out - pitch_out - yaw_out, 0, ESC_MAX);
@@ -116,7 +151,7 @@ void loop() {
   rb.setSpeed(rb_t);
   lb.setSpeed(lb_t);
 
-  outPrs.parse(msg, MSG_SIZE, EOL, DELIM, ypr_struct.yaw, ypr_struct.pitch, ypr_struct.roll, millis() - timestamp, accel_struct.x, accel_struct.y, accel_struct.z, rf_t, rb_t, lf_t, lb_t, throttle);
+  outPrs.parse(msg, MSG_SIZE, EOL, DELIM, 0, pitch, roll, millis() - timestamp, accel.acceleration.x, accel.acceleration.y, accel.acceleration.z, rf_t, rb_t, lf_t, lb_t, throttle);
   Serial.print(msg);
   timestamp = millis();
 }
