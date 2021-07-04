@@ -25,7 +25,7 @@ struct rotation
 bool dmpReady = false; // set true if DMP init was successful
 Quaternion q;        // [w, x, y, z]         quaternion container
 VectorFloat gravity; // [x, y, z]            gravity vector
-float ypr[3];        // [yaw, pitch, roll]   yaw/pitch/roll container and gravity vector
+float ypr[3], ypr_offset[3] = {111.75, 175.87, 179.51};        // [yaw, pitch, roll]   yaw/pitch/roll container and gravity vector
 uint8_t fifoBuffer[64]; // FIFO storage buffer
 int16_t rotx,roty,rotz;
 
@@ -45,18 +45,9 @@ void getYPR(MPU6050 *mpu, YPR *ypr_struct, bool degrees = true)
         mpu->dmpGetQuaternion(&q, fifoBuffer);
         mpu->dmpGetGravity(&gravity, &q);
         mpu->dmpGetYawPitchRoll(ypr, &q, &gravity);
-        if (degrees)
-        {
-            ypr_struct->yaw = ypr[0] * 180 / M_PI;
-            ypr_struct->pitch = ypr[1] * 180 / M_PI;
-            ypr_struct->roll = ypr[2] * 180 / M_PI;
-        }
-        else
-        {
-            ypr_struct->yaw = ypr[0];
-            ypr_struct->pitch = ypr[1];
-            ypr_struct->roll = ypr[2];
-        }
+        ypr_struct->yaw = (ypr[0] - ypr_offset[0]) * 180 / M_PI;
+        ypr_struct->pitch = (ypr[1] - ypr_offset[1]) * 180 / M_PI;
+        ypr_struct->roll = (ypr[2] - ypr_offset[2]) * 180 / M_PI;
     }
 }
 
@@ -68,18 +59,11 @@ void getMeasurements(MPU6050 *mpu, rotation *a, YPR *ypr_struct, bool degrees = 
         mpu->dmpGetQuaternion(&q, fifoBuffer);
         mpu->dmpGetGravity(&gravity, &q);
         mpu->dmpGetYawPitchRoll(ypr, &q, &gravity);
-        if (degrees)
-        {
-            ypr_struct->yaw = ypr[0] * 180 / M_PI;
-            ypr_struct->pitch = ypr[1] * 180 / M_PI;
-            ypr_struct->roll = ypr[2] * 180 / M_PI;
-        }
-        else
-        {
-            ypr_struct->yaw = ypr[0];
-            ypr_struct->pitch = ypr[1];
-            ypr_struct->roll = ypr[2];
-        }
+    
+        ypr_struct->yaw = ypr[0] * 180 / M_PI - ypr_offset[0];
+        ypr_struct->pitch = ypr[1] * 180 / M_PI - ypr_offset[1];
+        ypr_struct->roll = ypr[2] * 180 / M_PI - ypr_offset[2];
+
         mpu->getRotation(&rotx, &roty, &rotz);
         a->x = rotx;
         a->y = roty;
@@ -97,18 +81,18 @@ void initMPU6050(MPU6050 *mpu)
     devStatus = mpu->dmpInitialize(4);
 
     // supply your own gyro offsets here, scaled for min sensitivity
-    mpu->setXGyroOffset(220);
+    /*mpu->setXGyroOffset(220);
     mpu->setYGyroOffset(76);
     mpu->setZGyroOffset(-85);
-    mpu->setZAccelOffset(1788); // 1688 factory default for my test chip
+    mpu->setZAccelOffset(1788); // 1688 factory default for my test chip*/
 
     // make sure it worked (returns 0 if so)
     if (devStatus == 0)
     {
         // Calibration Time: generate offsets and calibrate our MPU6050
-        mpu->CalibrateAccel(6);
-        mpu->CalibrateGyro(6);
-        mpu->PrintActiveOffsets();
+        //mpu->CalibrateAccel(2);
+        //mpu->CalibrateGyro(2);
+        //mpu->PrintActiveOffsets();
         mpu->setDMPEnabled(true);
 
         mpuIntStatus = mpu->getIntStatus();
@@ -129,5 +113,7 @@ void initMPU6050(MPU6050 *mpu)
         Serial.println(F(")"));
     }
 }
+
+
 
 #endif /* _MPU_HELPER_H_ */

@@ -98,7 +98,7 @@ void loop() {
   }
 
   //getYPR(&mpu, &ypr_struct, true);
-  getMeasurements(&mpu, &accel_struct, &ypr_struct, true);
+  getMeasurements(&mpu, &accel_struct, &ypr_struct);
   pitch_rate = pitch_vel.control(ypr_struct.pitch, ypr_arr[1]);
   roll_rate = roll_vel.control(ypr_struct.roll, ypr_arr[2]);
 
