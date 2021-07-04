@@ -28,7 +28,8 @@ VectorFloat gravity; // [x, y, z]            gravity vector
 float ypr[3];        // [yaw, pitch, roll]   yaw/pitch/roll container and gravity vector
 uint8_t fifoBuffer[64]; // FIFO storage buffer
 int16_t rotx,roty,rotz;
-
+uint16_t fifoCount; 
+uint16_t packetSize;
 //uint16_t packetSize;    // expected DMP packet size (default is 42 bytes)
 
 volatile bool mpuInterrupt = false;
@@ -41,7 +42,9 @@ void getYPR(MPU6050 *mpu, YPR *ypr_struct, bool degrees = true)
 {
     if (!dmpReady)
         return;
-    if(mpu->dmpGetCurrentFIFOPacket(fifoBuffer)){
+    fifoCount = mpu->getFIFOCount();
+    if(fifoCount > packetSize){
+        mpu->getFIFOBytes(fifoBuffer, packetSize);
         mpu->dmpGetQuaternion(&q, fifoBuffer);
         mpu->dmpGetGravity(&gravity, &q);
         mpu->dmpGetYawPitchRoll(ypr, &q, &gravity);
@@ -64,7 +67,9 @@ void getYPR(MPU6050 *mpu, YPR *ypr_struct, bool degrees = true)
 void getMeasurements(MPU6050 *mpu, rotation *a, YPR *ypr_struct, bool degrees = true) {
     if (!dmpReady)
         return;
-    if(mpu->dmpGetCurrentFIFOPacket(fifoBuffer)){
+    fifoCount = mpu->getFIFOCount();
+    if(fifoCount > packetSize){
+        mpu->getFIFOBytes(fifoBuffer, packetSize);
         mpu->dmpGetQuaternion(&q, fifoBuffer);
         mpu->dmpGetGravity(&gravity, &q);
         mpu->dmpGetYawPitchRoll(ypr, &q, &gravity);
@@ -94,7 +99,7 @@ void initMPU6050(MPU6050 *mpu)
     mpu->initialize();
     Serial.println(mpu->testConnection() ? F("MPU6050 connection successful") : F("MPU6050 connection failed"));
     // load and configure the DMP
-    devStatus = mpu->dmpInitialize(4);
+    devStatus = mpu->dmpInitialize();
 
     // supply your own gyro offsets here, scaled for min sensitivity
     mpu->setXGyroOffset(220);
@@ -106,12 +111,13 @@ void initMPU6050(MPU6050 *mpu)
     if (devStatus == 0)
     {
         // Calibration Time: generate offsets and calibrate our MPU6050
-        mpu->CalibrateAccel(6);
-        mpu->CalibrateGyro(6);
-        mpu->PrintActiveOffsets();
+        //mpu->CalibrateAccel(6);
+        //mpu->CalibrateGyro(6);
+        //mpu->PrintActiveOffsets();
         mpu->setDMPEnabled(true);
 
         mpuIntStatus = mpu->getIntStatus();
+        packetSize = mpu->dmpGetFIFOPacketSize();
         dmpReady = true;
         // get expected DMP packet size for later comparison
         //packetSize = mpu->dmpGetFIFOPacketSize();
