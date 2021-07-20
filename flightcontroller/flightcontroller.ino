@@ -27,7 +27,7 @@ ESC lf, rf, lb, rb;
 int throttle = 0, lb_t, rb_t, lf_t, rf_t;
 
 // MPU
-MPU6050 mpu;
+ICM_20948_I2C imu;
 YPR ypr_struct;
 rotation accel_struct;
 
@@ -53,7 +53,7 @@ void setup() {
   Wire.begin();
   Wire.setClock(400000); // 400kHz I2C clock
   Serial.begin(115200);
-  while (!Serial); // wait for Leonardo enumeration, others continue immediately
+  while (!Serial); 
   ConfigParser cfgPrs;
   Config conf;
   char conf_msg[256];
@@ -75,11 +75,11 @@ void setup() {
   pitch_t.set(conf.kp_p_t, conf.kd_p_t, conf.ki_p_t, conf.kaw_p_t, conf.min_p_t, conf.max_p_t);
   yaw_t.set(conf.kp_y_t, conf.kd_y_t, conf.ki_y_t, conf.kaw_y_t, conf.min_y_t, conf.max_y_t);
   Serial.println("<A1>");
-  initMPU6050(&mpu);
+  initIMU(&imu);
   Serial.println("<A2>");
   delay(5000);
   digitalWrite(LED_BUILTIN, LOW);
-  mpu.resetFIFO();
+  imu.resetFIFO();
   Serial.println(CONTROL_TOKEN);
   timestamp = millis();
 }
@@ -97,8 +97,7 @@ void loop() {
     throttle = BOUND<int>(throttle, 0, THROTTLE_MAX);
   }
 
-  //getYPR(&mpu, &ypr_struct, true);
-  getMeasurements(&mpu, &accel_struct, &ypr_struct);
+  getMeasurements(&imu, &accel_struct, &ypr_struct);
   pitch_rate = pitch_vel.control(ypr_struct.pitch, ypr_arr[1]);
   roll_rate = roll_vel.control(ypr_struct.roll, ypr_arr[2]);
 

@@ -1,15 +1,10 @@
-#ifndef _MPU_HELPER_H_
-#define _MPU_HELPER_H_
+#ifndef _IMU_H_
+#define _IMU_H_
 
-#include "I2Cdev.h"
-#include "SparkFun_ICM-20948_ArduinoLibrary/ICM_20948.h"
+#include "icm20948/ICM_20948.h"
 
 #define INTERRUPT_PIN 2
 
-
-// ===========
-// == MPU Defs
-// ============
 struct YPR
 {
     float yaw = 0, pitch = 0, roll = 0;
@@ -20,100 +15,99 @@ struct rotation
     float x = 0, y = 0, z = 0;
 };
 
-//MPU6050 mpu;
-// MPU control/status vars
 bool dmpReady = false; // set true if DMP init was successful
-Quaternion q;        // [w, x, y, z]         quaternion container
-VectorFloat gravity; // [x, y, z]            gravity vector
-float ypr[3], ypr_offset[3] = {111.75, 175.87, 179.51};        // [yaw, pitch, roll]   yaw/pitch/roll container and gravity vector
-uint8_t fifoBuffer[64]; // FIFO storage buffer
-int16_t rotx,roty,rotz;
+icm_20948_DMP_data_t data;
+double q0, q1, q2, q3, q2sqr, t0, t1, t2, t3, t4;
 
 //uint16_t packetSize;    // expected DMP packet size (default is 42 bytes)
 
-volatile bool mpuInterrupt = false;
-void dmpDataReady()
-{
-    mpuInterrupt = true;
-}
-
-void getYPR(MPU6050 *mpu, YPR *ypr_struct, bool degrees = true)
+void getMeasurements(ICM_20948_I2C *imu, rotation *a, YPR *ypr_struct, bool degrees = true)
 {
     if (!dmpReady)
         return;
-    if(mpu->dmpGetCurrentFIFOPacket(fifoBuffer)){
-        mpu->dmpGetQuaternion(&q, fifoBuffer);
-        mpu->dmpGetGravity(&gravity, &q);
-        mpu->dmpGetYawPitchRoll(ypr, &q, &gravity);
-        ypr_struct->yaw = (ypr[0] - ypr_offset[0]) * 180 / M_PI;
-        ypr_struct->pitch = (ypr[1] - ypr_offset[1]) * 180 / M_PI;
-        ypr_struct->roll = (ypr[2] - ypr_offset[2]) * 180 / M_PI;
+    imu->readDMPdataFromFIFO(&data);
+    if (imu->status == ICM_20948_Stat_Ok)
+    {
+        if ((data.header & DMP_header_bitmap_Quat6) > 0) // We have asked for GRV data so we should receive Quat6
+        {
+
+            // Scale to +/- 1
+            q1 = ((double)data.Quat6.Data.Q1) / 1073741824.0; // Convert to double. Divide by 2^30
+            q2 = ((double)data.Quat6.Data.Q2) / 1073741824.0; // Convert to double. Divide by 2^30
+            q3 = ((double)data.Quat6.Data.Q3) / 1073741824.0; // Convert to double. Divide by 2^30
+
+            // Convert the quaternions to Euler angles (roll, pitch, yaw)
+            // https://en.wikipedia.org/w/index.php?title=Conversion_between_quaternions_and_Euler_angles&section=8#Source_code_2
+
+            q0 = sqrt(1.0 - ((q1 * q1) + (q2 * q2) + (q3 * q3)));
+
+            q2sqr = q2 * q2;
+
+            // roll (x-axis rotation)
+            t0 = +2.0 * (q0 * q1 + q2 * q3);
+            t1 = +1.0 - 2.0 * (q1 * q1 + q2sqr);
+            ypr_struct->roll = atan2(t0, t1);
+
+            // pitch (y-axis rotation)
+            t2 = +2.0 * (q0 * q2 - q3 * q1);
+            t2 = t2 > 1.0 ? 1.0 : t2;
+            t2 = t2 < -1.0 ? -1.0 : t2;
+            ypr_struct->pitch = asin(t2);
+
+            // yaw (z-axis rotation)
+            t3 = +2.0 * (q0 * q3 + q1 * q2);
+            t4 = +1.0 - 2.0 * (q2sqr + q3 * q3);
+            ypr_struct->yaw = atan2(t3, t4);
+        }
+   
+        a->x = imu->gyrX() * M_PI / 180.0;
+        a->y = imu->gyrY() * M_PI / 180.0;
+        a->z = imu->gyrZ() * M_PI / 180.0;
     }
 }
 
-
-void getMeasurements(MPU6050 *mpu, rotation *a, YPR *ypr_struct, bool degrees = true) {
-    if (!dmpReady)
-        return;
-    if(mpu->dmpGetCurrentFIFOPacket(fifoBuffer)){
-        mpu->dmpGetQuaternion(&q, fifoBuffer);
-        mpu->dmpGetGravity(&gravity, &q);
-        mpu->dmpGetYawPitchRoll(ypr, &q, &gravity);
-    
-        ypr_struct->yaw = ypr[0] * 180 / M_PI - ypr_offset[0];
-        ypr_struct->pitch = ypr[1] * 180 / M_PI - ypr_offset[1];
-        ypr_struct->roll = ypr[2] * 180 / M_PI - ypr_offset[2];
-
-        mpu->getRotation(&rotx, &roty, &rotz);
-        a->x = rotx;
-        a->y = roty;
-        a->z = rotz;
-    }
-}
-
-void initMPU6050(MPU6050 *mpu)
+void initIMU(ICM_20948_I2C *imu, int ado_val = 1)
 {
-    uint8_t devStatus;
-    uint8_t mpuIntStatus;
-    mpu->initialize();
-    Serial.println(mpu->testConnection() ? F("MPU6050 connection successful") : F("MPU6050 connection failed"));
-    // load and configure the DMP
-    devStatus = mpu->dmpInitialize(4);
-
-    // supply your own gyro offsets here, scaled for min sensitivity
-    /*mpu->setXGyroOffset(220);
-    mpu->setYGyroOffset(76);
-    mpu->setZGyroOffset(-85);
-    mpu->setZAccelOffset(1788); // 1688 factory default for my test chip*/
-
-    // make sure it worked (returns 0 if so)
-    if (devStatus == 0)
+    imu->begin(Wire, ado_val);
+    if (imu->status != ICM_20948_Stat_Ok)
     {
-        // Calibration Time: generate offsets and calibrate our MPU6050
-        //mpu->CalibrateAccel(2);
-        //mpu->CalibrateGyro(2);
-        //mpu->PrintActiveOffsets();
-        mpu->setDMPEnabled(true);
+        Serial.println(F("Error while initializing IMU"));
+        return;
+    }
+    dmpReady = true;
+    dmpReady &= (imu->initializeDMP() == ICM_20948_Stat_Ok);
+    // Enable the DMP Game Rotation Vector sensor (Quat6)
+    dmpReady &= (imu->enableDMPSensor(INV_ICM20948_SENSOR_GRAVITY) == ICM_20948_Stat_Ok);
 
-        mpuIntStatus = mpu->getIntStatus();
-        dmpReady = true;
-        // get expected DMP packet size for later comparison
-        //packetSize = mpu->dmpGetFIFOPacketSize();
-        //pinMode(INTERRUPT_PIN, INPUT);
-        //attachInterrupt(digitalPinToInterrupt(INTERRUPT_PIN), dmpDataReady, RISING);
-    }
-    else
-    {
-        // ERROR!
-        // 1 = initial memory load failed
-        // 2 = DMP configuration updates failed
-        // (if it's going to break, usually the code will be 1)
-        Serial.print(F("DMP Initialization failed (code "));
-        Serial.print(devStatus);
-        Serial.println(F(")"));
-    }
+    // Enable additional sensors / features
+    dmpReady &= (imu->enableDMPSensor(INV_ICM20948_SENSOR_RAW_GYROSCOPE) == ICM_20948_Stat_Ok);
+    //dmpReady &= (imu->enableDMPSensor(INV_ICM20948_SENSOR_RAW_ACCELEROMETER) == ICM_20948_Stat_Ok);
+    //dmpReady &= (imu->enableDMPSensor(INV_ICM20948_SENSOR_MAGNETIC_FIELD_UNCALIBRATED) == ICM_20948_Stat_Ok);
+    //dmpReady &= (imu->enableDMPSensor(INV_ICM20948_SENSOR_ORIENTATION) == ICM_20948_Stat_Ok);
+
+    // Configuring DMP to output data at multiple ODRs:
+    // DMP is capable of outputting multiple sensor data at different rates to FIFO.
+    // Setting value can be calculated as follows:
+    // Value = (DMP running rate / ODR ) - 1
+    // E.g. For a 5Hz ODR rate when DMP is running at 55Hz, value = (55/5) - 1 = 10.
+    dmpReady &= (imu->setDMPODRrate(DMP_ODR_Reg_Quat6, 0) == ICM_20948_Stat_Ok);        // Set to max
+
+    dmpReady &= (imu->setDMPODRrate(DMP_ODR_Reg_Gyro, 54) == ICM_20948_Stat_Ok);         // Set to 1Hz
+    dmpReady &= (imu->setDMPODRrate(DMP_ODR_Reg_Gyro_Calibr, 54) == ICM_20948_Stat_Ok);  // Set to 1Hz
+    //dmpReady &= (imu->setDMPODRrate(DMP_ODR_Reg_Cpass, 54) == ICM_20948_Stat_Ok);        // Set to 1Hz
+    //dmpReady &= (imu->setDMPODRrate(DMP_ODR_Reg_Cpass_Calibr, 54) == ICM_20948_Stat_Ok); // Set to 1Hz
+
+    // Enable the FIFO
+    dmpReady &= (imu->enableFIFO() == ICM_20948_Stat_Ok);
+
+    // Enable the DMP
+    dmpReady &= (imu->enableDMP() == ICM_20948_Stat_Ok);
+
+    // Reset DMP
+    dmpReady &= (imu->resetDMP() == ICM_20948_Stat_Ok);
+
+    // Reset FIFO
+    dmpReady &= (imu->resetFIFO() == ICM_20948_Stat_Ok);
 }
 
-
-
-#endif /* _MPU_HELPER_H_ */
+#endif /* _IMU_H_ */
