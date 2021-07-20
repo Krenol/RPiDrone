@@ -9,7 +9,7 @@
 
 //#include "I2Cdev.h"
 #include "Wire.h"
-#include "src/mpu_helper.h"
+#include "src/imu.h"
 #include "src/ESC.h"
 #include "Servo.h"
 #include "src/PID.h"

@@ -2,7 +2,7 @@
 #define _MPU_HELPER_H_
 
 #include "I2Cdev.h"
-#include "MPU6050/MPU6050_6Axis_MotionApps20.h"
+#include "SparkFun_ICM-20948_ArduinoLibrary/ICM_20948.h"
 
 #define INTERRUPT_PIN 2
 
