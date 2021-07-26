@@ -1,3 +1,6 @@
+#ifndef DRONE_LOGS_MEMORY_LOG_H
+#define DRONE_LOGS_MEMORY_LOG_H
+
 #include "stdlib.h"
 #include "stdio.h"
 #include "string.h"
@@ -57,3 +60,5 @@ namespace drone
         }
     }
 } // namespace drone
+
+#endif

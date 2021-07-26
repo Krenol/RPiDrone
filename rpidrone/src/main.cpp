@@ -1,62 +1,23 @@
 #include "loop.hpp"
 #include "logs/easylogging++.h"
+#include "logs/logs.hpp"
 #include "globals.hpp"
-#include <cstdio>
-#include <fstream>
-#include <iostream>
-#include <ios>
-#include <ctime>
+#include "misc.hpp"
 #if defined(POWER_LOGS)
-#include "logs/cpu_log.hpp"
-#include "logs/memory_log.hpp"
-#define POWER_LOG(LEVEL) CLOG(LEVEL, "power")  
+#include "logs/power_logs.hpp"
 #endif
 
 INITIALIZE_EASYLOGGINGPP
 
-static void mvFile(const std::string& file, const std::string& newFile){
-    try {
-        std::ifstream in(file.c_str(), std::ios::in | std::ios::binary);
-        if(in.good()) {
-            std::ofstream out(newFile.c_str(), std::ios::out | std::ios::binary);
-            out << in.rdbuf();
-            std::remove(file.c_str());
-        }
-    } catch(...) {
-
-    }
-    
-}
-
-static void initLogging()
-{
-    auto t = std::to_string(std::time(0));
-    mvFile(LOG_DIR + "/flightcontroller.csv", OLD_LOG_DIR + "/flightcontroller_" + t + ".csv");
-    mvFile(LOG_DIR + "/network.log", OLD_LOG_DIR + "/network_" + t + ".log");
-    mvFile(LOG_DIR + "/default.log", OLD_LOG_DIR + "/default_" + t + ".log");
-    mvFile(LOG_DIR + "/power.csv", OLD_LOG_DIR + "/power_" + t + ".csv");
-    mvFile(LOG_DIR + "/exec.csv", OLD_LOG_DIR + "/exec_" + t + ".csv");
-    mvFile(LOG_DIR + "/rpi.csv", OLD_LOG_DIR + "/rpi_" + t + ".csv");
-    //enable multi loggers
-    el::Loggers::addFlag(el::LoggingFlag::MultiLoggerSupport);
-    // configure all loggers
-    el::Loggers::configureFromGlobal((CONF_DIR + "/" + LOG_CONF).c_str());
-}
-
-void initPowerLogs(const bool& run) {
-    drone::logs::initCpuLog();
-    POWER_LOG(DEBUG) << "datetime;level;sys_cpu;proc_cpu;memory;virtual_memory";
-    while(run) {
-        POWER_LOG(INFO) << drone::logs::systemCpuConsumption() << ";" << drone::logs::getCpuConsumption() << ";" << drone::logs::getMemoryConsumption() << ";" << drone::logs::getVirtualMemoryConsumption();
-        usleep(100000);
-    }
-}
-
 int main() {
     bool run = true;
-    initLogging();
+    drone::logs::Logs log;
+    log.init(LOG_DIR, OLD_LOG_DIR, CONF_DIR, LOG_CONF);
     #if defined(POWER_LOGS)
-    std::thread thrd([&run] () {initPowerLogs(run); });
+    std::thread thrd([&run] () {
+        drone::logs::PowerLogs pwLogs;
+        pwLogs.init(run); 
+    });
     #endif
     LOG(INFO) << "Loading " << CONF_FILE << " and starting up drone";
     drone::Loop l (CONF_DIR + "/" + CONF_FILE);
