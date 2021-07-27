@@ -14,10 +14,12 @@
 #include "logs/power_logs.hpp"
 #endif
 #if defined(CONF_API_MODE)
-#include <unistd.h>
+#include <stdio.h>
+#include <conio.h>
+#include <Python.h>
 #endif
 
-
+namespace py = pybind11;
 using json = nlohmann::json;
 
 //INITIALIZE_EASYLOGGINGPP
@@ -38,10 +40,12 @@ int main() {
 
     #if defined(CONF_API_MODE)
     LOG(INFO) << "Starting API Server....";
-    std::string path = HOME_DIR + "/api";
-    execlp(path.c_str(), "python3 main.py", NULL);
+    char filename[] = HOME_DIR + "/api/main.py";
+	FILE* fp;
+	Py_Initialize();
+	fp = _Py_fopen(filename, "r");
+	PyRun_SimpleFile(fp, filename);
     LOG(INFO) << "API Server started successfully";
-    while(1) {}
     #endif
     #if defined(POWER_LOGS)
     std::thread thrd([&run] () {
@@ -68,6 +72,8 @@ int main() {
     }
     run = false;
     thrd.join();
-    
+    #if defined(CONF_API_MODE)
+    Py_Finalize();
+    #endif
     return 0;
 }
