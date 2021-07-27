@@ -37,8 +37,9 @@ int main() {
     #if defined(CONF_API_MODE)
     LOG(INFO) << "Starting API Server....";
     std:: string cmd = "/usr/bin/python3 " + HOME_DIR + "/api/main.py &";
-	if(system(cmd.c_str()) < 0) {
-        LOG(ERROR) << "API Server did not started successfully";
+    int pid;
+	if(pid = system(cmd.c_str()) < 0) {
+        LOG(ERROR) << "API Server did not started successfully with PID: " << pid;
     } else {
         LOG(INFO) << "API Server started successfully";
     }
