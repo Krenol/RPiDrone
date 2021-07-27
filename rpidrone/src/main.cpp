@@ -14,8 +14,6 @@
 #include "logs/power_logs.hpp"
 #endif
 #if defined(CONF_API_MODE)
-#include <stdio.h>
-#include <conio.h>
 #include <Python.h>
 #endif
 
