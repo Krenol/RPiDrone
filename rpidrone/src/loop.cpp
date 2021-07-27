@@ -113,7 +113,6 @@ namespace drone
                 if (server.hasData())
                 {
                     readFromSocket(server, buf, config.server.delimiter, 3);
-                    LOG(INFO) << buf;
                 }
                 if(parseBuffer(buf, msg, config.server.delimiter)) 
                 {

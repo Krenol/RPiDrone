@@ -73,8 +73,7 @@ int main() {
             #endif 
         } catch(const std::exception &exc) {
             LOG(ERROR) << exc.what();
-        }
-        
+        } 
     }
     run = false;
     thrd.join();

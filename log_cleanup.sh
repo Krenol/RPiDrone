@@ -5,4 +5,4 @@ mkdir logs/old_logs
 touch logs/old_logs/.gitkeep
 mkdir logs/plots
 touch logs/plots/.gitkeep
-chown -R krenol:krenol logs
+chown -R pi:pi logs
