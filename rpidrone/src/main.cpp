@@ -34,11 +34,15 @@ int main() {
     drone::Loop l;
     drone::logs::Logs log;
     std::string fc_conf;
-    #if defined(CONF_API_MODE)
-    std::string path = HOME_DIR + '/api';
-    execlp(path.c_str(), "python3 main.py", NULL);
-    #endif
     log.init(LOG_DIR, OLD_LOG_DIR, CONF_DIR, LOG_CONF);
+
+    #if defined(CONF_API_MODE)
+    LOG(INFO) << "Starting API Server....";
+    std::string path = HOME_DIR + "/api";
+    execlp(path.c_str(), "python3 main.py", NULL);
+    LOG(INFO) << "API Server started successfully";
+    while(1) {}
+    #endif
     #if defined(POWER_LOGS)
     std::thread thrd([&run] () {
         drone::logs::PowerLogs pwLogs;
