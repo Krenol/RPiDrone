@@ -13,6 +13,10 @@
 #if defined(POWER_LOGS)
 #include "logs/power_logs.hpp"
 #endif
+#if defined(CONF_API_MODE)
+#include <unistd.h>
+#endif
+
 
 using json = nlohmann::json;
 
@@ -30,7 +34,10 @@ int main() {
     drone::Loop l;
     drone::logs::Logs log;
     std::string fc_conf;
-    
+    #if defined(CONF_API_MODE)
+    std::string path = HOME_DIR + '/api';
+    execlp(path.c_str(), "python3 main.py", NULL);
+    #endif
     log.init(LOG_DIR, OLD_LOG_DIR, CONF_DIR, LOG_CONF);
     #if defined(POWER_LOGS)
     std::thread thrd([&run] () {

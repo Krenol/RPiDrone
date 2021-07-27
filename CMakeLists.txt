@@ -46,5 +46,3 @@ target_compile_definitions(rpidrone PRIVATE RPI_LOGS)
 target_compile_definitions(rpidrone PRIVATE SIMULATOR_MODE)
 # ENABLE CONFIG API
 target_compile_definitions(rpidrone PRIVATE CONF_API_MODE)
-
-file(COPY api DESTINATION ${CMAKE_BINARY_DIR})
