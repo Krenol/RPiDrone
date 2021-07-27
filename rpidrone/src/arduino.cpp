@@ -1,9 +1,6 @@
 #include "arduino.hpp"
 #include "wiringSerial.h"
 #include "logs/easylogging++.h"
-#if defined(SIMULATOR_MODE)
-#include <unistd.h>
-#endif
 
 namespace drone
 {
@@ -19,12 +16,6 @@ namespace drone
     {
         char out_c[OUT_MSG_SIZE];
         std::string out;
-        #if defined(SIMULATOR_MODE)
-        LOG(INFO) << "---SIMULATOR MODE ACTIVE -> RESET ARDUINO---";
-        serialSend("<R>");
-        LOG(INFO) << "---SIMULATOR MODE ACTIVE -> RESET SIGNAL SENT; WAIT 5s---";
-        usleep(5000);
-        #endif
         LOG(INFO) << "Setting up arduino with parsed config " << conf;
         
         do {
@@ -32,7 +23,7 @@ namespace drone
             serialPuts(fd_ard_, conf.c_str());
             serialGetStr(fd_ard_, out_c, OUT_MSG_SIZE, '\n');
             out = out_c;
-        } while(out.find("<A>") == std::string::npos);
+        } while(out.find(ACK_TOKEN) == std::string::npos);
         LOG(INFO) << "arduino acknowledged config; waiting for successful sensor & motor setup";
         
         //await go from arduino

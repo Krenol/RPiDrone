@@ -6,6 +6,7 @@
 #define MSG_SIZE 128
 #define THROTTLE_MAX 100
 #define ESC_MAX 120 // we need buffer to still be able to control the drone at top speed
+#define ACK_TOKEN "<A>"
 
 //#include "I2Cdev.h"
 #include "Wire.h"
@@ -47,33 +48,45 @@ const char DELIM = ';', DELIM_D = '&', EOL = '\n';
 int timestamp;
 
 
+void getConf(Config *conf) {
+  ConfigParser cfgPrs;
+  char conf_msg[256];
+  Serial.println(CONFIG_TOKEN);
+  dataReceived = readString(conf_msg, 256, EOL);
+  while (!dataReceived || cfgPrs.parse(conf, conf_msg, &DELIM_D, &DELIM) == false) {
+    Serial.println(CONFIG_TOKEN);
+    delay(200);
+    dataReceived = readString(conf_msg, 256, EOL);
+  }
+}
+
+void initPIDs(Config *conf) {
+  roll_vel.set(conf->kp_r_v, conf->kd_r_v, conf->ki_r_v, conf->kaw_r_v, conf->min_r_v, conf->max_r_v);
+  roll_t.set(conf->kp_r_t, conf->kd_r_t, conf->ki_r_t, conf->kaw_r_t, conf->min_r_t, conf->max_r_t);
+  pitch_vel.set(conf->kp_p_v, conf->kd_p_v, conf->ki_p_v, conf->kaw_p_v, conf->min_r_v, conf->max_p_v);
+  pitch_t.set(conf->kp_p_t, conf->kd_p_t, conf->ki_p_t, conf->kaw_p_t, conf->min_p_t, conf->max_p_t);
+  yaw_t.set(conf->kp_y_t, conf->kd_y_t, conf->ki_y_t, conf->kaw_y_t, conf->min_y_t, conf->max_y_t);
+}
+
+void initESCs(Config *conf) {
+  lf.init(conf->pin_lf, conf->esc_min, conf->esc_max, ESC_MAX, conf->calib_esc);
+  rf.init(conf->pin_rf, conf->esc_min, conf->esc_max, ESC_MAX, conf->calib_esc);
+  lb.init(conf->pin_lb, conf->esc_min, conf->esc_max, ESC_MAX, conf->calib_esc);
+  rb.init(conf->pin_rb, conf->esc_min, conf->esc_max, ESC_MAX, conf->calib_esc);
+}
+
 void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
   digitalWrite(LED_BUILTIN, HIGH);
   Wire.begin();
   Wire.setClock(400000); // 400kHz I2C clock
   Serial.begin(115200);
-  while (!Serial); 
-  ConfigParser cfgPrs;
+  while (!Serial);
   Config conf;
-  char conf_msg[256];
-  Serial.println(CONFIG_TOKEN);
-  dataReceived = readString(conf_msg, 256, EOL);
-  while(!dataReceived || cfgPrs.parse(&conf, conf_msg, &DELIM_D, &DELIM) == false){
-    Serial.println(CONFIG_TOKEN);
-    delay(200);
-    dataReceived = readString(conf_msg, 256, EOL);
-  }
-  Serial.println("<A>");
-  lf.init(conf.pin_lf, conf.esc_min, conf.esc_max, ESC_MAX, conf.calib_esc);
-  rf.init(conf.pin_rf, conf.esc_min, conf.esc_max, ESC_MAX, conf.calib_esc);
-  lb.init(conf.pin_lb, conf.esc_min, conf.esc_max, ESC_MAX, conf.calib_esc);
-  rb.init(conf.pin_rb, conf.esc_min, conf.esc_max, ESC_MAX, conf.calib_esc);
-  roll_vel.set(conf.kp_r_v, conf.kd_r_v, conf.ki_r_v, conf.kaw_r_v, conf.min_r_v, conf.max_r_v);
-  roll_t.set(conf.kp_r_t, conf.kd_r_t, conf.ki_r_t, conf.kaw_r_t, conf.min_r_t, conf.max_r_t);
-  pitch_vel.set(conf.kp_p_v, conf.kd_p_v, conf.ki_p_v, conf.kaw_p_v, conf.min_r_v, conf.max_p_v);
-  pitch_t.set(conf.kp_p_t, conf.kd_p_t, conf.ki_p_t, conf.kaw_p_t, conf.min_p_t, conf.max_p_t);
-  yaw_t.set(conf.kp_y_t, conf.kd_y_t, conf.ki_y_t, conf.kaw_y_t, conf.min_y_t, conf.max_y_t);
+  getConf(&conf);
+  Serial.println(ACK_TOKEN);
+  initESCs(&conf);
+  initPIDs(&conf);
   Serial.println("<A1>");
   initIMU(&imu);
   Serial.println("<A2>");

@@ -5,6 +5,7 @@
 
 #define OUT_MSG_SIZE 90
 #define CONTROL_TOKEN "<S>"
+#define ACK_TOKEN "<A>"
 
 namespace drone
 {

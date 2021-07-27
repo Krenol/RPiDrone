@@ -41,7 +41,7 @@
                     "pitch_rate": 0.0,
                     "roll_output": 0.0,
                     "pitch_output": 0.0,
-                    "yaw_output": 0.00
+                    "yaw_output": 0.0
                 },
                 "k_p": {
                     "roll_rate": 1,

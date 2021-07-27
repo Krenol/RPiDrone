@@ -7,6 +7,7 @@
 #define MSG_SIZE 256
 #define THROTTLE_MAX 100
 #define ESC_MAX 120 // we need buffer to still be able to control the drone at top speed
+#define ACK_TOKEN "<A>"
 
 //#include "I2Cdev.h"
 #include "Wire.h"
@@ -88,7 +89,7 @@ void setup() {
   while (!Serial);
   Config conf;
   getConf(&conf);
-  Serial.println("<A>");
+  Serial.println(ACK_TOKEN);
   initESCs(&conf);
   initPIDs(&conf);
   Serial.println("<A1>");
