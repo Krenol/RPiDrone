@@ -14,7 +14,7 @@
 #include "logs/power_logs.hpp"
 #endif
 #if defined(CONF_API_MODE)
-#include <Python.h>
+#include <cstdlib>
 #endif
 
 namespace py = pybind11;
@@ -38,12 +38,13 @@ int main() {
 
     #if defined(CONF_API_MODE)
     LOG(INFO) << "Starting API Server....";
-    char filename[] = HOME_DIR + "/api/main.py";
-	FILE* fp;
-	Py_Initialize();
-	fp = _Py_fopen(filename, "r");
-	PyRun_SimpleFile(fp, filename);
-    LOG(INFO) << "API Server started successfully";
+    char cmd[] = "/usr/bin/python3" + HOME_DIR + "/api/main.py 1";
+	if(system(cmd) < 0) {
+        LOG(ERROR) << "API Server did not started successfully";
+    } else {
+        LOG(INFO) << "API Server started successfully";
+    }
+    
     #endif
     #if defined(POWER_LOGS)
     std::thread thrd([&run] () {
