@@ -148,7 +148,6 @@ namespace drone
         }
         msg = "{\"disconnected\": true}";
         sendToFlightcontroller(fc, msg, userInput, config);
-        
     }
 
     void Loop::sendToFlightcontroller(drone::Arduino &fc, std::string &msg, UserInput &userInput, const Config &config) {

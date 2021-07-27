@@ -64,12 +64,17 @@ int main() {
     LOG(INFO) << "Drone startup completed; starting main loop";
     while (1)
     {
-        l.loop(server, fc, config);
-        #if defined(SIMULATOR_MODE)
-        LOG(INFO) << "---SIMULATOR MODE ACTIVE -> LOADING NEW CONF---";
-        loadConfig(CONF_DIR + "/" + CONF_FILE, config, fc_conf);
-        fc.init(fc_conf);
-        #endif
+        try {
+            l.loop(server, fc, config);
+            #if defined(SIMULATOR_MODE)
+            LOG(INFO) << "---SIMULATOR MODE ACTIVE -> LOADING NEW CONF---";
+            loadConfig(CONF_DIR + "/" + CONF_FILE, config, fc_conf);
+            fc.init(fc_conf);
+            #endif 
+        } catch(const std::exception &exc) {
+            LOG(ERROR) << exc.what();
+        }
+        
     }
     run = false;
     thrd.join();
