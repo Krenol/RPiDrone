@@ -5,6 +5,8 @@
 #include "easylogging++.h"
 #include <ctime>
 
+INITIALIZE_EASYLOGGINGPP
+
 namespace drone
 {
     namespace logs

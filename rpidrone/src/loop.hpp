@@ -19,32 +19,16 @@ namespace drone {
              * Constructor for loop class
              * @param config_path The path to the config.json
              */
-            Loop(const std::string& config_path);
-
-            /**
-             * Destructor
-             */
-            ~Loop();
+            Loop();
 
             /**
              * Method containing the main logic
              */
-            void loop();
+            void loop(rpisocket::WiFiServer &server, drone::Arduino &fc, const Config &config);
             
         private:
             //std::unique_ptr<rpicomponents::Led> on_led_, status_led_;
-            Config config_;
             Input last_input_;
-            std::unique_ptr<rpisocket::WiFiServer> server_;
-            int fd_ard_;
-            
-            std::unique_ptr<drone::Arduino> fc_;
-
-            /**
-             * Method to load the config file
-             * @param file The file to be parsed
-             */
-            void loadConfig(const std::string& file);
 
             /**
              * Loop maintianing the connection to clients
@@ -53,13 +37,13 @@ namespace drone {
 
             void createOutputJson(float roll, float pitch, float yaw, const GPSCoordinates& c, json& j);
 
-            void parseUserInput(std::string &msg, UserInput &userInput);
+            void parseUserInput(std::string &msg, UserInput &userInput, const Config &config);
 
-            void readFromSocket(std::string &buf, int max_iter = 10);
+            void readFromSocket(rpisocket::WiFiServer &server, std::string &buf, const std::string &delim, int max_iter = 5);
 
-            bool parseBuffer(std::string &buf, std::string &msg);
+            bool parseBuffer(std::string &buf, std::string &msg, const std::string &delim);
 
-            void sendToFlightcontroller(std::string &msg, UserInput &userInput);
+            void sendToFlightcontroller(drone::Arduino &fc, std::string &msg, UserInput &userInput, const Config &config);
     };
 }
 

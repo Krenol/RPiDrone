@@ -42,3 +42,5 @@ target_compile_definitions(rpidrone PRIVATE EXEC_TIME_LOG)
 target_compile_definitions(rpidrone PRIVATE FLIGHTCONTROLLER_LOGS)
 # ENABLE LOGS FOR RPI
 target_compile_definitions(rpidrone PRIVATE RPI_LOGS)
+# ENABLE SIMULATOR MODE
+target_compile_definitions(rpidrone PRIVATE SIMULATOR_MODE)
