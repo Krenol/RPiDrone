@@ -39,9 +39,9 @@ int main() {
     std:: string cmd = "/usr/bin/python3 " + HOME_DIR + "/api/main.py &";
     int pid;
 	if(pid = system(cmd.c_str()) < 0) {
-        LOG(ERROR) << "API Server did not started successfully with PID: " << pid;
+        LOG(ERROR) << "API Server did not started successfully";
     } else {
-        LOG(INFO) << "API Server started successfully";
+        LOG(INFO) << "API Server started successfully with PID: " << pid;
     }
     
     #endif
