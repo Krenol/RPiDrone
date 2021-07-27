@@ -30,11 +30,10 @@ static void loadConfig(const std::string &conf_file, drone::Config &config, std:
 int main() {
     bool run = true;
     drone::Config config;
-    drone::Loop l;
-    drone::logs::Logs log;
     std::string fc_conf;
+    drone::logs::Logs log;
     log.init(LOG_DIR, OLD_LOG_DIR, CONF_DIR, LOG_CONF);
-
+    drone::Loop l;
     #if defined(CONF_API_MODE)
     LOG(INFO) << "Starting API Server....";
     std:: string cmd = "/usr/bin/python3 " + HOME_DIR + "/api/main.py &";
@@ -54,7 +53,9 @@ int main() {
     LOG(INFO) << "Loading " << CONF_FILE << " and starting up drone";
     
     loadConfig(CONF_DIR + "/" + CONF_FILE, config, fc_conf);
+    OG(INFO) << "init server";
     rpisocket::WiFiServer server(config.server.port, config.server.bytes);
+    LOG(INFO) << "init FC";
     drone::Arduino fc(config.flightcontroller.port, config.flightcontroller.baudrate);
     fc.init(fc_conf);
 
