@@ -17,7 +17,6 @@
 #include <cstdlib>
 #endif
 
-namespace py = pybind11;
 using json = nlohmann::json;
 
 //INITIALIZE_EASYLOGGINGPP
@@ -38,8 +37,7 @@ int main() {
 
     #if defined(CONF_API_MODE)
     LOG(INFO) << "Starting API Server....";
-    char cmd[] = "/usr/bin/python3" + HOME_DIR + "/api/main.py 1";
-	if(system(cmd) < 0) {
+	if(system("/usr/bin/python3" + HOME_DIR + "/api/main.py 1") < 0) {
         LOG(ERROR) << "API Server did not started successfully";
     } else {
         LOG(INFO) << "API Server started successfully";
