@@ -69,8 +69,5 @@ int main() {
     }
     run = false;
     thrd.join();
-    #if defined(CONF_API_MODE)
-    Py_Finalize();
-    #endif
     return 0;
 }
