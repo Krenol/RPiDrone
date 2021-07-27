@@ -22,8 +22,11 @@ using json = nlohmann::json;
 //INITIALIZE_EASYLOGGINGPP
 
 static void loadConfig(const std::string &conf_file, drone::Config &config, std::string &fc_conf){
+    LOG(INFO) << "1";
     std::ifstream ifs(conf_file);
+    LOG(INFO) << "2";
     config = json::parse(ifs);
+    LOG(INFO) << "3";
     drone::parse_config(config, fc_conf);
 }
 
@@ -53,7 +56,7 @@ int main() {
     LOG(INFO) << "Loading " << CONF_FILE << " and starting up drone";
     
     loadConfig(CONF_DIR + "/" + CONF_FILE, config, fc_conf);
-    OG(INFO) << "init server";
+    LOG(INFO) << "init server";
     rpisocket::WiFiServer server(config.server.port, config.server.bytes);
     LOG(INFO) << "init FC";
     drone::Arduino fc(config.flightcontroller.port, config.flightcontroller.baudrate);
