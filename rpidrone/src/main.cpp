@@ -35,10 +35,6 @@ int main() {
     log.init(LOG_DIR, OLD_LOG_DIR, CONF_DIR, LOG_CONF);
     drone::Loop l;
     #if defined(CONF_API_MODE)
-<<<<<<< HEAD
-    std::string path = HOME_DIR + "/api";
-    execlp(path.c_str(), "python3 main.py", NULL);
-=======
     LOG(INFO) << "Starting API Server....";
     std:: string cmd = "/usr/bin/python3 " + HOME_DIR + "/api/main.py &";
     int pid;
@@ -48,7 +44,6 @@ int main() {
         LOG(INFO) << "API Server started successfully with PID: " << pid;
     }
     
->>>>>>> 765a53f52926f130b9d5324ae38a2b510032004a
     #endif
     #if defined(POWER_LOGS)
     std::thread thrd([&run] () {
