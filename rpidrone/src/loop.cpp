@@ -106,14 +106,13 @@ namespace drone
         std::chrono::steady_clock::time_point last_call = std::chrono::steady_clock::now(), now;
         #endif
    
-        server.connect(); //use async?
+        server.connect(); 
         while(server.hasConnection()){
             try
             {
                 if (server.hasData())
                 {
                     readFromSocket(server, buf, config.server.delimiter, 3);
-                    LOG(INFO) << buf;
                 }
                 if(parseBuffer(buf, msg, config.server.delimiter)) 
                 {
@@ -146,9 +145,9 @@ namespace drone
             last_call = now;
             #endif
         }
+        LOG(INFO) << "Connection lost...";
         msg = "{\"disconnected\": true}";
         sendToFlightcontroller(fc, msg, userInput, config);
-        
     }
 
     void Loop::sendToFlightcontroller(drone::Arduino &fc, std::string &msg, UserInput &userInput, const Config &config) {

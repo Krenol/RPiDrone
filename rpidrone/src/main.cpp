@@ -14,9 +14,8 @@
 #include "logs/power_logs.hpp"
 #endif
 #if defined(CONF_API_MODE)
-#include <unistd.h>
+#include <cstdlib>
 #endif
-
 
 using json = nlohmann::json;
 
@@ -31,14 +30,26 @@ static void loadConfig(const std::string &conf_file, drone::Config &config, std:
 int main() {
     bool run = true;
     drone::Config config;
-    drone::Loop l;
-    drone::logs::Logs log;
     std::string fc_conf;
+    drone::logs::Logs log;
+    log.init(LOG_DIR, OLD_LOG_DIR, CONF_DIR, LOG_CONF);
+    drone::Loop l;
     #if defined(CONF_API_MODE)
+<<<<<<< HEAD
     std::string path = HOME_DIR + "/api";
     execlp(path.c_str(), "python3 main.py", NULL);
+=======
+    LOG(INFO) << "Starting API Server....";
+    std:: string cmd = "/usr/bin/python3 " + HOME_DIR + "/api/main.py &";
+    int pid;
+	if(pid = system(cmd.c_str()) < 0) {
+        LOG(ERROR) << "API Server did not started successfully";
+    } else {
+        LOG(INFO) << "API Server started successfully with PID: " << pid;
+    }
+    
+>>>>>>> 765a53f52926f130b9d5324ae38a2b510032004a
     #endif
-    log.init(LOG_DIR, OLD_LOG_DIR, CONF_DIR, LOG_CONF);
     #if defined(POWER_LOGS)
     std::thread thrd([&run] () {
         drone::logs::PowerLogs pwLogs;
@@ -47,23 +58,33 @@ int main() {
     #endif
     LOG(INFO) << "Loading " << CONF_FILE;
     loadConfig(CONF_DIR + "/" + CONF_FILE, config, fc_conf);
+<<<<<<< HEAD
     LOG(INFO) << "Starting Wifi Server";
     rpisocket::WiFiServer server(config.server.port, config.server.bytes);
     LOG(INFO) << "Drone startup";
+=======
+    LOG(INFO) << "init server";
+    rpisocket::WiFiServer server(config.server.port, config.server.bytes);
+    LOG(INFO) << "init FC";
+>>>>>>> 765a53f52926f130b9d5324ae38a2b510032004a
     drone::Arduino fc(config.flightcontroller.port, config.flightcontroller.baudrate);
+    LOG(INFO) << "init FC conf";
     fc.init(fc_conf);
     LOG(INFO) << "Drone startup completed; starting main loop";
     while (1)
     {
-        l.loop(server, fc, config);
-        #if defined(SIMULATOR_MODE)
-        LOG(INFO) << "---SIMULATOR MODE ACTIVE -> LOADING NEW CONF---";
-        loadConfig(CONF_DIR + "/" + CONF_FILE, config, fc_conf);
-        fc.init(fc_conf);
-        #endif
+        try {
+            l.loop(server, fc, config);
+            #if defined(SIMULATOR_MODE)
+            LOG(INFO) << "---SIMULATOR MODE ACTIVE -> LOADING NEW CONF---";
+            loadConfig(CONF_DIR + "/" + CONF_FILE, config, fc_conf);
+            fc.init(fc_conf);
+            #endif 
+        } catch(const std::exception &exc) {
+            LOG(ERROR) << exc.what();
+        } 
     }
     run = false;
     thrd.join();
-    
     return 0;
 }
