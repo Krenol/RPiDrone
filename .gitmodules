@@ -7,3 +7,6 @@
 [submodule "rpidrone/external/RPiPins"]
 	path = rpidrone/external/RPiPins
 	url = git@github.com:Krenol/RPiPins.git
+[submodule "rpidrone/external/Simple-WebSocket-Server"]
+	path = rpidrone/external/Simple-WebSocket-Server
+	url = https://gitlab.com/eidheim/Simple-WebSocket-Server.git

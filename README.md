@@ -8,3 +8,7 @@ https://github.com/sparkfun/SparkFun_MPU-9250-DMP_Arduino_Library
 ```
 <C>0.00,0.00,0.00,0.00,-8.00,8.00;0.00,0.00,0.00,0.00,-50.00,50.00;0.00,0.00,0.00,0.00,-8.00,8.00;0.00,0.00,0.00,0.00,-50.00,50.00;0.00,0.00,0.00,0.00,-25.00,25.00;&700;2000;7;9;8;10;0
 ```
+## Install dependencies for [Simple-WebSocket-Server](https://gitlab.com/eidheim/Simple-WebSocket-Server)
+```bash
+apt-get install -y libssl-dev libboost-all-dev
+```

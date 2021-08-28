@@ -8,7 +8,7 @@ set(JSON_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/external/json CACHE INTERNAL "Path to
 #set(CONTROLLERS_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/external/CppControllers CACHE INTERNAL "Path to include folder for CppControllers")
 #set(DESIGN_PATTERNS_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/external/CppDesignPatterns CACHE INTERNAL "Path to include folder for CppDesignPatterns")
 #set(UTILS_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/external/CppUtils CACHE INTERNAL "Path to include folder for CppUtils")
-set(WEBSOCKET_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/external/websocketpp CACHE INTERNAL "Path to include folder for websocketpp")
+set(WEBSOCKET_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/external/Simple-WebSocket-Server CACHE INTERNAL "Path to include folder for websocketpp")
 
 set(RPICDRONE_PROJECT_SRCS 
 ${PROJECT_SOURCE_DIR}/loop.cpp
@@ -22,6 +22,7 @@ ${PROJECT_SOURCE_DIR}/parsers/arduino_output_parser.cpp
 ${PROJECT_SOURCE_DIR}/connection.cpp
 ${PROJECT_SOURCE_DIR}/wiringSerial.c
 ${PROJECT_SOURCE_DIR}/arduino.cpp
+${PROJECT_SOURCE_DIR}/websocket.cpp
 )
 
 include_directories(${PROJECT_INCLUDE_DIR})
@@ -38,8 +39,8 @@ if (NOT TARGET rpisocket)
     add_subdirectory (external/RPiSocket)
 endif ()
 
-if (NOT TARGET websocketpp)
-    add_subdirectory (external/websocketpp)
+if (NOT TARGET Simple-WebSocket-Server)
+    add_subdirectory (external/Simple-WebSocket-Server)
 endif ()
 
 if (NOT TARGET rpicomponents)
@@ -69,8 +70,14 @@ find_library(pigpio REQUIRED)
 find_library(pthread REQUIRED)
 find_library(bluetooth REQUIRED)
 find_library(atomic REQUIRED)
+find_package(OpenSSL REQUIRED)
+find_package(Boost 1.54.0 COMPONENTS system thread coroutine context REQUIRED)
 target_link_libraries(${PROJECT_NAME} bluetooth)
 target_link_libraries(${PROJECT_NAME} pigpio)
 target_link_libraries(${PROJECT_NAME} pthread)
 target_link_libraries(${PROJECT_NAME} atomic)
 target_link_libraries(${PROJECT_NAME} nlohmann_json::nlohmann_json)
+target_link_libraries(${PROJECT_NAME} ${Boost_LIBRARIES})
+target_include_directories(${PROJECT_NAME} INTERFACE ${Boost_INCLUDE_DIR})
+target_link_libraries(${PROJECT_NAME} ${OPENSSL_LIBRARIES})
+target_include_directories(${PROJECT_NAME} INTERFACE ${OPENSSL_INCLUDE_DIR})
