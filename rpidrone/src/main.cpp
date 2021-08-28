@@ -35,7 +35,7 @@ int main() {
     drone::logs::Logs log;
     std::string fc_conf;
     #if defined(CONF_API_MODE)
-    std::string path = HOME_DIR + '/api';
+    std::string path = HOME_DIR + "/api";
     execlp(path.c_str(), "python3 main.py", NULL);
     #endif
     log.init(LOG_DIR, OLD_LOG_DIR, CONF_DIR, LOG_CONF);
@@ -45,13 +45,13 @@ int main() {
         pwLogs.init(run); 
     });
     #endif
-    LOG(INFO) << "Loading " << CONF_FILE << " and starting up drone";
-    
+    LOG(INFO) << "Loading " << CONF_FILE;
     loadConfig(CONF_DIR + "/" + CONF_FILE, config, fc_conf);
+    LOG(INFO) << "Starting Wifi Server";
     rpisocket::WiFiServer server(config.server.port, config.server.bytes);
+    LOG(INFO) << "Drone startup";
     drone::Arduino fc(config.flightcontroller.port, config.flightcontroller.baudrate);
     fc.init(fc_conf);
-
     LOG(INFO) << "Drone startup completed; starting main loop";
     while (1)
     {

@@ -8,6 +8,7 @@ set(JSON_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/external/json CACHE INTERNAL "Path to
 #set(CONTROLLERS_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/external/CppControllers CACHE INTERNAL "Path to include folder for CppControllers")
 set(DESIGN_PATTERNS_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/external/CppDesignPatterns CACHE INTERNAL "Path to include folder for CppDesignPatterns")
 #set(UTILS_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/external/CppUtils CACHE INTERNAL "Path to include folder for CppUtils")
+set(WEBSOCKET_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/external/websocketpp CACHE INTERNAL "Path to include folder for websocketpp")
 
 set(RPICDRONE_PROJECT_SRCS 
 ${PROJECT_SOURCE_DIR}/loop.cpp
@@ -34,13 +35,17 @@ include_directories(${DESIGN_PATTERNS_INCLUDE_DIR})
 
 
 if (NOT TARGET rpisocket)
-add_subdirectory (external/RPiSocket)
+    add_subdirectory (external/RPiSocket)
 endif ()
 
+if (NOT TARGET websocketpp)
+    add_subdirectory (external/websocketpp)
+endif ()
 
 if (NOT TARGET rpicomponents)
     add_subdirectory (external/RPiPins)
 endif ()
+
 if (NOT TARGET design_patterns)
     add_subdirectory (external/CppDesignPatterns)
 endif ()
@@ -49,12 +54,9 @@ if (NOT TARGET nlohmann_json::nlohmann_json)
     add_subdirectory (external/json EXCLUDE_FROM_ALL)
 endif ()
 
-
-
 add_executable (rpidrone ${RPICDRONE_PROJECT_SRCS})
 
 # Own libs
-
 find_library(rpipins REQUIRED)
 find_library(rpisocket REQUIRED)
 find_library(design_patterns REQUIRED)
