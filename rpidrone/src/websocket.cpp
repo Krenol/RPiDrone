@@ -66,7 +66,7 @@ namespace drone
         return connected_;
     }
 
-    void Websocket::writeMsg(const std::string &msg)
+    void Websocket::writeMessage(const std::string &msg)
     {
         if (connected_)
         {
@@ -104,7 +104,7 @@ namespace drone
         srv_thrd_.join();
     }
     
-    void Websocket::getMsg(std::string &msg) 
+    void Websocket::getMessage(std::string &msg) 
     {
         queue_.pop(msg);
     }

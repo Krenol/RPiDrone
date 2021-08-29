@@ -1,12 +1,9 @@
-[submodule "rpidrone/external/RPiSocket"]
-	path = rpidrone/external/RPiSocket
-	url = git@github.com:Krenol/RPiSocket.git
 [submodule "rpidrone/external/json"]
 	path = rpidrone/external/json
 	url = https://github.com/nlohmann/json.git
-[submodule "rpidrone/external/RPiPins"]
-	path = rpidrone/external/RPiPins
-	url = git@github.com:Krenol/RPiPins.git
 [submodule "rpidrone/external/Simple-WebSocket-Server"]
 	path = rpidrone/external/Simple-WebSocket-Server
 	url = https://gitlab.com/eidheim/Simple-WebSocket-Server.git
+[submodule "rpidrone/external/CppDesignPatterns"]
+	path = rpidrone/external/CppDesignPatterns
+	url = git@github.com:Krenol/CppDesignPatterns.git

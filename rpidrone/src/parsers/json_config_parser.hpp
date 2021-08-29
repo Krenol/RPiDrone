@@ -11,25 +11,30 @@ namespace drone
 
     struct Server
     {
-        int port = 8889, bytes = 256;
-        std::string delimiter = "\r\n";
+        int port = 8889, queue_size = 10;
+        std::string context = "/", cert_dir = "";
+        bool ssl = false;
 
         Server()
         {
         }
 
-        Server(int port, int bytes, const std::string &delimiter)
+        Server(int port, int queue_size, const std::string &context, bool ssl, const std::string &cert_dir)
         {
             this->port = port;
-            this->bytes = bytes;
-            this->delimiter = delimiter;
+            this->queue_size = queue_size;
+            this->context = context;
+            this->ssl = ssl;
+            this->cert_dir = cert_dir;
         }
 
         Server(const Server &s)
         {
             this->port = s.port;
-            this->bytes = s.bytes;
-            this->delimiter = s.delimiter;
+            this->queue_size = s.queue_size;
+            this->context = s.context;
+            this->ssl = s.ssl;
+            this->cert_dir = s.cert_dir;
         }
     };
 

@@ -68,32 +68,7 @@ namespace drone
         }
     }
 
-    bool Loop::parseBuffer(std::string &buf, std::string &msg, const std::string &delim) {
-        std::size_t pos;
-        if ((pos = buf.find(delim)) != std::string::npos)
-        {
-            msg = buf.substr(0, pos);
-            buf.erase(0, pos + delim.length());
-            pos = msg.find_first_of("{");
-            msg.erase(0, pos);
-            return true;
-        }
-        return false;
-    }
-
-    void Loop::readFromSocket(rpisocket::WiFiServer &server, std::string &buf, const std::string &delim, int max_iter) 
-    {
-        std::string msg;
-        do 
-        {
-            server.readBytes(msg);
-            buf += msg;
-            if(buf.find(delim) != std::string::npos) return;
-            --max_iter;
-        } while (max_iter > 0);
-    }
-
-    void Loop::loop(rpisocket::WiFiServer &server, drone::Arduino &fc, const Config &config)
+    void Loop::loop(Websocket &websocket, drone::Arduino &fc, const Config &config)
     {
         std::string msg, buf = "";
         char out[OUT_MSG_SIZE];
@@ -105,17 +80,13 @@ namespace drone
         #if defined(EXEC_TIME_LOG)
         std::chrono::steady_clock::time_point last_call = std::chrono::steady_clock::now(), now;
         #endif
-   
-        server.connect(); 
-        while(server.hasConnection()){
+ 
+        while(websocket.hasConnection()){
             try
             {
-                if (server.hasData())
+                if (websocket.hasMessages())
                 {
-                    readFromSocket(server, buf, config.server.delimiter, 3);
-                }
-                if(parseBuffer(buf, msg, config.server.delimiter)) 
-                {
+                    websocket.getMessage(msg);
                     sendToFlightcontroller(fc, msg, userInput, config);
                 }
                 if(fc.availableData() > config.flightcontroller.max_serial_buffer) {
@@ -132,7 +103,7 @@ namespace drone
                 #if defined(NETWORK_DEBUG_LOGS)
                 NETWORK_LOG(DEBUG) << "writing " << msg;
                 #endif
-                server.writeBytes(msg + config.server.delimiter);
+                websocket.writeMessage(msg);
                 
             }
             catch (const std::exception &exc)
