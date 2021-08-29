@@ -16,7 +16,6 @@ namespace drone {
         public:
             /**
              * Constructor for loop class
-             * @param config_path The path to the config.json
              */
             Loop();
 
@@ -28,11 +27,6 @@ namespace drone {
         private:
             //std::unique_ptr<rpicomponents::Led> on_led_, status_led_;
             Input last_input_;
-
-            /**
-             * Loop maintianing the connection to clients
-             */
-            void connectionHandler();
 
             void createOutputJson(float roll, float pitch, float yaw, const GPSCoordinates& c, json& j);
 

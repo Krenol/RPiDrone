@@ -54,15 +54,16 @@ int main() {
     #endif
     LOG(INFO) << "Loading " << CONF_FILE;
     loadConfig(CONF_DIR + "/" + CONF_FILE, config, fc_conf);
-    LOG(INFO) << "Starting WS Server";
-    drone::Websocket websocket(config_.server.queue_size);
-    websocket.init(config_.server.context, config_.server.port);
+    LOG(INFO) << "Starting Websocket Server";
+    drone::Websocket websocket(config.server.queue_size);
+    websocket.init(config.server.context, config.server.port);
     websocket.start();
-    LOG(INFO) << "Drone startup";
+    LOG(INFO) << "Started Websocket Server sucessfully";
+    LOG(INFO) << "Starting the drone flightcontroller & drone setup";
     drone::Arduino fc(config.flightcontroller.port, config.flightcontroller.baudrate);
-    LOG(INFO) << "init FC conf";
+    LOG(INFO) << "init flightcontroller conf";
     fc.init(fc_conf);
-    LOG(INFO) << "Drone startup completed; starting main loop";
+    LOG(INFO) << "Drone & flightcontroller startup completed; starting main loop";
     while (1)
     {
         try {
