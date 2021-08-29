@@ -32,8 +32,8 @@ int main() {
     // bool run = true;
     // drone::Config config;
     // std::string fc_conf;
-    // drone::logs::Logs log;
-    // log.init(LOG_DIR, OLD_LOG_DIR, CONF_DIR, LOG_CONF);
+    drone::logs::Logs log;
+    log.init(LOG_DIR, OLD_LOG_DIR, CONF_DIR, LOG_CONF);
     // drone::Loop l;
     // #if defined(CONF_API_MODE)
     // LOG(INFO) << "Starting API Server....";
@@ -77,11 +77,18 @@ int main() {
     // run = false;
     // thrd.join();
     drone::Websocket ws(10);
-    ws.init("/", 80);
+    ws.init("/", 8000);
+    ws.start();
+    std::string msg;
     while(true) 
     {
         if(ws.hasConnection()) {
-            ws.writeMsg("hi");
+            ws.writeMsg("{\"gps\":{},\"joystick\":{\"degrees\":0,\"offset\":0,\"rotation\":0},\"throttle\":5}");
+            if(ws.hasMessages()) {
+                ws.getMsg(msg);
+                LOG(INFO) << "received: " << msg;
+            }
+            
         } else {
             LOG(INFO) << "no conn";
         }

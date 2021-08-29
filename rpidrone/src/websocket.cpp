@@ -70,16 +70,24 @@ namespace drone
     {
         if (connected_)
         {
-            connection_->send(msg, [](const SimpleWeb::error_code &ec)
+            connection_->send(msg, [this](const SimpleWeb::error_code &ec)
                 {
                     if (ec)
                     {
                         NETWORK_LOG(INFO) << "Server: Error sending message. " <<
                             // See http://www.boost.org/doc/libs/1_55_0/doc/html/boost_asio/reference.html, Error Codes for error code meanings
                             "Error: " << ec << ", error message: " << ec.message();
+                        disconnect();
                     }
                 });
         }
+    }
+
+    void Websocket::disconnect()
+    {
+        connected_ = false;
+        connection_->close();
+        connection_.reset();
     }
 
     void Websocket::start()
@@ -98,7 +106,7 @@ namespace drone
     
     void Websocket::getMsg(std::string &msg) 
     {
-        msg = queue_.pop(msg);
+        queue_.pop(msg);
     }
     
     bool Websocket::hasMessages() 

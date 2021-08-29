@@ -58,6 +58,12 @@ namespace drone
             void stop();
 
             /**
+             * @brief Disconnect from connected client
+             * 
+             */
+            void disconnect();
+
+            /**
              * @brief Get the next received msg from the queue
              * 
              * @param msg The string where the msg is to be stored
