@@ -28,7 +28,7 @@ namespace drone {
             //std::unique_ptr<rpicomponents::Led> on_led_, status_led_;
             Input last_input_;
 
-            void createOutputJson(float roll, float pitch, float yaw, const GPSCoordinates& c, json& j);
+            void createOutputJson(float roll_is, float pitch_is, float yaw_is, float roll_should, float pitch_should, float yaw_should,const GPSCoordinates &c, json &j);
 
             void parseUserInput(std::string &msg, UserInput &userInput, const Config &config);
 

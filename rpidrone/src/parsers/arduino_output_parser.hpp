@@ -2,7 +2,7 @@
 #define DRONE_ARDUINO_OUTPUT_PARSER_H
 
 #include <string>
-#include "../structs/output.hpp"
+#include "../structs/fc_output.hpp"
 
 #define DELIM_ITEM ";"
 

@@ -12,11 +12,11 @@ namespace drone
         {
             token = out.substr(0, pos);
             if(i == 0) {
-                output.yaw = atof(token.c_str());
+                output.yaw_is = atof(token.c_str());
             } else if(i == 1) {
-                output.pitch = atof(token.c_str());
+                output.pitch_is = atof(token.c_str());
             } else if(i == 2) {
-                output.roll = atof(token.c_str());
+                output.roll_is = atof(token.c_str());
             } else if(i == 3) {
                 output.exec_time = atoi(token.c_str());
             } else if(i == 4) {
@@ -33,6 +33,12 @@ namespace drone
                 output.lf_t = atoi(token.c_str());
             } else if(i == 10) {
                 output.lb_t = atoi(token.c_str());
+            }  else if(i == 11) {
+                output.yaw_should = atoi(token.c_str());
+            }  else if(i == 12) {
+                output.pitch_should = atoi(token.c_str());
+            }  else if(i == 13) {
+                output.roll_should = atoi(token.c_str());
             } else {
                 break;
             }

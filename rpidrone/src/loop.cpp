@@ -4,7 +4,7 @@
 #include "misc.hpp"
 #include "parsers/arduino_input_parser.hpp"
 #include "parsers/arduino_output_parser.hpp"
-#include "structs/output.hpp"
+#include "structs/fc_output.hpp"
 
 #define NETWORK_LOG(LEVEL) CLOG(LEVEL, "network")  //define network log
 #if defined(EXEC_TIME_LOG)
@@ -98,7 +98,7 @@ namespace drone
                 FLIGHT_LOG(INFO) << msg;
                 #endif
                 parse_output(msg, output_struct);
-                createOutputJson(output_struct.roll, output_struct.pitch, output_struct.yaw, c, j);
+                createOutputJson(output_struct.roll_is, output_struct.pitch_is, output_struct.yaw_is, output_struct.roll_should, output_struct.pitch_should, output_struct.yaw_should, c, j);
                 msg = j.dump();
                 #if defined(NETWORK_DEBUG_LOGS)
                 NETWORK_LOG(DEBUG) << "writing " << msg;
@@ -130,10 +130,10 @@ namespace drone
         fc.serialSend(msg);
     }
 
-    void Loop::createOutputJson(float roll, float pitch, float yaw, const GPSCoordinates &c, json &j)
+    void Loop::createOutputJson(float roll_is, float pitch_is, float yaw_is, float roll_should, float pitch_should, float yaw_should,const GPSCoordinates &c, json &j)
     {
         j = {
-            {"angles", {{"yaw", yaw}, {"pitch", pitch}, {"roll", roll}}},
+            {"angles", { "is", {{"yaw", yaw_is}, {"pitch", pitch_is}, {"roll", roll_is}}}, {"should", {{"yaw", yaw_should}, {"pitch", pitch_should}, {"roll", roll_should}} }},
             {"position", {{"latitude", c.latitude}, {"longitude", c.longitude}, {"altitude", c.altitude}}},
             {"sensors", {{"barometric_height", 0}}}};
     }
