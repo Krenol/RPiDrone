@@ -78,8 +78,9 @@ int main() {
         } 
     }
     run = false;
+    #if defined(POWER_LOGS)
     thrd.join();
-    
+    #endif
     return 0;
 }
 
