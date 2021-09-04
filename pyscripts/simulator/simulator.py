@@ -1,4 +1,4 @@
-import socket
+from websocket import create_connection
 import time
 import json
 import os
@@ -6,19 +6,18 @@ import thread
 
 HOSTNAME = "localhost"
 PORT = 8889
+CONTEXT = "/"
 
-DELIM = "\r\n"
-
-def send(s: socket, deg: float = 0, offset: float = 0, rotation: float = 0, throttle: int = 0):
+def send(ws, deg: float = 0, offset: float = 0, rotation: float = 0, throttle: int = 0):
     data = {"gps":{"altitude":0,"latitude":0,"longitude":0},"joystick":{"degrees": deg,"offset": offset, "rotation": rotation},"throttle": throttle}
-    data_str = json.dumps(data) + DELIM
+    data_str = json.dumps(data)
     print(data_str)
-    s.send(data_str.encode())
+    ws.send(data_str.encode())
 
 def read(t: tuple):
-    s = t[0]
+    ws = t[0]
     try:
-        data = s.recv(1024)
+        data = ws.recv()
         if not data:
             time.sleep(1)
         j = json.loads(data)
@@ -28,21 +27,20 @@ def read(t: tuple):
 
 def run():
     while True:
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.settimeout(1)
+
         while True:
             try:
-                s.connect((HOSTNAME, PORT))
+                ws = create_connection("ws://" + HOSTNAME + ":" + PORT + CONTEXT)
                 break
             except KeyboardInterrupt:
                 return
             except Exception:
                 print("failed to connect")
             time.sleep(1)
-        thr = thread.MyThread(read, s)
+        thr = thread.MyThread(read, ws)
         thr.start()
         throttle = 0
-        send(s)
+        send(ws)
         time.sleep(5)
 
         # for i in range(2, 8):
@@ -60,7 +58,7 @@ def run():
         # time.sleep(5)
         thr.stop()
         thr.join()
-        s.close()
+        ws.close()
         time.sleep(1)
 
 
