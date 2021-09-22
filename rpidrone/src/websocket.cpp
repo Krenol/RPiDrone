@@ -49,7 +49,6 @@ namespace drone
             if (connection->remote_endpoint().address().to_string() == connection_->remote_endpoint().address().to_string())
             {
                 NETWORK_LOG(INFO) << "Server: Closed connection " << connection->remote_endpoint().address().to_string() << " with status code " << status;
-                connection_.reset();
                 connected_ = false;
             }
         };
@@ -87,7 +86,6 @@ namespace drone
     {
         connected_ = false;
         connection_->close();
-        connection_.reset();
     }
 
     void Websocket::start()

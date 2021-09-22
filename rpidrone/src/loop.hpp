@@ -30,7 +30,7 @@ namespace drone {
 
             void createOutputJson(float roll_is, float pitch_is, float yaw_is, float roll_should, float pitch_should, float yaw_should,const GPSCoordinates &c, json &j);
 
-            void parseUserInput(std::string &msg, UserInput &userInput, const Config &config);
+            void parseAppJson(std::string &msg, UserInput &userInput, const Config &config);
 
             void sendToFlightcontroller(drone::Arduino &fc, std::string &msg, UserInput &userInput, const Config &config);
     };

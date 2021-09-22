@@ -67,12 +67,17 @@ int main() {
     while (1)
     {
         try {
-            l.loop(websocket, fc, config);
-            #if defined(SIMULATOR_MODE)
-            LOG(INFO) << "---SIMULATOR MODE ACTIVE -> LOADING NEW CONF---";
-            loadConfig(CONF_DIR + "/" + CONF_FILE, config, fc_conf);
-            fc.init(fc_conf);
-            #endif 
+            if(websocket.hasConnection()) {
+                l.loop(websocket, fc, config);
+                #if defined(SIMULATOR_MODE)
+                LOG(INFO) << "---SIMULATOR MODE ACTIVE -> LOADING NEW CONF---";
+                loadConfig(CONF_DIR + "/" + CONF_FILE, config, fc_conf);
+                fc.init(fc_conf);
+                #endif 
+                websocket.disconnect();
+            } else {
+                usleep(1000 * 1000);
+            }
         } catch(const std::exception &exc) {
             LOG(ERROR) << exc.what();
         } 

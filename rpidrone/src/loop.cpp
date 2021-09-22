@@ -32,7 +32,7 @@ namespace drone
         #endif
     }
 
-    void Loop::parseUserInput(std::string &msg, UserInput &userInput, const Config &config)
+    void Loop::parseAppJson(std::string &msg, UserInput &userInput, const Config &config)
     {
         json j;
         try
@@ -122,7 +122,7 @@ namespace drone
     }
 
     void Loop::sendToFlightcontroller(drone::Arduino &fc, std::string &msg, UserInput &userInput, const Config &config) {
-        parseUserInput(msg, userInput, config);
+        parseAppJson(msg, userInput, config);
         parse_input(userInput, msg);
         #if defined(RPI_LOGS)
         RPI_LOG(INFO) << msg;
@@ -133,8 +133,26 @@ namespace drone
     void Loop::createOutputJson(float roll_is, float pitch_is, float yaw_is, float roll_should, float pitch_should, float yaw_should,const GPSCoordinates &c, json &j)
     {
         j = {
-            {"angles", { "is", {{"yaw", yaw_is}, {"pitch", pitch_is}, {"roll", roll_is}}}, {"should", {{"yaw", yaw_should}, {"pitch", pitch_should}, {"roll", roll_should}} }},
-            {"position", {{"latitude", c.latitude}, {"longitude", c.longitude}, {"altitude", c.altitude}}},
-            {"sensors", {{"barometric_height", 0}}}};
+            {"sensors", {
+                {"barometric_height", 0}
+            }},
+            {"position", {
+                {"altitude", c.altitude},
+                {"latitude", c.latitude},
+                {"longitude", c.longitude}
+            }},
+            {"angles", {
+                {"is", {
+                    {"yaw", yaw_is},
+                    {"pitch", pitch_is},
+                    {"roll", roll_is}
+                }},
+                {"should", {
+                    {"yaw", yaw_should},
+                    {"pitch", pitch_should},
+                    {"roll", roll_should}
+                }}
+            }}
+        };
     }
 }

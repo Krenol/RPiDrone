@@ -34,11 +34,13 @@ namespace drone
             } else if(i == 10) {
                 output.lb_t = atoi(token.c_str());
             }  else if(i == 11) {
-                output.yaw_should = atoi(token.c_str());
+                output.throttle = atoi(token.c_str());
             }  else if(i == 12) {
-                output.pitch_should = atoi(token.c_str());
+                output.yaw_should = atof(token.c_str());
             }  else if(i == 13) {
-                output.roll_should = atoi(token.c_str());
+                output.roll_should = atof(token.c_str());
+            } else if(i == 14) {
+                output.pitch_should = atof(token.c_str());
             } else {
                 break;
             }
