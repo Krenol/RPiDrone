@@ -43,7 +43,7 @@ namespace drone
              * Write a message to the connected clients
              * @param msg The message to be written
              */
-            void writeMsg(const std::string& msg);
+            void writeMessage(const std::string& msg);
 
             /**
              * @brief start the websocket server
@@ -68,7 +68,7 @@ namespace drone
              * 
              * @param msg The string where the msg is to be stored
              */
-            void getMsg(std::string &msg);
+            void getMessage(std::string &msg);
 
             /**
              * @brief check if queue has messages stored

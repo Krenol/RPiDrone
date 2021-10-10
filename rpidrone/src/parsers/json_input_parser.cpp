@@ -20,7 +20,7 @@ namespace drone
                 offset = BOUND<float>(joystick.at("offset"), OFFSET_LOWER_BOUND, OFFSET_UPPER_BOUND);
                 degrees = BOUND<float>(joystick.at("degrees"), DEGREE_LOWER_BOUND, DEGREE_UPPER_BOUND);
             }
-            if (JSON_EXISTS(j, "rotation")) {
+            if (JSON_EXISTS(joystick, "rotation")) {
                 rot = BOUND<float>(joystick.at("rotation"), ROTATION_LOWER_BOUND, ROTATION_UPPER_BOUND);
             }
         }

@@ -49,7 +49,6 @@ namespace drone
             if (connection->remote_endpoint().address().to_string() == connection_->remote_endpoint().address().to_string())
             {
                 NETWORK_LOG(INFO) << "Server: Closed connection " << connection->remote_endpoint().address().to_string() << " with status code " << status;
-                connection_.reset();
                 connected_ = false;
             }
         };
@@ -66,7 +65,7 @@ namespace drone
         return connected_;
     }
 
-    void Websocket::writeMsg(const std::string &msg)
+    void Websocket::writeMessage(const std::string &msg)
     {
         if (connected_)
         {
@@ -87,7 +86,6 @@ namespace drone
     {
         connected_ = false;
         connection_->close();
-        connection_.reset();
     }
 
     void Websocket::start()
@@ -104,7 +102,7 @@ namespace drone
         srv_thrd_.join();
     }
     
-    void Websocket::getMsg(std::string &msg) 
+    void Websocket::getMessage(std::string &msg) 
     {
         queue_.pop(msg);
     }

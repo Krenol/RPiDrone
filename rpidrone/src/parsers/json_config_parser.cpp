@@ -9,7 +9,7 @@ namespace drone
     {
         cfg.leds = Leds(j.at("leds").at("on_led"), j.at("leds").at("status_led"));
         cfg.logic = Logic(j.at("logic").at("motors_off_on_disconnect"), j.at("logic").at("rpi_reset_pin"));
-        cfg.server = Server(j.at("server").at("port"), j.at("server").at("bytes"), j.at("server").at("delimiter"));
+        cfg.server = Server(j.at("server").at("port"), j.at("server").at("queue_size"), j.at("server").at("context"), j.at("server").at("ssl"), j.at("server").at("ssl_cert"));
         cfg.queues = Queues(j.at("queues").at("read_size"), j.at("queues").at("write_size"));
         cfg.flightcontroller = Flightcontroller(j.at("flightcontroller").at("port"), j.at("flightcontroller").at("baudrate"), j.at("flightcontroller").at("max_serial_buffer"));
         parse_sensor_obj(j, cfg);

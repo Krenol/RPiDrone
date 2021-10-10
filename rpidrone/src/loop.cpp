@@ -4,7 +4,7 @@
 #include "misc.hpp"
 #include "parsers/arduino_input_parser.hpp"
 #include "parsers/arduino_output_parser.hpp"
-#include "structs/output.hpp"
+#include "structs/fc_output.hpp"
 
 #define NETWORK_LOG(LEVEL) CLOG(LEVEL, "network")  //define network log
 #if defined(EXEC_TIME_LOG)
@@ -32,7 +32,7 @@ namespace drone
         #endif
     }
 
-    void Loop::parseUserInput(std::string &msg, UserInput &userInput, const Config &config)
+    void Loop::parseAppJson(std::string &msg, UserInput &userInput, const Config &config)
     {
         json j;
         try
@@ -68,32 +68,7 @@ namespace drone
         }
     }
 
-    bool Loop::parseBuffer(std::string &buf, std::string &msg, const std::string &delim) {
-        std::size_t pos;
-        if ((pos = buf.find(delim)) != std::string::npos)
-        {
-            msg = buf.substr(0, pos);
-            buf.erase(0, pos + delim.length());
-            pos = msg.find_first_of("{");
-            msg.erase(0, pos);
-            return true;
-        }
-        return false;
-    }
-
-    void Loop::readFromSocket(rpisocket::WiFiServer &server, std::string &buf, const std::string &delim, int max_iter) 
-    {
-        std::string msg;
-        do 
-        {
-            server.readBytes(msg);
-            buf += msg;
-            if(buf.find(delim) != std::string::npos) return;
-            --max_iter;
-        } while (max_iter > 0);
-    }
-
-    void Loop::loop(rpisocket::WiFiServer &server, drone::Arduino &fc, const Config &config)
+    void Loop::loop(Websocket &websocket, drone::Arduino &fc, const Config &config)
     {
         std::string msg, buf = "";
         char out[OUT_MSG_SIZE];
@@ -105,17 +80,13 @@ namespace drone
         #if defined(EXEC_TIME_LOG)
         std::chrono::steady_clock::time_point last_call = std::chrono::steady_clock::now(), now;
         #endif
-   
-        server.connect(); 
-        while(server.hasConnection()){
+ 
+        while(websocket.hasConnection()){
             try
             {
-                if (server.hasData())
+                if (websocket.hasMessages())
                 {
-                    readFromSocket(server, buf, config.server.delimiter, 3);
-                }
-                if(parseBuffer(buf, msg, config.server.delimiter)) 
-                {
+                    websocket.getMessage(msg);
                     sendToFlightcontroller(fc, msg, userInput, config);
                 }
                 if(fc.availableData() > config.flightcontroller.max_serial_buffer) {
@@ -127,12 +98,12 @@ namespace drone
                 FLIGHT_LOG(INFO) << msg;
                 #endif
                 parse_output(msg, output_struct);
-                createOutputJson(output_struct.roll, output_struct.pitch, output_struct.yaw, c, j);
+                createOutputJson(output_struct.roll_is, output_struct.pitch_is, output_struct.yaw_is, output_struct.roll_should, output_struct.pitch_should, output_struct.yaw_should, c, j);
                 msg = j.dump();
                 #if defined(NETWORK_DEBUG_LOGS)
                 NETWORK_LOG(DEBUG) << "writing " << msg;
                 #endif
-                server.writeBytes(msg + config.server.delimiter);
+                websocket.writeMessage(msg);
                 
             }
             catch (const std::exception &exc)
@@ -151,7 +122,7 @@ namespace drone
     }
 
     void Loop::sendToFlightcontroller(drone::Arduino &fc, std::string &msg, UserInput &userInput, const Config &config) {
-        parseUserInput(msg, userInput, config);
+        parseAppJson(msg, userInput, config);
         parse_input(userInput, msg);
         #if defined(RPI_LOGS)
         RPI_LOG(INFO) << msg;
@@ -159,11 +130,29 @@ namespace drone
         fc.serialSend(msg);
     }
 
-    void Loop::createOutputJson(float roll, float pitch, float yaw, const GPSCoordinates &c, json &j)
+    void Loop::createOutputJson(float roll_is, float pitch_is, float yaw_is, float roll_should, float pitch_should, float yaw_should,const GPSCoordinates &c, json &j)
     {
         j = {
-            {"angles", {{"yaw", yaw}, {"pitch", pitch}, {"roll", roll}}},
-            {"position", {{"latitude", c.latitude}, {"longitude", c.longitude}, {"altitude", c.altitude}}},
-            {"sensors", {{"barometric_height", 0}}}};
+            {"sensors", {
+                {"barometric_height", 0}
+            }},
+            {"position", {
+                {"altitude", c.altitude},
+                {"latitude", c.latitude},
+                {"longitude", c.longitude}
+            }},
+            {"angles", {
+                {"is", {
+                    {"yaw", yaw_is},
+                    {"pitch", pitch_is},
+                    {"roll", roll_is}
+                }},
+                {"should", {
+                    {"yaw", yaw_should},
+                    {"pitch", pitch_should},
+                    {"roll", roll_should}
+                }}
+            }}
+        };
     }
 }

@@ -1,4 +1,6 @@
-FROM krenol/cpp_raspbian:latest
+ARG IMG_VERSION=20201106
+
+FROM krenol/cpp_raspbian:${IMG_VERSION}
 
 ARG PROJECT_DIR=rpidrone
 ENV BUILD_TEST=OFF
