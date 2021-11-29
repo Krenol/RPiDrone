@@ -4,9 +4,10 @@
 #include "globals.hpp"
 #include "misc.hpp"
 #include <fstream>
-#include "parsers/arduino_config_parser.hpp"
+#include "parsers/flightcontroller/config_parser.hpp"
 #include <string>
-#include "parsers/json_config_parser.hpp" 
+#include "parsers/json/config_parser.hpp" 
+#include "structs/config/config.hpp"
 #include "arduino.hpp"
 #include "websocket.hpp"
 #include <stdlib.h>     /* srand, rand */
@@ -25,7 +26,7 @@ using json = nlohmann::json;
 static void loadConfig(const std::string &conf_file, drone::Config &config, std::string &fc_conf){
     std::ifstream ifs(conf_file);
     config = json::parse(ifs);
-    drone::parse_config(config, fc_conf);
+    drone::parseConfigForFlightcontroller(config, fc_conf);
 }
 
 int main() {

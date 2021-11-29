@@ -1,9 +1,9 @@
-#include "arduino_config_parser.hpp"
+#include "config_parser.hpp"
 #include "misc.hpp"
 
 namespace drone
 {
-    void parse_config(const Config &config, std::string &out) 
+    void parseConfigForFlightcontroller(const Config &config, std::string &out) 
     {
         out = CONFIG_TOKEN;
         //controllers

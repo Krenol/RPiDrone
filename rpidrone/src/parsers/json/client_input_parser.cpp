@@ -1,19 +1,20 @@
-#include "json_input_parser.hpp"
+#include "client_input_parser.hpp"
 #include "misc.hpp"
 
 namespace drone
 {
-    void from_json(const nlohmann::json &j, Input &i) 
+    void from_json(const nlohmann::json &j, ClientInput &i) 
     {
-        int throttle = i.throttle;
-        float offset = i.joystick.offset, degrees = i.joystick.degrees, rot = i.joystick.rotation, longitude = i.gps.longitude, latitude = i.gps.latitude, altitude = i.gps.altitude;
-        if (JSON_EXISTS(j, "throttle"))
-        {
-            throttle = BOUND<int>(j.at("throttle"), THROTTLE_LOWER_BOUND, THROTTLE_UPPER_BOUND);
-        } 
-
+        parseThrottleStruct(j, i);
+        parseJoystickStruct(j,i);
+        parseGpsStruct(j,i);
+    }
+    
+    void parseJoystickStruct(const nlohmann::json &j, ClientInput &i) 
+    {
         if (JSON_EXISTS(j, "joystick"))
         {
+            float offset = i.joystick.offset, degrees = i.joystick.degrees, rot = i.joystick.rotation;
             auto joystick = j.at("joystick");
             if (JSON_EXISTS(joystick, "offset") && JSON_EXISTS(joystick, "degrees"))
             {
@@ -23,10 +24,23 @@ namespace drone
             if (JSON_EXISTS(joystick, "rotation")) {
                 rot = BOUND<float>(joystick.at("rotation"), ROTATION_LOWER_BOUND, ROTATION_UPPER_BOUND);
             }
+            i.joystick = Joystick(degrees, offset, rot);
         }
-
+    }
+    
+    void parseThrottleStruct(const nlohmann::json &j, ClientInput &i) 
+    {
+        if (JSON_EXISTS(j, "throttle"))
+        {
+            i.throttle = BOUND<int>(j.at("throttle"), THROTTLE_LOWER_BOUND, THROTTLE_UPPER_BOUND);
+        } 
+    }
+    
+    void parseGpsStruct(const nlohmann::json &j, ClientInput &i) 
+    {
         if (JSON_EXISTS(j, "gps"))
         {
+            float longitude = i.gps.longitude, latitude = i.gps.latitude, altitude = i.gps.altitude;
             auto gps = j.at("gps");
             if (JSON_EXISTS(gps, "altitude"))
             {
@@ -40,10 +54,7 @@ namespace drone
             {
                 longitude = gps.at("longitude");
             }
+            i.gps = GPSCoordinates(altitude, longitude, latitude);
         }
-
-        i.throttle = throttle;
-        i.gps = GPSCoordinates(altitude, longitude, latitude);
-        i.joystick = Joystick(degrees, offset, rot);
     }
 }

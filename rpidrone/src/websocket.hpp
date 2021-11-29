@@ -7,6 +7,7 @@
 #include <atomic>
 #include "design_patterns/design_patterns.hpp"
 #include <thread>
+#include <future>
 
 using WsServer = SimpleWeb::SocketServer<SimpleWeb::WS>;
 using WsEndpoint = SimpleWeb::SocketServerBase<SimpleWeb::WS>::Endpoint;
@@ -22,15 +23,17 @@ namespace drone
             const int q_size_;
             std::thread srv_thrd_;
 
-            void handleIncomingMessage(const std::string& msg);
+            void onIncomingMessage(const std::string& msg);
 
-            void handleConnectionOpening(std::shared_ptr<WsServer::Connection> connection);
+            void onConnectionOpening(std::shared_ptr<WsServer::Connection> connection);
 
-            void handleConnectionClosing(std::shared_ptr<WsServer::Connection> connection, int status);
+            void onConnectionClosing(std::shared_ptr<WsServer::Connection> connection, int status);
 
-            void handleEndpointErrors(std::shared_ptr<WsServer::Connection> connection, const SimpleWeb::error_code &ec);
+            void onEndpointErrors(std::shared_ptr<WsServer::Connection> connection, const SimpleWeb::error_code &ec);
 
             void setupWebsocketEndpointEvents(WsEndpoint &endpoint);
+
+            void onMessageSendError(const SimpleWeb::error_code &ec);
 
         public:
             Websocket(int q_size);
@@ -39,7 +42,7 @@ namespace drone
 
             bool hasConnection() const;
 
-            void writeMessage(const std::string& msg);
+            std::future<bool> writeMessage(const std::string& msg);
 
             void startWebsocketThread();
 

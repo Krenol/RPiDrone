@@ -1,25 +1,25 @@
-#ifndef DRONE_STRUCT_INPUT_H
-#define DRONE_STRUCT_INPUT_H
+#ifndef DRONE_STRUCT_FC_INPUT_H
+#define DRONE_STRUCT_FC_INPUT_H
 
-#include "parsers/json_input_parser.hpp"
-#include "parsers/json_config_parser.hpp"
-#include "gps_coordinates.hpp"
+#include "parsers/json/client_input_parser.hpp"
+#include "parsers/json/config_parser.hpp"
+#include "../gps_coordinates.hpp"
 #include "globals.hpp"
 #include <cmath>
 
 
 namespace drone
 {
-    struct UserInput {
+    struct FlightcontrollerInput {
         int throttle = 0;
         float roll_angle = 0.0f, pitch_angle = 0.0f, yaw_vel = 0.0f;
         GPSCoordinates gps;
 
-        UserInput() {
+        FlightcontrollerInput() {
 
         }
 
-        UserInput(int throttle, float offset, float degrees, float max_roll, float max_pitch, float max_yawn, float rotation, GPSCoordinates &gps) 
+        FlightcontrollerInput(int throttle, float offset, float degrees, float max_roll, float max_pitch, float max_yawn, float rotation, GPSCoordinates &gps) 
         {
             this->throttle = throttle;
             roll_angle = offset * cos(degrees * M_PI / 180.0) * max_roll;
@@ -28,7 +28,7 @@ namespace drone
             gps = GPSCoordinates(gps);
         }
 
-        UserInput(const UserInput& i)
+        FlightcontrollerInput(const FlightcontrollerInput& i)
         {
             this->throttle = i.throttle;
             this->roll_angle = i.roll_angle;

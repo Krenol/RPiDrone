@@ -1,10 +1,7 @@
-#include "json_config_parser.hpp"
+#include "config_parser.hpp"
 
 namespace drone
 {
-    // const float DEGREE_UPPER_BOUND = 360.0f, OFFSET_UPPER_BOUND = 1.0f, DEGREE_LOWER_BOUND = -360.0f, OFFSET_LOWER_BOUND = 0.0f, ROTATION_UPPER_BOUND = 100.0f, ROTATION_LOWER_BOUND = -100.0f;
-    // const int THROTTLE_UPPER_BOUND = 100, THROTTLE_LOWER_BOUND = 0;
-    
     void from_json(const nlohmann::json &j, Config &cfg) 
     {
         cfg.leds = Leds(j.at("leds").at("on_led"), j.at("leds").at("status_led"));

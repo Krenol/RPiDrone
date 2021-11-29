@@ -5,16 +5,16 @@
 
 namespace drone
 {
-    void Websocket::handleIncomingMessage(const std::string& msg) 
+    void Websocket::onIncomingMessage(const std::string& msg) 
     {
         if (queue_.item_count() > q_size_)
         {
-            queue_.clear();
+            queue_.pop();
         }
         queue_.push(msg);
     }
     
-    void Websocket::handleConnectionOpening(std::shared_ptr<WsServer::Connection> connection) 
+    void Websocket::onConnectionOpening(std::shared_ptr<WsServer::Connection> connection) 
     {
         if (!connected_)
         {
@@ -24,11 +24,12 @@ namespace drone
         }
         else
         {
+            //allow only 1 client
             connection->close();
         }
     }
 
-    void Websocket::handleConnectionClosing(std::shared_ptr<WsServer::Connection> connection, int status) 
+    void Websocket::onConnectionClosing(std::shared_ptr<WsServer::Connection> connection, int status) 
     {
         if (connection->remote_endpoint().address().to_string() == connection_->remote_endpoint().address().to_string())
         {
@@ -37,7 +38,7 @@ namespace drone
         }
     }
     
-    void Websocket::handleEndpointErrors(std::shared_ptr<WsServer::Connection> connection, const SimpleWeb::error_code &ec) 
+    void Websocket::onEndpointErrors(std::shared_ptr<WsServer::Connection> connection, const SimpleWeb::error_code &ec) 
     {
         NETWORK_LOG(INFO) << "Server: Error in connection " << connection->remote_endpoint().address().to_string() << ". "
                               << "Error: " << ec << ", error message: " << ec.message();
@@ -47,7 +48,7 @@ namespace drone
     {
         endpoint.on_message = [this](std::shared_ptr<WsServer::Connection> connection, std::shared_ptr<WsServer::InMessage> in_message)
         {
-            handleIncomingMessage(in_message->string());
+            onIncomingMessage(in_message->string());
         };
 
         endpoint.on_handshake = [this](std::shared_ptr<WsServer::Connection> /*connection*/, SimpleWeb::CaseInsensitiveMultimap & /*response_header*/)
@@ -57,18 +58,26 @@ namespace drone
 
         endpoint.on_open = [this](std::shared_ptr<WsServer::Connection> connection)
         {
-            handleConnectionOpening(connection);
+            onConnectionOpening(connection);
         };
 
         endpoint.on_close = [this](std::shared_ptr<WsServer::Connection> connection, int status, const std::string & /*reason*/)
         {
-            handleConnectionClosing(connection, status);
+            onConnectionClosing(connection, status);
         };
 
         endpoint.on_error = [this](std::shared_ptr<WsServer::Connection> connection, const SimpleWeb::error_code &ec)
         {
-            handleEndpointErrors(connection, ec);
+            onEndpointErrors(connection, ec);
         };
+    }
+    
+    void Websocket::onMessageSendError(const SimpleWeb::error_code &ec) 
+    {
+        // See http://www.boost.org/doc/libs/1_55_0/doc/html/boost_asio/reference.html, Error Codes for error code meanings
+        NETWORK_LOG(INFO) << "Server: Error sending message. " <<
+            "Error: " << ec << ", error message: " << ec.message();
+        disconnectConnectedClient();
     }
 
     Websocket::Websocket(int q_size) : q_size_{q_size}
@@ -88,22 +97,24 @@ namespace drone
         return connected_;
     }
 
-    void Websocket::writeMessage(const std::string &msg)
+    std::future<bool> Websocket::writeMessage(const std::string &msg)
     {
+        std::promise<bool> promise;
         if (connected_)
         {
-            connection_->send(msg, [this](const SimpleWeb::error_code &ec)
+            connection_->send(msg, [this, &promise](const SimpleWeb::error_code &ec)
                 {
-                    if (ec)
-                    {
-                        NETWORK_LOG(INFO) << "Server: Error sending message. " <<
-                            // See http://www.boost.org/doc/libs/1_55_0/doc/html/boost_asio/reference.html, Error Codes for error code meanings
-                            "Error: " << ec << ", error message: " << ec.message();
-                        disconnectConnectedClient();
+                    if (ec) {
+                        onMessageSendError(ec);
+                        promise.set_value(false);
                     }
+                    promise.set_value(true);
                 }
             );
+        } else {
+            promise.set_value(false);
         }
+        return promise.get_future();
     }
 
     void Websocket::disconnectConnectedClient()

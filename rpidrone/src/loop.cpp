@@ -2,9 +2,9 @@
 #include <unistd.h>
 #include "logs/easylogging++.h"
 #include "misc.hpp"
-#include "parsers/arduino_input_parser.hpp"
-#include "parsers/arduino_output_parser.hpp"
-#include "structs/flightcontroller_output.hpp"
+#include "parsers/flightcontroller/input_parser.hpp"
+#include "parsers/flightcontroller/output_parser.hpp"
+#include "structs/flightcontroller/output.hpp"
 
 #define NETWORK_LOG(LEVEL) CLOG(LEVEL, "network")  //define network log
 #if defined(EXEC_TIME_LOG)
@@ -32,7 +32,7 @@ namespace drone
         #endif
     }
 
-    void Loop::parseAppJson(std::string &msg, UserInput &userInput, const Config &config)
+    void Loop::parseAppJson(std::string &msg, FlightcontrollerInput &userInput, const Config &config)
     {
         json j;
         try
@@ -57,9 +57,9 @@ namespace drone
             }
             else
             {
-                Input in;
+                ClientInput in;
                 from_json(j, in);
-                userInput = UserInput(in.throttle, in.joystick.offset, in.joystick.degrees, config.controls.max_roll, config.controls.max_pitch, config.controls.max_yawn, in.joystick.rotation, in.gps);
+                userInput = FlightcontrollerInput(in.throttle, in.joystick.offset, in.joystick.degrees, config.controls.max_roll, config.controls.max_pitch, config.controls.max_yawn, in.joystick.rotation, in.gps);
             }
         }
         catch (const std::exception &exc)
@@ -72,7 +72,7 @@ namespace drone
     {
         std::string msg, buf = "";
         char out[OUT_MSG_SIZE];
-        UserInput userInput;
+        FlightcontrollerInput userInput;
         FlightcontrollerOutput fc_output;
         GPSCoordinates c;
         json j;
@@ -97,7 +97,7 @@ namespace drone
                 #if defined(FLIGHTCONTROLLER_LOGS)
                 FLIGHT_LOG(INFO) << msg;
                 #endif
-                parse_output(msg, fc_output);
+                parseOutputFromFlightcontroller(msg, fc_output);
                 createOutputJson(fc_output.roll_is, fc_output.pitch_is, fc_output.yaw_is, fc_output.roll_should, fc_output.pitch_should, fc_output.yaw_should, c, j);
                 msg = j.dump();
                 #if defined(NETWORK_DEBUG_LOGS)
@@ -121,9 +121,9 @@ namespace drone
         sendToFlightcontroller(fc, msg, userInput, config);
     }
 
-    void Loop::sendToFlightcontroller(drone::Arduino &fc, std::string &msg, UserInput &userInput, const Config &config) {
+    void Loop::sendToFlightcontroller(drone::Arduino &fc, std::string &msg, FlightcontrollerInput &userInput, const Config &config) {
         parseAppJson(msg, userInput, config);
-        parse_input(userInput, msg);
+        parseControlInputForFlightcontroller(userInput, msg);
         #if defined(RPI_LOGS)
         RPI_LOG(INFO) << msg;
         #endif

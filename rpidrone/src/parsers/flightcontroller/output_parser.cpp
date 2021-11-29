@@ -1,9 +1,9 @@
-#include "arduino_output_parser.hpp"
+#include "output_parser.hpp"
 #include <stdlib.h>
 
 namespace drone
 {
-    void parse_output(std::string &out, FlightcontrollerOutput &output)
+    void parseOutputFromFlightcontroller(std::string &out, FlightcontrollerOutput &output)
     {
         size_t pos = 0;
         std::string token;
