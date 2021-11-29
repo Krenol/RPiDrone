@@ -1,5 +1,5 @@
-#ifndef DRONE_FCOUTPUT_PARSER_H
-#define DRONE_FCOUTPUT_PARSER_H
+#ifndef DRONE_PARSERS_FLIGHTCONTROLLER__PARSER_H
+#define DRONE_PARSERS_FLIGHTCONTROLLER__PARSER_H
 
 #include <string>
 #include "../../structs/flightcontroller/output.hpp"

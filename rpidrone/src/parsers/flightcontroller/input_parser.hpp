@@ -1,5 +1,5 @@
-#ifndef DRONE_FC_INPUT_PARSER_H
-#define DRONE_FC_INPUT_PARSER_H
+#ifndef DRONE_PARSERS_FLIGHTCONTROLLER_INPUT_PARSER_H
+#define DRONE_PARSERS_FLIGHTCONTROLLER_INPUT_PARSER_H
 
 #include <string>
 #include "../../structs/flightcontroller/input.hpp"

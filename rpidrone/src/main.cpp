@@ -26,7 +26,7 @@ using json = nlohmann::json;
 static void loadConfig(const std::string &conf_file, drone::Config &config, std::string &fc_conf){
     std::ifstream ifs(conf_file);
     config = json::parse(ifs);
-    drone::parseConfigForFlightcontroller(config, fc_conf);
+    drone::parsers::flightcontroller::ConfigParser::parseFlightcontrollerConfig(config, fc_conf);
 }
 
 int main() {
