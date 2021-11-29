@@ -3,7 +3,7 @@
 
 #include "parsers/json_input_parser.hpp"
 #include "parsers/json_config_parser.hpp"
-#include "gps_struct.hpp"
+#include "gps_coordinates.hpp"
 #include "globals.hpp"
 #include <cmath>
 

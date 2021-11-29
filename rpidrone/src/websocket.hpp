@@ -22,60 +22,33 @@ namespace drone
             const int q_size_;
             std::thread srv_thrd_;
 
+            void handleIncomingMessage(const std::string& msg);
+
+            void handleConnectionOpening(std::shared_ptr<WsServer::Connection> connection);
+
+            void handleConnectionClosing(std::shared_ptr<WsServer::Connection> connection, int status);
+
+            void handleEndpointErrors(std::shared_ptr<WsServer::Connection> connection, const SimpleWeb::error_code &ec);
+
+            void setupWebsocketEndpointEvents(WsEndpoint &endpoint);
+
         public:
             Websocket(int q_size);
 
-            /**
-             * @brief init websocket
-             * 
-             * @param path the path on which is to be listened
-             * @param port the port of the websocket
-             */
             void init(const std::string &path, int port);
 
-            /**
-             * Method to check if server has connection or not
-             * @return true if server has connected clients else false
-             */
             bool hasConnection() const;
 
-            /**
-             * Write a message to the connected clients
-             * @param msg The message to be written
-             */
             void writeMessage(const std::string& msg);
 
-            /**
-             * @brief start the websocket server
-             * 
-             */
-            void start();
+            void startWebsocketThread();
 
-            /**
-             * @brief stop the websocket server
-             * 
-             */
-            void stop();
+            void stopWebsocketThread();
 
-            /**
-             * @brief Disconnect from connected client
-             * 
-             */
-            void disconnect();
+            void disconnectConnectedClient();
 
-            /**
-             * @brief Get the next received msg from the queue
-             * 
-             * @param msg The string where the msg is to be stored
-             */
             void getMessage(std::string &msg);
 
-            /**
-             * @brief check if queue has messages stored
-             * 
-             * @return true if messages are available
-             * @return false no messages available
-             */
             bool hasMessages();
     };
 }

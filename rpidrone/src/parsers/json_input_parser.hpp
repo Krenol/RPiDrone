@@ -1,6 +1,6 @@
 #include <nlohmann/json.hpp>
 #include <string>
-#include "../structs/gps_struct.hpp"
+#include "../structs/gps_coordinates.hpp"
 
 #ifndef DRONE_JSON_INPUT_PARSER_H
 #define DRONE_JSON_INPUT_PARSER_H

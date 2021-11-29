@@ -57,7 +57,7 @@ int main() {
     LOG(INFO) << "Starting Websocket Server";
     drone::Websocket websocket(config.server.queue_size);
     websocket.init(config.server.context, config.server.port);
-    websocket.start();
+    websocket.startWebsocketThread();
     LOG(INFO) << "Started Websocket Server sucessfully";
     LOG(INFO) << "Starting the drone flightcontroller & drone setup";
     drone::Arduino fc(config.flightcontroller.port, config.flightcontroller.baudrate);
@@ -74,7 +74,7 @@ int main() {
                 loadConfig(CONF_DIR + "/" + CONF_FILE, config, fc_conf);
                 fc.init(fc_conf);
                 #endif 
-                websocket.disconnect();
+                websocket.disconnectConnectedClient();
             } else {
                 usleep(1000 * 1000);
             }
@@ -93,7 +93,7 @@ int main() {
 void wsTest() {
     drone::Websocket ws(10);
     ws.init("/", 8000);
-    ws.start();
+    ws.startWebsocketThread();
     std::string msg;
     srand (time(NULL));
     while(true) 

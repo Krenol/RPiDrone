@@ -2,13 +2,13 @@
 #define DRONE_ARDUINO_OUTPUT_PARSER_H
 
 #include <string>
-#include "../structs/fc_output.hpp"
+#include "../structs/flightcontroller_output.hpp"
 
 #define DELIM_ITEM ";"
 
 namespace drone
 {
-    void parse_output(std::string &out, Output &output);
+    void parse_output(std::string &out, FlightcontrollerOutput &output);
 
 } // namespace drone
 

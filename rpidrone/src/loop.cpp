@@ -4,7 +4,7 @@
 #include "misc.hpp"
 #include "parsers/arduino_input_parser.hpp"
 #include "parsers/arduino_output_parser.hpp"
-#include "structs/fc_output.hpp"
+#include "structs/flightcontroller_output.hpp"
 
 #define NETWORK_LOG(LEVEL) CLOG(LEVEL, "network")  //define network log
 #if defined(EXEC_TIME_LOG)
@@ -73,7 +73,7 @@ namespace drone
         std::string msg, buf = "";
         char out[OUT_MSG_SIZE];
         UserInput userInput;
-        Output output_struct;
+        FlightcontrollerOutput fc_output;
         GPSCoordinates c;
         json j;
         LOG(INFO) << "starting main control loop";
@@ -97,8 +97,8 @@ namespace drone
                 #if defined(FLIGHTCONTROLLER_LOGS)
                 FLIGHT_LOG(INFO) << msg;
                 #endif
-                parse_output(msg, output_struct);
-                createOutputJson(output_struct.roll_is, output_struct.pitch_is, output_struct.yaw_is, output_struct.roll_should, output_struct.pitch_should, output_struct.yaw_should, c, j);
+                parse_output(msg, fc_output);
+                createOutputJson(fc_output.roll_is, fc_output.pitch_is, fc_output.yaw_is, fc_output.roll_should, fc_output.pitch_should, fc_output.yaw_should, c, j);
                 msg = j.dump();
                 #if defined(NETWORK_DEBUG_LOGS)
                 NETWORK_LOG(DEBUG) << "writing " << msg;
