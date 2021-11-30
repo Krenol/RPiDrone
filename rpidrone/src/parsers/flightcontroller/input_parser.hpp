@@ -10,8 +10,20 @@
 
 namespace drone
 {
-    void parseControlInputForFlightcontroller(const FlightcontrollerInput &input, std::string &out);
-
+    namespace parsers {
+        namespace flightcontroller {
+            class InputParser {
+                private:
+                    static void setInputToken(std::string &out);
+                    static void appendDelim(std::string &out);
+                    static void appendEOL(std::string &out);
+                    static void appendYPRAngles(const FlightcontrollerInput &input, std::string &out);
+                    static void appendThrottleValue(const FlightcontrollerInput &input, std::string &out);
+                public: 
+                    static void parseFlightcontrollerInput(const FlightcontrollerInput &input, std::string &out);
+            };
+        }
+    }
 } // namespace drone
 
 #endif

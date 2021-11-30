@@ -123,7 +123,7 @@ namespace drone
 
     void Loop::sendToFlightcontroller(drone::Arduino &fc, std::string &msg, FlightcontrollerInput &userInput, const Config &config) {
         parseAppJson(msg, userInput, config);
-        parseControlInputForFlightcontroller(userInput, msg);
+        drone::parsers::flightcontroller::InputParser::parseFlightcontrollerInput(userInput, msg);
         #if defined(RPI_LOGS)
         RPI_LOG(INFO) << msg;
         #endif
