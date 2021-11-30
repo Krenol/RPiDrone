@@ -90,27 +90,3 @@ int main() {
     return 0;
 }
 
-
-void wsTest() {
-    drone::Websocket ws(10);
-    ws.init("/", 8000);
-    ws.startWebsocketThread();
-    std::string msg;
-    srand (time(NULL));
-    while(true) 
-    {
-        if(ws.hasConnection()) {
-            auto v1 = rand() % 100;         
-            ws.writeMessage("{\"gps\":{},\"joystick\":{\"degrees\":0,\"offset\":0,\"rotation\":0},\"throttle\":" + std::to_string(v1) + "}");
-            if(ws.hasMessages()) {
-                ws.getMessage(msg);
-                LOG(INFO) << "received: " << msg;
-            }
-            
-        } else {
-            LOG(INFO) << "no conn";
-        }
-            
-        usleep(1000 * 1000);
-    }
-}
