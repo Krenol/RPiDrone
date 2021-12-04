@@ -77,24 +77,12 @@
             "min": 700,
             "max": 2000,
             "idle": 750,
-            "pins": [
-                {
-                    "pos": "lf",
-                    "pin": 9
-                },
-                {
-                    "pos": "rf",
-                    "pin": 10
-                },
-                {
-                    "pos": "lb",
-                    "pin": 7
-                },
-                {
-                    "pos": "rb",
-                    "pin": 8
-                }
-            ]
+            "pins": {
+                "leftFront": 9,
+                "rightFront": 10,
+                "leftBack": 7,
+                "rightBack": 8
+            }
         }
     }
 }

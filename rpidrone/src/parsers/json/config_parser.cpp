@@ -21,10 +21,20 @@ namespace drone
             {
                 return configJson.at("controls");
             }
+            
+            nlohmann::json ConfigParser::getEscsJsonObject(const nlohmann::json &configJson) 
+            {
+                return configJson.at("controls").at("escs");
+            }
+            
+            nlohmann::json ConfigParser::getEscPinsJsonObject(const nlohmann::json &configJson) 
+            {
+                return configJson.at("controls").at("escs").at("pins");
+            }
         
             nlohmann::json ConfigParser::getControllersJsonObject(const nlohmann::json &configJson) 
             {
-                return configJson.at("controls").at("controllers");
+                return configJson.at("controls").at("escs").at("controllers");
             }
         
             void ConfigParser::setSensorsStruct(const nlohmann::json &configJson, structs::config::Config &cfg)
@@ -55,35 +65,30 @@ namespace drone
                 max_r = c.at("max_roll_rate");
                 max_y = c.at("max_yaw_velocity");
                 c = c.at("escs");
-                calib = c.at("calibrate");
-                min_esc = c.at("min");
-                max_esc = c.at("max");
-                idle = c.at("idle");
-                auto esc_pins = c.at("pins");
-                for (auto esc : esc_pins.items())
-                {
-                    val = esc.value();
-                    pos = val.at("pos");
-                    if (pos == "rb")
-                    {
-                        rb = val.at("pin");
-                    }
-                    else if (pos == "lb")
-                    {
-                        lb = val.at("pin");
-                    }
-                    else if (pos == "rf")
-                    {
-                        rf = val.at("pin");
-                    }
-                    else if (pos == "lf")
-                    {
-                        lf = val.at("pin");
-                    }
-                }
-                structs::config::EscControllers escControllers = getEscControllers(configJson);
-                structs::config::Escs escs(escControllers, min_esc, max_esc, idle, lf, rf, lb, rb, calib);
+                auto escs = getEscs(configJson);
                 cfg.controls = structs::config::ControlsStruct(escs, max_p, max_r, max_y);
+            }
+            
+            structs::config::Escs ConfigParser::getEscs(const nlohmann::json &configJson) 
+            {
+                auto escJson = getEscsJsonObject(configJson);
+                bool calibrateEsc = escJson.at("calibrate");
+                int minEscValue = escJson.at("min");
+                int maxEscValue = escJson.at("max");
+                int idleEscValue = escJson.at("idle");
+                structs::config::EscPins esc_pins = getEscPins(configJson);
+                structs::config::EscControllers escControllers = getEscControllers(configJson);
+                return structs::config::Escs(escControllers, esc_pins, minEscValue, maxEscValue, idleEscValue, calibrateEsc);
+            }
+            
+            structs::config::EscPins ConfigParser::getEscPins(const nlohmann::json &configJson) 
+            {
+                auto pinsObject = getEscPinsJsonObject(configJson);
+                int leftFrontPin = pinsObject.at("leftFront");
+                int leftBackPin = pinsObject.at("leftBack");
+                int rightFrontPin = pinsObject.at("rightFront");
+                int rightBackPin = pinsObject.at("rightBack");
+                return structs::config::EscPins(leftFrontPin, leftBackPin, rightFrontPin, rightBackPin);
             }
             
             structs::config::EscControllers ConfigParser::getEscControllers(const nlohmann::json &configJson) 

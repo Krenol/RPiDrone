@@ -136,13 +136,13 @@ namespace drone
                 appendItemDelim(out);
                 out += std::to_string(config.controls.escs.max);
                 appendItemDelim(out);
-                out += std::to_string(config.controls.escs.pin_lb);
+                out += std::to_string(config.controls.escs.esc_pins.leftBackPin);
                 appendItemDelim(out);
-                out += std::to_string(config.controls.escs.pin_lf);
+                out += std::to_string(config.controls.escs.esc_pins.leftFrontPin);
                 appendItemDelim(out);
-                out += std::to_string(config.controls.escs.pin_rb);
+                out += std::to_string(config.controls.escs.esc_pins.rightBackPin);
                 appendItemDelim(out);
-                out += std::to_string(config.controls.escs.pin_rf);
+                out += std::to_string(config.controls.escs.esc_pins.rightFrontPin);
                 appendItemDelim(out);
                 out += config.controls.escs.calibrate ? "1" : "0";
             }
