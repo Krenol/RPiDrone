@@ -54,19 +54,12 @@ namespace drone
 
             void ConfigParser::setControlsStruct(const nlohmann::json &configJson, structs::config::Config &cfg)
             {
-                int min_esc, max_esc, idle, lf, rf, lb, rb;
-                float max_p, max_y, max_r;
-                double m;
-                bool calib;
-                nlohmann::json c, val, ki, kd, kp, kaw, diffs;
-                std::string pos;
-                c = configJson.at("controls");
-                max_p = c.at("max_pitch_rate");
-                max_r = c.at("max_roll_rate");
-                max_y = c.at("max_yaw_velocity");
-                c = c.at("escs");
+                auto controlsJson = getDroneControlsJsonObject(configJson);
+                float maxPitchRate = controlsJson.at("max_pitch_rate");
+                float maxRollRate = controlsJson.at("max_roll_rate");
+                float maxYawVel = controlsJson.at("max_yaw_velocity");
                 auto escs = getEscs(configJson);
-                cfg.controls = structs::config::ControlsStruct(escs, max_p, max_r, max_y);
+                cfg.controls = structs::config::ControlsStruct(escs, maxPitchRate, maxRollRate, maxYawVel);
             }
             
             structs::config::Escs ConfigParser::getEscs(const nlohmann::json &configJson) 
