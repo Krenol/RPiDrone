@@ -10,25 +10,25 @@ namespace drone
         {
             struct ControlsStruct
             {
-                float max_pitch = 20.0f, max_roll = 20.0f, max_yawn = 20.0f;
+                float maxPitchRate = 20.0f, maxRollRate = 20.0f, maxYawVel = 20.0f;
                 Escs escs;
 
                 ControlsStruct()
                 {
                 }
 
-                ControlsStruct(const Escs &esc, float max_pitch, float max_roll, float max_yawn) : escs(esc)
+                ControlsStruct(const Escs &esc, float maxPitchRate, float maxRollRate, float maxYawVel) : escs(esc)
                 {
-                    this->max_pitch = max_pitch;
-                    this->max_roll = max_roll;
-                    this->max_yawn = max_yawn;
+                    this->maxPitchRate = maxPitchRate;
+                    this->maxRollRate = maxRollRate;
+                    this->maxYawVel = maxYawVel;
                 }
 
                 ControlsStruct(const ControlsStruct &c) : escs(c.escs)
                 {
-                    this->max_pitch = c.max_pitch;
-                    this->max_roll = c.max_roll;
-                    this->max_yawn = c.max_yawn;
+                    this->maxPitchRate = c.maxPitchRate;
+                    this->maxRollRate = c.maxRollRate;
+                    this->maxYawVel = c.maxYawVel;
                 }
             };
         }

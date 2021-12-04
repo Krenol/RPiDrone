@@ -59,7 +59,7 @@ namespace drone
             {
                 ClientInput in;
                 from_json(j, in);
-                userInput = FlightcontrollerInput(in.throttle, in.joystick.offset, in.joystick.degrees, config.controls.max_roll, config.controls.max_pitch, config.controls.max_yawn, in.joystick.rotation, in.gps);
+                userInput = FlightcontrollerInput(in.throttle, in.joystick.offset, in.joystick.degrees, config.controls.maxRollRate, config.controls.maxPitchRate, config.controls.maxYawVel, in.joystick.rotation, in.gps);
             }
         }
         catch (const std::exception &exc)

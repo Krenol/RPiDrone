@@ -19,12 +19,12 @@ namespace drone
 
         }
 
-        FlightcontrollerInput(int throttle, float offset, float degrees, float max_roll, float max_pitch, float max_yawn, float rotation, GPSCoordinates &gps) 
+        FlightcontrollerInput(int throttle, float offset, float degrees, float maxRollRate, float maxPitchRate, float maxYawVel, float rotation, GPSCoordinates &gps) 
         {
             this->throttle = throttle;
-            roll_angle = offset * cos(degrees * M_PI / 180.0) * max_roll;
-            pitch_angle = offset * sin(degrees * M_PI / 180.0) * max_pitch;
-            yaw_vel = max_yawn * rotation / drone::ROTATION_UPPER_BOUND;
+            roll_angle = offset * cos(degrees * M_PI / 180.0) * maxRollRate;
+            pitch_angle = offset * sin(degrees * M_PI / 180.0) * maxPitchRate;
+            yaw_vel = maxYawVel * rotation / drone::ROTATION_UPPER_BOUND;
             gps = GPSCoordinates(gps);
         }
 
