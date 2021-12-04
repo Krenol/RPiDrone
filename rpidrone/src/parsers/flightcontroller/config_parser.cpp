@@ -32,7 +32,7 @@ namespace drone
                 out += DELIM_CAT;
             }
             
-            void ConfigParser::appendControllerConfigs(const Config &config, std::string &out) 
+            void ConfigParser::appendControllerConfigs(const structs::config::Config &config, std::string &out) 
             {
                 appendRollControllerConfigs(config, out);
                 appendItemDelim(out);
@@ -41,14 +41,14 @@ namespace drone
                 appendYawControllerConfigs(config, out);   
             }
             
-            void ConfigParser::appendRollControllerConfigs(const Config &config, std::string &out) 
+            void ConfigParser::appendRollControllerConfigs(const structs::config::Config &config, std::string &out) 
             {
                 appendRollRateControllerConfigs(config, out);
                 appendItemDelim(out);
                 appendRollOutControllerConfigs(config, out);                
             }
             
-            void ConfigParser::appendRollRateControllerConfigs(const Config &config, std::string &out) 
+            void ConfigParser::appendRollRateControllerConfigs(const structs::config::Config &config, std::string &out) 
             {
                 out += TO_STRING<double>(config.controls.escs.roll_rate.k_p, 2); 
                 appendValueDelim(out); 
@@ -63,7 +63,7 @@ namespace drone
                 out += TO_STRING<double>(config.controls.escs.roll_rate.max, 2);
             }
             
-            void ConfigParser::appendRollOutControllerConfigs(const Config &config, std::string &out) 
+            void ConfigParser::appendRollOutControllerConfigs(const structs::config::Config &config, std::string &out) 
             {
                 out += TO_STRING<double>(config.controls.escs.roll_output.k_p, 2); 
                 appendValueDelim(out); 
@@ -78,7 +78,7 @@ namespace drone
                 out += TO_STRING<double>(config.controls.escs.roll_output.max, 2);
             }
             
-            void ConfigParser::appendYawControllerConfigs(const Config &config, std::string &out) 
+            void ConfigParser::appendYawControllerConfigs(const structs::config::Config &config, std::string &out) 
             {
                 //yaw is already a velocity; we only have the output controller
                 out += TO_STRING<double>(config.controls.escs.yaw_output.k_p, 2); 
@@ -93,14 +93,14 @@ namespace drone
                 out += TO_STRING<double>(config.controls.escs.yaw_output.max, 2);
             }
             
-            void ConfigParser::appendPitchControllerConfigs(const Config &config, std::string &out) 
+            void ConfigParser::appendPitchControllerConfigs(const structs::config::Config &config, std::string &out) 
             {
                 appendPitchRateControllerConfigs(config, out);               
                 appendItemDelim(out);
                 appendPitchOutControllerConfigs(config, out);
             }
             
-            void ConfigParser::appendPitchRateControllerConfigs(const Config &config, std::string &out) 
+            void ConfigParser::appendPitchRateControllerConfigs(const structs::config::Config &config, std::string &out) 
             {
                 out += TO_STRING<double>(config.controls.escs.pitch_rate.k_p, 2); 
                 appendValueDelim(out); 
@@ -115,7 +115,7 @@ namespace drone
                 out += TO_STRING<double>(config.controls.escs.pitch_rate.max, 2);
             }
             
-            void ConfigParser::appendPitchOutControllerConfigs(const Config &config, std::string &out) 
+            void ConfigParser::appendPitchOutControllerConfigs(const structs::config::Config &config, std::string &out) 
             {
                 out += TO_STRING<double>(config.controls.escs.pitch_output.k_p, 2); 
                 appendValueDelim(out); 
@@ -130,7 +130,7 @@ namespace drone
                 out += TO_STRING<double>(config.controls.escs.pitch_output.max, 2);
             }
             
-            void ConfigParser::appendEscConfigs(const Config &config, std::string &out) 
+            void ConfigParser::appendEscConfigs(const structs::config::Config &config, std::string &out) 
             {
                 out += std::to_string(config.controls.escs.min);
                 appendItemDelim(out);
@@ -147,7 +147,7 @@ namespace drone
                 out += config.controls.escs.calibrate ? "1" : "0";
             }
         
-            void ConfigParser::parseFlightcontrollerConfig(const Config &config, std::string &out) 
+            void ConfigParser::parseFlightcontrollerConfig(const structs::config::Config &config, std::string &out) 
             {
                 setConfigToken(out);
                 appendControllerConfigs(config, out);

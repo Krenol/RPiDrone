@@ -9,9 +9,9 @@
 
 namespace drone
 {
-    class Arduino{
+    class Flightcontroller {
         public:
-            Arduino(const std::string &serial, int baudrate);
+            Flightcontroller(const std::string &serial, int baudrate);
 
             void init(const std::string &conf);
 

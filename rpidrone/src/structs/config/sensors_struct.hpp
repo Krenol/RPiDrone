@@ -3,27 +3,35 @@
 
 #include "gps.hpp"
 
-struct SensorsStruct
+namespace drone
 {
-    bool calibrate;
-    int decimals = 1;
-    GPS gps;
-
-    SensorsStruct()
+    namespace structs
     {
-    }
+        namespace config
+        {
+            struct SensorsStruct
+            {
+                bool calibrate;
+                int decimals = 1;
+                GPS gps;
 
-    SensorsStruct(bool calibrate, const GPS &g, int decimals) :  gps(g)
-    {
-        this->decimals = decimals;
-        this->calibrate = calibrate;
-    }
+                SensorsStruct()
+                {
+                }
 
-    SensorsStruct(const SensorsStruct &s) : gps(s.gps)
-    {
-        this->decimals = s.decimals;
-        this->calibrate = s.calibrate;
-    }
-};
+                SensorsStruct(bool calibrate, const GPS &g, int decimals) : gps(g)
+                {
+                    this->decimals = decimals;
+                    this->calibrate = calibrate;
+                }
 
+                SensorsStruct(const SensorsStruct &s) : gps(s.gps)
+                {
+                    this->decimals = s.decimals;
+                    this->calibrate = s.calibrate;
+                }
+            };
+        }
+    }
+}
 #endif

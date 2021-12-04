@@ -9,29 +9,36 @@
 #include "controls_struct.hpp"
 #include "flightcontroller.hpp"
 
-namespace drone {
-    struct Config
+namespace drone
+{
+    namespace structs
     {
-        Logic logic;
-        Server server;
-        Leds leds;
-        Queues queues;
-        SensorsStruct sensors;
-        ControlsStruct controls;
-        Flightcontroller flightcontroller;
-
-        Config()
+        namespace config
         {
-        }
+            struct Config
+            {
+                Logic logic;
+                Server server;
+                Leds leds;
+                Queues queues;
+                SensorsStruct sensors;
+                ControlsStruct controls;
+                Flightcontroller flightcontroller;
 
-        Config(const Logic &logic, const Server &server, const Leds &leds, const Queues &queues, const SensorsStruct &sensors, const ControlsStruct &controls, const Flightcontroller &flightcontroller) : logic(logic), server(server), leds(leds), queues(queues), sensors(sensors), controls(controls), flightcontroller(flightcontroller)
-        {
-        }
+                Config()
+                {
+                }
 
-        Config(const Config &c) : logic(c.logic), server(c.server), leds(c.leds), queues(c.queues), sensors(c.sensors), controls(c.controls), flightcontroller(c.flightcontroller)
-        {
+                Config(const Logic &logic, const Server &server, const Leds &leds, const Queues &queues, const SensorsStruct &sensors, const ControlsStruct &controls, const Flightcontroller &flightcontroller) : logic(logic), server(server), leds(leds), queues(queues), sensors(sensors), controls(controls), flightcontroller(flightcontroller)
+                {
+                }
+
+                Config(const Config &c) : logic(c.logic), server(c.server), leds(c.leds), queues(c.queues), sensors(c.sensors), controls(c.controls), flightcontroller(c.flightcontroller)
+                {
+                }
+            };
         }
-    };
+    }
 }
 
 #endif

@@ -4,7 +4,7 @@
 #include "websocket.hpp"
 #include <memory>
 #include <string>
-#include "arduino.hpp"
+#include "flightcontroller.hpp"
 #include "parsers/json/client_input_parser.hpp"
 #include "structs/config/config.hpp"
 #include "structs/flightcontroller/input.hpp"
@@ -14,15 +14,9 @@ using json = nlohmann::json;
 namespace drone {
     class Loop  {
         public:
-            /**
-             * Constructor for loop class
-             */
             Loop();
 
-            /**
-             * Method containing the main logic
-             */
-            void loop(Websocket &websocket, drone::Arduino &fc, const Config &config);
+            void loop(Websocket &websocket, drone::Flightcontroller &fc, const structs::config::Config &config);
             
         private:
             //std::unique_ptr<rpicomponents::Led> on_led_, status_led_;
@@ -30,9 +24,9 @@ namespace drone {
 
             void createOutputJson(float roll_is, float pitch_is, float yaw_is, float roll_should, float pitch_should, float yaw_should,const GPSCoordinates &c, json &j);
 
-            void parseAppJson(std::string &msg, FlightcontrollerInput &userInput, const Config &config);
+            void parseAppJson(std::string &msg, FlightcontrollerInput &userInput, const structs::config::Config &config);
 
-            void sendToFlightcontroller(drone::Arduino &fc, std::string &msg, FlightcontrollerInput &userInput, const Config &config);
+            void sendToFlightcontroller(drone::Flightcontroller &fc, std::string &msg, FlightcontrollerInput &userInput, const structs::config::Config &config);
     };
 }
 

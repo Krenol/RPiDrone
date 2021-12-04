@@ -8,10 +8,9 @@
 #include <string>
 #include "parsers/json/config_parser.hpp" 
 #include "structs/config/config.hpp"
-#include "arduino.hpp"
+#include "flightcontroller.hpp"
 #include "websocket.hpp"
-#include <stdlib.h>     /* srand, rand */
-#include <time.h>       /* time */
+#include "api/api_server.hpp"
 #if defined(POWER_LOGS)
 #include "logs/power_logs.hpp"
 #endif
@@ -21,31 +20,30 @@
 
 using json = nlohmann::json;
 
-//INITIALIZE_EASYLOGGINGPP
-
-static void loadConfig(const std::string &conf_file, drone::Config &config, std::string &fc_conf){
+static void loadConfig(const std::string &conf_file, drone::structs::config::Config &config, std::string &fc_conf){
     std::ifstream ifs(conf_file);
-    config = json::parse(ifs);
+    auto j = json::parse(ifs);
+    drone::parsers::json::ConfigParser::parseJsonConfigToStruct(j, config);
     drone::parsers::flightcontroller::ConfigParser::parseFlightcontrollerConfig(config, fc_conf);
 }
 
 int main() {
     bool run = true;
-    drone::Config config;
+    drone::structs::config::Config config;
     std::string fc_conf;
     drone::logs::Logs log;
     log.init(LOG_DIR, OLD_LOG_DIR, CONF_DIR, LOG_CONF);
     drone::Loop l;
     #if defined(CONF_API_MODE)
     LOG(INFO) << "Starting API Server....";
+    drone::api::ApiServer apiServer;
     std:: string cmd = "/usr/bin/python3 " + HOME_DIR + "/api/main.py &";
-    int pid;
-	if(pid = system(cmd.c_str()) < 0) {
+    try {
+        apiServer.startApiServer(cmd);
+        LOG(INFO) << "API Server started successfully";
+    } catch(...) {
         LOG(ERROR) << "API Server did not started successfully";
-    } else {
-        LOG(INFO) << "API Server started successfully with PID: " << pid;
     }
-    
     #endif
     #if defined(POWER_LOGS)
     std::thread thrd([&run] () {
@@ -61,7 +59,7 @@ int main() {
     websocket.startWebsocketThread();
     LOG(INFO) << "Started Websocket Server sucessfully";
     LOG(INFO) << "Starting the drone flightcontroller & drone setup";
-    drone::Arduino fc(config.flightcontroller.port, config.flightcontroller.baudrate);
+    drone::Flightcontroller fc(config.flightcontroller.port, config.flightcontroller.baudrate);
     LOG(INFO) << "init flightcontroller conf";
     fc.init(fc_conf);
     LOG(INFO) << "Drone & flightcontroller startup completed; starting main loop";

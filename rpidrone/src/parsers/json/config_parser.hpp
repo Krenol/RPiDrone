@@ -9,12 +9,18 @@ using json = nlohmann::json;
 
 namespace drone
 {
-    void from_json(const nlohmann::json &j, Config &cfg);
+    namespace parsers {
+        namespace json {
+            class ConfigParser {
+                private:
+                    static void parseSensorObject(const nlohmann::json &j, structs::config::Config &cfg);
+                    static void parseControlObject(const nlohmann::json &j, structs::config::Config &cfg);
 
-    void parse_sensor_obj(const nlohmann::json &j, Config &cfg);
-
-    void parse_control_obj(const nlohmann::json &j, Config &cfg);
-
+                public:
+                    static void parseJsonConfigToStruct(const nlohmann::json &j, structs::config::Config &cfg);
+            };
+        }
+    }
 } // namespace drone
 
 #endif

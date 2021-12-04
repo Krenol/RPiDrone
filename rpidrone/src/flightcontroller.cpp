@@ -1,10 +1,10 @@
-#include "arduino.hpp"
+#include "flightcontroller.hpp"
 #include "wiringSerial.h"
 #include "logs/easylogging++.h"
 
 namespace drone
 {
-    Arduino::Arduino(const std::string &serial, int baudrate) : fd_ard_{serialOpen(serial.c_str(), baudrate)}
+    Flightcontroller::Flightcontroller(const std::string &serial, int baudrate) : fd_ard_{serialOpen(serial.c_str(), baudrate)}
     {
         initialized_ = false;
         if(fd_ard_ < 0) {
@@ -12,7 +12,7 @@ namespace drone
         }
     }
 
-    void Arduino::init(const std::string &conf) 
+    void Flightcontroller::init(const std::string &conf) 
     {
         char out_c[OUT_MSG_SIZE];
         std::string out;
@@ -35,24 +35,24 @@ namespace drone
         initialized_ = true;
     }
     
-    void Arduino::serialSend(const std::string &msg) 
+    void Flightcontroller::serialSend(const std::string &msg) 
     {
         if(!initialized_) return;
         serialPuts(fd_ard_, msg.c_str());
     }
     
-    void Arduino::serialRead(char *msg, const char EOL) 
+    void Flightcontroller::serialRead(char *msg, const char EOL) 
     {
         if(!initialized_) return;
         serialGetStr(fd_ard_, msg, OUT_MSG_SIZE, EOL);
     }
 
-    int Arduino::availableData() 
+    int Flightcontroller::availableData() 
     {
         return serialDataAvail(fd_ard_);
     }
     
-    void Arduino::clearReceiverBuffer() 
+    void Flightcontroller::clearReceiverBuffer() 
     {
         clearReceiveBuffer(fd_ard_);
     }

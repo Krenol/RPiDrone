@@ -32,7 +32,7 @@ namespace drone
         #endif
     }
 
-    void Loop::parseAppJson(std::string &msg, FlightcontrollerInput &userInput, const Config &config)
+    void Loop::parseAppJson(std::string &msg, FlightcontrollerInput &userInput, const structs::config::Config &config)
     {
         json j;
         try
@@ -68,7 +68,7 @@ namespace drone
         }
     }
 
-    void Loop::loop(Websocket &websocket, drone::Arduino &fc, const Config &config)
+    void Loop::loop(Websocket &websocket, drone::Flightcontroller &fc, const structs::config::Config &config)
     {
         std::string msg, buf = "";
         char out[OUT_MSG_SIZE];
@@ -121,7 +121,7 @@ namespace drone
         sendToFlightcontroller(fc, msg, userInput, config);
     }
 
-    void Loop::sendToFlightcontroller(drone::Arduino &fc, std::string &msg, FlightcontrollerInput &userInput, const Config &config) {
+    void Loop::sendToFlightcontroller(drone::Flightcontroller &fc, std::string &msg, FlightcontrollerInput &userInput, const structs::config::Config &config) {
         parseAppJson(msg, userInput, config);
         drone::parsers::flightcontroller::InputParser::parseFlightcontrollerInput(userInput, msg);
         #if defined(RPI_LOGS)

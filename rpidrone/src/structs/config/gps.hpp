@@ -3,27 +3,35 @@
 
 #include <string>
 
-struct GPS
+namespace drone
 {
-    std::string port = "/dev/serial0";
-    int baudrate = 9600;
-
-    GPS()
+    namespace structs
     {
-    }
+        namespace config
+        {
+            struct GPS
+            {
+                std::string port = "/dev/serial0";
+                int baudrate = 9600;
 
-    GPS(const std::string &port, int baudrate)
-    {
-        this->port = port;
-        this->baudrate = baudrate;
-    }
+                GPS()
+                {
+                }
 
-    GPS(const GPS &g)
-    {
-        this->port = g.port;
-        this->baudrate = g.baudrate;
-    }
-};
+                GPS(const std::string &port, int baudrate)
+                {
+                    this->port = port;
+                    this->baudrate = baudrate;
+                }
 
+                GPS(const GPS &g)
+                {
+                    this->port = g.port;
+                    this->baudrate = g.baudrate;
+                }
+            };
+        }
+    }
+}
 
 #endif

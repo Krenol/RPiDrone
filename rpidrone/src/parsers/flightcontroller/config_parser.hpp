@@ -21,17 +21,17 @@ namespace drone
                     static void appendItemDelim(std::string &out);
                     static void appendEOL(std::string &out);
                     static void appendNewCategoryToken(std::string &out);
-                    static void appendControllerConfigs(const Config &config, std::string &out);
-                    static void appendRollControllerConfigs(const Config &config, std::string &out);
-                    static void appendRollRateControllerConfigs(const Config &config, std::string &out);
-                    static void appendRollOutControllerConfigs(const Config &config, std::string &out);
-                    static void appendPitchControllerConfigs(const Config &config, std::string &out);
-                    static void appendPitchRateControllerConfigs(const Config &config, std::string &out);
-                    static void appendPitchOutControllerConfigs(const Config &config, std::string &out);
-                    static void appendYawControllerConfigs(const Config &config, std::string &out);
-                    static void appendEscConfigs(const Config &config, std::string &out);
+                    static void appendControllerConfigs(const structs::config::Config &config, std::string &out);
+                    static void appendRollControllerConfigs(const structs::config::Config &config, std::string &out);
+                    static void appendRollRateControllerConfigs(const structs::config::Config &config, std::string &out);
+                    static void appendRollOutControllerConfigs(const structs::config::Config &config, std::string &out);
+                    static void appendPitchControllerConfigs(const structs::config::Config &config, std::string &out);
+                    static void appendPitchRateControllerConfigs(const structs::config::Config &config, std::string &out);
+                    static void appendPitchOutControllerConfigs(const structs::config::Config &config, std::string &out);
+                    static void appendYawControllerConfigs(const structs::config::Config &config, std::string &out);
+                    static void appendEscConfigs(const structs::config::Config &config, std::string &out);
                 public: 
-                    static void parseFlightcontrollerConfig(const Config &config, std::string &out);
+                    static void parseFlightcontrollerConfig(const structs::config::Config &config, std::string &out);
             };
         }
     }
