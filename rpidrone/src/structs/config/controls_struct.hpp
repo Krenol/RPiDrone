@@ -2,6 +2,8 @@
 #define DRONE_STRUCT_CONFIG_CONTROLS_STRUCT_H
 
 #include "escs.hpp"
+#include "max_ypr_rates.hpp"
+
 namespace drone
 {
     namespace structs
@@ -10,25 +12,21 @@ namespace drone
         {
             struct ControlsStruct
             {
-                float maxPitchRate = 20.0f, maxRollRate = 20.0f, maxYawVel = 20.0f;
+                MaxYprRates maxYprRates;
                 Escs escs;
 
                 ControlsStruct()
                 {
                 }
 
-                ControlsStruct(const Escs &esc, float maxPitchRate, float maxRollRate, float maxYawVel) : escs(esc)
+                ControlsStruct(const Escs &esc, const MaxYprRates &maxYprRates) : escs(esc), maxYprRates(maxYprRates)
                 {
-                    this->maxPitchRate = maxPitchRate;
-                    this->maxRollRate = maxRollRate;
-                    this->maxYawVel = maxYawVel;
+     
                 }
 
-                ControlsStruct(const ControlsStruct &c) : escs(c.escs)
+                ControlsStruct(const ControlsStruct &c) : escs(c.escs), maxYprRates(c.maxYprRates)
                 {
-                    this->maxPitchRate = c.maxPitchRate;
-                    this->maxRollRate = c.maxRollRate;
-                    this->maxYawVel = c.maxYawVel;
+      
                 }
             };
         }
