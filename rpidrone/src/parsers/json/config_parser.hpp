@@ -13,11 +13,18 @@ namespace drone
         namespace json {
             class ConfigParser {
                 private:
-                    static void parseSensorObject(const nlohmann::json &j, structs::config::Config &cfg);
-                    static void parseControlObject(const nlohmann::json &j, structs::config::Config &cfg);
+                    static nlohmann::json getSensorsJsonObject(const nlohmann::json &configJson);
+                    static nlohmann::json getGpsJsonObject(const nlohmann::json &configJson);
+                    static nlohmann::json getDroneControlsJsonObject(const nlohmann::json &configJson);
+                    static nlohmann::json getControllersJsonObject(const nlohmann::json &configJson);
+                    static void setSensorsStruct(const nlohmann::json &configJson, structs::config::Config &cfg);
+                    static structs::config::GPS getGpsStruct(const nlohmann::json &configJson);
+                    static void setControlsStruct(const nlohmann::json &configJson, structs::config::Config &cfg);
+                    static structs::config::EscControllers getEscControllers(const nlohmann::json &configJson);
+                    static structs::config::PID parsePidControlStruct(const nlohmann::json &controllersJson, const std::string &key);
 
                 public:
-                    static void parseJsonConfigToStruct(const nlohmann::json &j, structs::config::Config &cfg);
+                    static void parseJsonConfigToStruct(const nlohmann::json &configJson, structs::config::Config &cfg);
             };
         }
     }

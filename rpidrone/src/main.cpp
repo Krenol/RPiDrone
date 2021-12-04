@@ -37,8 +37,8 @@ int main() {
     #if defined(CONF_API_MODE)
     LOG(INFO) << "Starting API Server....";
     drone::api::ApiServer apiServer;
-    std:: string cmd = "/usr/bin/python3 " + HOME_DIR + "/api/main.py &";
     try {
+        std:: string cmd = "/usr/bin/python3 " + HOME_DIR + "/api/main.py &";
         apiServer.startApiServer(cmd);
         LOG(INFO) << "API Server started successfully";
     } catch(...) {
@@ -84,6 +84,9 @@ int main() {
     run = false;
     #if defined(POWER_LOGS)
     thrd.join();
+    #endif
+    #if defined(CONF_API_MODE)
+    apiServer.stopApiServer();
     #endif
     return 0;
 }

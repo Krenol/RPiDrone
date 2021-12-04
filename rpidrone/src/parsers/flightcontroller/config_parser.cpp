@@ -50,47 +50,47 @@ namespace drone
             
             void ConfigParser::appendRollRateControllerConfigs(const structs::config::Config &config, std::string &out) 
             {
-                out += TO_STRING<double>(config.controls.escs.roll_rate.k_p, 2); 
+                out += TO_STRING<double>(config.controls.escs.esc_controllers.roll_rate.k_p, 2); 
                 appendValueDelim(out); 
-                out += TO_STRING<double>(config.controls.escs.roll_rate.k_d, 2); 
+                out += TO_STRING<double>(config.controls.escs.esc_controllers.roll_rate.k_d, 2); 
                 appendValueDelim(out); 
-                out += TO_STRING<double>(config.controls.escs.roll_rate.k_i, 2); 
+                out += TO_STRING<double>(config.controls.escs.esc_controllers.roll_rate.k_i, 2); 
                 appendValueDelim(out); 
-                out += TO_STRING<double>(config.controls.escs.roll_rate.k_aw, 2); 
+                out += TO_STRING<double>(config.controls.escs.esc_controllers.roll_rate.k_aw, 2); 
                 appendValueDelim(out); 
-                out += TO_STRING<double>(config.controls.escs.roll_rate.min, 2); 
+                out += TO_STRING<double>(config.controls.escs.esc_controllers.roll_rate.min, 2); 
                 appendValueDelim(out); 
-                out += TO_STRING<double>(config.controls.escs.roll_rate.max, 2);
+                out += TO_STRING<double>(config.controls.escs.esc_controllers.roll_rate.max, 2);
             }
             
             void ConfigParser::appendRollOutControllerConfigs(const structs::config::Config &config, std::string &out) 
             {
-                out += TO_STRING<double>(config.controls.escs.roll_output.k_p, 2); 
+                out += TO_STRING<double>(config.controls.escs.esc_controllers.roll_output.k_p, 2); 
                 appendValueDelim(out); 
-                out += TO_STRING<double>(config.controls.escs.roll_output.k_d, 2); 
+                out += TO_STRING<double>(config.controls.escs.esc_controllers.roll_output.k_d, 2); 
                 appendValueDelim(out); 
-                out += TO_STRING<double>(config.controls.escs.roll_output.k_i, 2); 
+                out += TO_STRING<double>(config.controls.escs.esc_controllers.roll_output.k_i, 2); 
                 appendValueDelim(out); 
-                out += TO_STRING<double>(config.controls.escs.roll_output.k_aw, 2); 
+                out += TO_STRING<double>(config.controls.escs.esc_controllers.roll_output.k_aw, 2); 
                 appendValueDelim(out); 
-                out += TO_STRING<double>(config.controls.escs.roll_output.min, 2); 
+                out += TO_STRING<double>(config.controls.escs.esc_controllers.roll_output.min, 2); 
                 appendValueDelim(out); 
-                out += TO_STRING<double>(config.controls.escs.roll_output.max, 2);
+                out += TO_STRING<double>(config.controls.escs.esc_controllers.roll_output.max, 2);
             }
             
             void ConfigParser::appendYawControllerConfigs(const structs::config::Config &config, std::string &out) 
             {
                 //yaw is already a velocity; we only have the output controller
-                out += TO_STRING<double>(config.controls.escs.yaw_output.k_p, 2); 
-                appendValueDelim(out); out += TO_STRING<double>(config.controls.escs.yaw_output.k_d, 2); 
+                out += TO_STRING<double>(config.controls.escs.esc_controllers.yaw_output.k_p, 2); 
+                appendValueDelim(out); out += TO_STRING<double>(config.controls.escs.esc_controllers.yaw_output.k_d, 2); 
                 appendValueDelim(out); 
-                out += TO_STRING<double>(config.controls.escs.yaw_output.k_i, 2); 
+                out += TO_STRING<double>(config.controls.escs.esc_controllers.yaw_output.k_i, 2); 
                 appendValueDelim(out); 
-                out += TO_STRING<double>(config.controls.escs.yaw_output.k_aw, 2); 
+                out += TO_STRING<double>(config.controls.escs.esc_controllers.yaw_output.k_aw, 2); 
                 appendValueDelim(out); 
-                out += TO_STRING<double>(config.controls.escs.yaw_output.min, 2); 
+                out += TO_STRING<double>(config.controls.escs.esc_controllers.yaw_output.min, 2); 
                 appendValueDelim(out); 
-                out += TO_STRING<double>(config.controls.escs.yaw_output.max, 2);
+                out += TO_STRING<double>(config.controls.escs.esc_controllers.yaw_output.max, 2);
             }
             
             void ConfigParser::appendPitchControllerConfigs(const structs::config::Config &config, std::string &out) 
@@ -102,32 +102,32 @@ namespace drone
             
             void ConfigParser::appendPitchRateControllerConfigs(const structs::config::Config &config, std::string &out) 
             {
-                out += TO_STRING<double>(config.controls.escs.pitch_rate.k_p, 2); 
+                out += TO_STRING<double>(config.controls.escs.esc_controllers.pitch_rate.k_p, 2); 
                 appendValueDelim(out); 
-                out += TO_STRING<double>(config.controls.escs.pitch_rate.k_d, 2); 
+                out += TO_STRING<double>(config.controls.escs.esc_controllers.pitch_rate.k_d, 2); 
                 appendValueDelim(out); 
-                out += TO_STRING<double>(config.controls.escs.pitch_rate.k_i, 2); 
+                out += TO_STRING<double>(config.controls.escs.esc_controllers.pitch_rate.k_i, 2); 
                 appendValueDelim(out); 
-                out += TO_STRING<double>(config.controls.escs.pitch_rate.k_aw, 2); 
+                out += TO_STRING<double>(config.controls.escs.esc_controllers.pitch_rate.k_aw, 2); 
                 appendValueDelim(out); 
-                out += TO_STRING<double>(config.controls.escs.pitch_rate.min, 2); 
+                out += TO_STRING<double>(config.controls.escs.esc_controllers.pitch_rate.min, 2); 
                 appendValueDelim(out); 
-                out += TO_STRING<double>(config.controls.escs.pitch_rate.max, 2);
+                out += TO_STRING<double>(config.controls.escs.esc_controllers.pitch_rate.max, 2);
             }
             
             void ConfigParser::appendPitchOutControllerConfigs(const structs::config::Config &config, std::string &out) 
             {
-                out += TO_STRING<double>(config.controls.escs.pitch_output.k_p, 2); 
+                out += TO_STRING<double>(config.controls.escs.esc_controllers.pitch_output.k_p, 2); 
                 appendValueDelim(out); 
-                out += TO_STRING<double>(config.controls.escs.pitch_output.k_d, 2); 
+                out += TO_STRING<double>(config.controls.escs.esc_controllers.pitch_output.k_d, 2); 
                 appendValueDelim(out); 
-                out += TO_STRING<double>(config.controls.escs.pitch_output.k_i, 2); 
+                out += TO_STRING<double>(config.controls.escs.esc_controllers.pitch_output.k_i, 2); 
                 appendValueDelim(out); 
-                out += TO_STRING<double>(config.controls.escs.pitch_output.k_aw, 2); 
+                out += TO_STRING<double>(config.controls.escs.esc_controllers.pitch_output.k_aw, 2); 
                 appendValueDelim(out); 
-                out += TO_STRING<double>(config.controls.escs.pitch_output.min, 2); 
+                out += TO_STRING<double>(config.controls.escs.esc_controllers.pitch_output.min, 2); 
                 appendValueDelim(out); 
-                out += TO_STRING<double>(config.controls.escs.pitch_output.max, 2);
+                out += TO_STRING<double>(config.controls.escs.esc_controllers.pitch_output.max, 2);
             }
             
             void ConfigParser::appendEscConfigs(const structs::config::Config &config, std::string &out) 

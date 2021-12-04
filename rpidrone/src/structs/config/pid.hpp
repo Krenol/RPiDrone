@@ -1,5 +1,5 @@
-#ifndef DRONE_STRUCT_CONFIG_PID_CONTROL_H
-#define DRONE_STRUCT_CONFIG_PID_CONTROL_H
+#ifndef DRONE_STRUCT_CONFIG_PID_H
+#define DRONE_STRUCT_CONFIG_PID_H
 
 namespace drone
 {
@@ -7,15 +7,15 @@ namespace drone
     {
         namespace config
         {
-            struct PIDControl
+            struct PID
             {
                 double k_p = 1.0, k_d = 1.0, k_i = 0.0, k_aw = 0.0, max = 0.0, min = 0.0;
 
-                PIDControl()
+                PID()
                 {
                 }
 
-                PIDControl(double k_p, double k_d, double k_i, double k_aw, double min, double max)
+                PID(double k_p, double k_d, double k_i, double k_aw, double min, double max)
                 {
                     this->k_aw = k_aw;
                     this->k_d = k_d;
@@ -25,7 +25,7 @@ namespace drone
                     this->max = max;
                 }
 
-                PIDControl(const PIDControl &p)
+                PID(const PID &p)
                 {
                     this->k_aw = p.k_aw;
                     this->k_d = p.k_d;
