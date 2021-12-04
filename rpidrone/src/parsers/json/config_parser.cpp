@@ -7,6 +7,31 @@ namespace drone
     {
         namespace json
         {
+            nlohmann::json ConfigParser::getLedsJsonObject(const nlohmann::json &configJson) 
+            {
+                return configJson.at("leds");
+            }
+            
+            nlohmann::json ConfigParser::getLogicJsonObject(const nlohmann::json &configJson) 
+            {
+                return configJson.at("logic");
+            }
+            
+            nlohmann::json ConfigParser::getServerJsonObject(const nlohmann::json &configJson) 
+            {
+                return configJson.at("server");
+            }
+            
+            nlohmann::json ConfigParser::getQueuesJsonObject(const nlohmann::json &configJson) 
+            {
+                return configJson.at("queues");
+            }
+            
+            nlohmann::json ConfigParser::getFlightcontrollerJsonObject(const nlohmann::json &configJson) 
+            {
+                return configJson.at("flightcontroller");
+            }
+        
             nlohmann::json ConfigParser::getSensorsJsonObject(const nlohmann::json &configJson) 
             {
                 return configJson.at("sensors");
@@ -111,14 +136,58 @@ namespace drone
                 double kaw = controllersJson.at("k_aw").at(key);
                 return structs::config::PID(kp, kd, ki, kaw, -maxOffset, maxOffset);
             }
+            
+            void ConfigParser::setLedsStruct(const nlohmann::json &configJson, structs::config::Config &cfg) 
+            {
+                auto ledsObject = getLedsJsonObject(configJson);
+                int onLedPin = ledsObject.at("on_led_pin");
+                int statusLedPin = ledsObject.at("status_led_pin");
+                cfg.leds = structs::config::Leds(onLedPin, statusLedPin);
+            }
+            
+            void ConfigParser::setLogicStruct(const nlohmann::json &configJson, structs::config::Config &cfg) 
+            {
+                auto logicObject = getLogicJsonObject(configJson);
+                bool motorsOffOnDisco = logicObject.at("motors_off_on_disconnect");
+                int resetPin = logicObject.at("rpi_reset_pin");
+                cfg.logic = structs::config::Logic(motorsOffOnDisco, resetPin);
+            }
+            
+            void ConfigParser::setServerStruct(const nlohmann::json &configJson, structs::config::Config &cfg) 
+            {
+                auto serverObject = getServerJsonObject(configJson);
+                int port = serverObject.at("port");
+                int queueSize = serverObject.at("queue_size");
+                std::string wsContext = serverObject.at("context");
+                bool enableSsl = serverObject.at("ssl");
+                std::string sslCertPath = serverObject.at("ssl_cert");
+                cfg.server = structs::config::Server(port, queueSize, wsContext, enableSsl, sslCertPath);
+            }
+            
+            void ConfigParser::setQueuesStruct(const nlohmann::json &configJson, structs::config::Config &cfg) 
+            {
+                auto queueObject = getQueuesJsonObject(configJson);
+                int readQueueSize = queueObject.at("read_queue_size");
+                int writeQueueSize = queueObject.at("write_queue_size");
+                cfg.queues = structs::config::Queues(readQueueSize, writeQueueSize);
+            }
+            
+            void ConfigParser::setFlightcontrollerStruct(const nlohmann::json &configJson, structs::config::Config &cfg) 
+            {
+                auto fcObject = getFlightcontrollerJsonObject(configJson);
+                std::string port = fcObject.at("port");
+                int baudrate = fcObject.at("baudrate");
+                int maxSerialBuffer = fcObject.at("max_serial_buffer");
+                cfg.flightcontroller = structs::config::Flightcontroller(port, baudrate, maxSerialBuffer);
+            }
 
             void ConfigParser::parseJsonConfigToStruct(const nlohmann::json &configJson, structs::config::Config &cfg)
             {
-                cfg.leds = structs::config::Leds(configJson.at("leds").at("on_led"), configJson.at("leds").at("status_led"));
-                cfg.logic = structs::config::Logic(configJson.at("logic").at("motors_off_on_disconnect"), configJson.at("logic").at("rpi_reset_pin"));
-                cfg.server = structs::config::Server(configJson.at("server").at("port"), configJson.at("server").at("queue_size"), configJson.at("server").at("context"), configJson.at("server").at("ssl"), configJson.at("server").at("ssl_cert"));
-                cfg.queues = structs::config::Queues(configJson.at("queues").at("read_size"), configJson.at("queues").at("write_size"));
-                cfg.flightcontroller = structs::config::Flightcontroller(configJson.at("flightcontroller").at("port"), configJson.at("flightcontroller").at("baudrate"), configJson.at("flightcontroller").at("max_serial_buffer"));
+                setLedsStruct(configJson, cfg);
+                setLogicStruct(configJson, cfg);
+                setServerStruct(configJson, cfg);
+                setQueuesStruct(configJson, cfg);
+                setFlightcontrollerStruct(configJson, cfg);
                 setSensorsStruct(configJson, cfg);
                 setControlsStruct(configJson, cfg);
             }

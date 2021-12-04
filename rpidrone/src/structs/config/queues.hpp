@@ -9,22 +9,22 @@ namespace drone
         {
             struct Queues
             {
-                int read_size = 100, write_size = 100;
+                int read_queue_size = 100, write_queue_size = 100;
 
                 Queues()
                 {
                 }
 
-                Queues(int read_size, int write_size)
+                Queues(int read_queue_size, int write_queue_size)
                 {
-                    this->read_size = read_size;
-                    this->write_size = write_size;
+                    this->read_queue_size = read_queue_size;
+                    this->write_queue_size = write_queue_size;
                 }
 
                 Queues(const Queues &q)
                 {
-                    this->read_size = q.read_size;
-                    this->write_size = q.write_size;
+                    this->read_queue_size = q.read_queue_size;
+                    this->write_queue_size = q.write_queue_size;
                 }
             };
         }

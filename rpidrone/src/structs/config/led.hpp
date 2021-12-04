@@ -9,22 +9,22 @@ namespace drone
         {
             struct Leds
             {
-                int on_led = 4, status_led = 5;
+                int on_led_pin = 4, status_led_pin = 5;
 
                 Leds()
                 {
                 }
 
-                Leds(int on_led, int status_led)
+                Leds(int on_led_pin, int status_led_pin)
                 {
-                    this->on_led = on_led;
-                    this->status_led = status_led;
+                    this->on_led_pin = on_led_pin;
+                    this->status_led_pin = status_led_pin;
                 }
 
                 Leds(const Leds &l)
                 {
-                    this->on_led = l.on_led;
-                    this->status_led = l.status_led;
+                    this->on_led_pin = l.on_led_pin;
+                    this->status_led_pin = l.status_led_pin;
                 }
             };
         }

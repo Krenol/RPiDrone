@@ -16,12 +16,12 @@
         "max_serial_buffer": 200
     },
     "leds": {
-        "on_led": 6,
-        "status_led": 5
+        "on_led_pin": 6,
+        "status_led_pin": 5
     },
     "queues": {
-        "read_size": 100,
-        "write_size": 100
+        "read_queue_size": 100,
+        "write_queue_size": 100
     },
     "sensors": {
         "calibration": true,

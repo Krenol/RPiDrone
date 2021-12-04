@@ -16,12 +16,12 @@ class Flightcontroller(BaseModel):
     max_serial_buffer: Optional[int] = None
 
 class Leds(BaseModel):
-    on_led: Optional[int] = None
-    status_led: Optional[int] = None
+    on_led_pin: Optional[int] = None
+    status_led_pin: Optional[int] = None
 
 class Queues(BaseModel):
-    read_size: Optional[int] = None
-    write_size: Optional[int] = None
+    read_queue_size: Optional[int] = None
+    write_queue_size: Optional[int] = None
 
 class GPS(BaseModel):
     port: Optional[str] = None
