@@ -2,6 +2,7 @@
 #define DRONE_ARDUINO_H
 
 #include <string>
+#include "structs/config/config.hpp"
 
 #define OUT_MSG_SIZE 90
 #define CONTROL_TOKEN "<S>"
@@ -13,11 +14,11 @@ namespace drone
         public:
             Flightcontroller(const std::string &serial, int baudrate);
 
-            void init(const std::string &conf);
+            void init(const structs::config::Config &config);
 
             void serialSend(const std::string &msg);
 
-            void serialRead(char *msg, const char EOL = '\n');
+            void serialRead(char *msg, const char eol = '\n');
 
             int availableData();
 
@@ -27,6 +28,8 @@ namespace drone
             const int fd_ard_;
             bool initialized_ = false;
 
+            void configureFlightcontroller(const std::string &config);
+            void awaitSuccessfulSetup();
     };
 
 } // namespace drone

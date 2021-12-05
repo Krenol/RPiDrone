@@ -1,6 +1,7 @@
 #include "flightcontroller.hpp"
 #include "wiringSerial.h"
 #include "logs/easylogging++.h"
+#include "parsers/flightcontroller/config_parser.hpp"
 
 namespace drone
 {
@@ -12,25 +13,14 @@ namespace drone
         }
     }
 
-    void Flightcontroller::init(const std::string &conf) 
+    void Flightcontroller::init(const drone::structs::config::Config &config) 
     {
-        char out_c[OUT_MSG_SIZE];
-        std::string out;
-        LOG(INFO) << "Setting up arduino with parsed config " << conf;
-        
-        do {
-            serialFlush(fd_ard_);
-            serialPuts(fd_ard_, conf.c_str());
-            serialGetStr(fd_ard_, out_c, OUT_MSG_SIZE, '\n');
-            out = out_c;
-        } while(out.find(ACK_TOKEN) == std::string::npos);
+        std::string flightcontrollerConfig;
+        drone::parsers::flightcontroller::ConfigParser::parseFlightcontrollerConfig(config, flightcontrollerConfig);
+        LOG(INFO) << "Setting up arduino with parsed config " << flightcontrollerConfig;
+        configureFlightcontroller(flightcontrollerConfig);
         LOG(INFO) << "arduino acknowledged config; waiting for successful sensor & motor setup";
-        
-        //await go from arduino
-        do {
-            serialGetStr(fd_ard_, out_c, OUT_MSG_SIZE, '\n');
-            out = out_c;
-        } while(out.find(CONTROL_TOKEN) == std::string::npos);
+        awaitSuccessfulSetup();
         LOG(INFO) << "arduino setup is completed";
         initialized_ = true;
     }
@@ -41,10 +31,10 @@ namespace drone
         serialPuts(fd_ard_, msg.c_str());
     }
     
-    void Flightcontroller::serialRead(char *msg, const char EOL) 
+    void Flightcontroller::serialRead(char *msg, const char eol) 
     {
         if(!initialized_) return;
-        serialGetStr(fd_ard_, msg, OUT_MSG_SIZE, EOL);
+        serialGetStr(fd_ard_, msg, OUT_MSG_SIZE, eol);
     }
 
     int Flightcontroller::availableData() 
@@ -55,5 +45,27 @@ namespace drone
     void Flightcontroller::clearReceiverBuffer() 
     {
         clearReceiveBuffer(fd_ard_);
+    }
+    
+    void Flightcontroller::configureFlightcontroller(const std::string &config) 
+    {
+        char out_c[OUT_MSG_SIZE];
+        std::string out;        
+        do {
+            serialFlush(fd_ard_);
+            serialPuts(fd_ard_, config.c_str());
+            serialGetStr(fd_ard_, out_c, OUT_MSG_SIZE, '\n');
+            out = out_c;
+        } while(out.find(ACK_TOKEN) == std::string::npos);
+    }
+    
+    void Flightcontroller::awaitSuccessfulSetup() 
+    {
+        char out_c[OUT_MSG_SIZE];
+        std::string out;   
+        do {
+            serialGetStr(fd_ard_, out_c, OUT_MSG_SIZE, '\n');
+            out = out_c;
+        } while(out.find(CONTROL_TOKEN) == std::string::npos);
     }
 }

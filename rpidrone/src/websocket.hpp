@@ -35,6 +35,8 @@ namespace drone
 
             void onMessageSendError(const SimpleWeb::error_code &ec);
 
+            void sendMessageToConnectedClient(const std::string &msg, std::promise<bool> &promise);
+
         public:
             Websocket(int q_size);
 
