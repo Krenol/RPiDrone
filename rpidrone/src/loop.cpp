@@ -76,6 +76,7 @@ namespace drone
         FlightcontrollerOutput fc_output;
         GPSCoordinates c;
         json j;
+        std::future<bool> successfulSend;
         LOG(INFO) << "starting main control loop";
         #if defined(EXEC_TIME_LOG)
         std::chrono::steady_clock::time_point last_call = std::chrono::steady_clock::now(), now;
@@ -103,8 +104,8 @@ namespace drone
                 #if defined(NETWORK_DEBUG_LOGS)
                 NETWORK_LOG(DEBUG) << "writing " << msg;
                 #endif
-                websocket.writeMessage(msg);
-                
+                successfulSend = websocket.writeMessage(msg);
+                if(successfulSend.get() == false) break;                
             }
             catch (const std::exception &exc)
             {
