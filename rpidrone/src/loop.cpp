@@ -1,10 +1,10 @@
 #include "loop.hpp"
 #include <unistd.h>
 #include "logs/easylogging++.h"
-#include "misc.hpp"
 #include "parsers/flightcontroller/input_parser.hpp"
 #include "parsers/flightcontroller/output_parser.hpp"
 #include "structs/flightcontroller/output.hpp"
+#include "misc/json.hpp"
 
 #define NETWORK_LOG(LEVEL) CLOG(LEVEL, "network")  //define network log
 #if defined(EXEC_TIME_LOG)
@@ -41,7 +41,7 @@ namespace drone
             #if defined(NETWORK_DEBUG_LOGS)
             NETWORK_LOG(DEBUG) << "parsed input to json " << j;
             #endif
-            if (JSON_EXISTS(j, "disconnected") && j.at("disconnected") == true)
+            if (misc::Json::jsonFieldExists(j, "disconnected") && j.at("disconnected") == true)
             {
                 if (config.logic.motors_off_disconnect)
                 {

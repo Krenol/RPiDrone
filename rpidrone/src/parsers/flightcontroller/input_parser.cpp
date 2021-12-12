@@ -1,15 +1,6 @@
 #include "input_parser.hpp"
-#include "misc.hpp"
+#include "misc/string.hpp"
 
-namespace drone
-{
-    void parseControlInputForFlightcontroller(const FlightcontrollerInput &input, std::string &out) 
-    {
-        out = INPUT_TOKEN;
-        out += TO_STRING<float>(input.yaw_vel, 1) + DELIM_ITEM + TO_STRING<float>(input.pitch_angle, 1) + DELIM_ITEM 
-            + TO_STRING<float>(input.roll_angle, 1) + DELIM_ITEM + std::to_string(input.throttle) + EOL;
-    }
-}
 namespace drone
 {
     namespace parsers
@@ -33,11 +24,11 @@ namespace drone
             
             void InputParser::appendYPRAngles(const FlightcontrollerInput &input, std::string &out) 
             {
-                out += TO_STRING<float>(input.yaw_vel, 1);
+                out += misc::StringParser<float>::roundToString(input.yaw_vel, 1);
                 appendDelim(out);
-                out += TO_STRING<float>(input.pitch_angle, 1);
+                out += misc::StringParser<float>::roundToString(input.pitch_angle, 1);
                 appendDelim(out);
-                out += TO_STRING<float>(input.roll_angle, 1);
+                out += misc::StringParser<float>::roundToString(input.roll_angle, 1);
             }
             
             void InputParser::appendThrottleValue(const FlightcontrollerInput &input, std::string &out) 

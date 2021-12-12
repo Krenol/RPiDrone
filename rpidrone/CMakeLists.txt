@@ -17,6 +17,7 @@ ${PROJECT_SOURCE_DIR}/parsers/flightcontroller/output_parser.cpp
 ${PROJECT_SOURCE_DIR}/wiringSerial.c
 ${PROJECT_SOURCE_DIR}/flightcontroller.cpp
 ${PROJECT_SOURCE_DIR}/websocket.cpp
+${PROJECT_SOURCE_DIR}/config.cpp
 ${PROJECT_SOURCE_DIR}/api/api_server.cpp
 )
 

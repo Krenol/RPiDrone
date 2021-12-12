@@ -2,9 +2,7 @@
 #include "logs/easylogging++.h"
 #include "logs/logs.hpp"
 #include "globals.hpp"
-#include "misc.hpp"
-#include <fstream>
-#include "parsers/flightcontroller/config_parser.hpp"
+#include "config.hpp"
 #include <string>
 #include "parsers/json/config_parser.hpp" 
 #include "structs/config/config.hpp"
@@ -20,10 +18,14 @@
 
 using json = nlohmann::json;
 
-static void loadConfig(const std::string &conf_file, drone::structs::config::Config &config){
-    std::ifstream ifs(conf_file);
-    auto j = json::parse(ifs);
-    drone::parsers::json::ConfigParser::parseJsonConfigToStruct(j, config);
+static void startApiServer(drone::api::ApiServer &apiServer) {
+    try {
+        std:: string cmd = "/usr/bin/python3 " + HOME_DIR + "/api/main.py &";
+        apiServer.startApiServer(cmd);
+        LOG(INFO) << "API Server started successfully";
+    } catch(...) {
+        LOG(ERROR) << "API Server did not started successfully";
+    }
 }
 
 int main() {
@@ -35,22 +37,14 @@ int main() {
     #if defined(CONF_API_MODE)
     LOG(INFO) << "Starting API Server....";
     drone::api::ApiServer apiServer;
-    try {
-        std:: string cmd = "/usr/bin/python3 " + HOME_DIR + "/api/main.py &";
-        apiServer.startApiServer(cmd);
-        LOG(INFO) << "API Server started successfully";
-    } catch(...) {
-        LOG(ERROR) << "API Server did not started successfully";
-    }
+    startApiServer(apiServer);
     #endif
     #if defined(POWER_LOGS)
-    std::thread thrd([&run] () {
-        drone::logs::PowerLogs pwLogs;
-        pwLogs.init(run); 
-    });
+    drone::logs::PowerLogs pwLogs;
+    pwLogs.startPowerLogThread();
     #endif
     LOG(INFO) << "Loading " << CONF_FILE;
-    loadConfig(CONF_DIR + "/" + CONF_FILE, config);
+    drone::Config::loadConfig(CONF_DIR + "/" + CONF_FILE, config);
     LOG(INFO) << "Starting Websocket Server";
     drone::Websocket websocket(config.server.queue_size);
     websocket.init(config.server.context, config.server.port);
@@ -68,7 +62,7 @@ int main() {
                 l.loop(websocket, fc, config);
                 #if defined(SIMULATOR_MODE)
                 LOG(INFO) << "---SIMULATOR MODE ACTIVE -> LOADING NEW CONF---";
-                loadConfig(CONF_DIR + "/" + CONF_FILE, config);
+                drone::Config::loadConfig(CONF_DIR + "/" + CONF_FILE, config);
                 fc.init(config);
                 #endif 
                 websocket.disconnectConnectedClient();
@@ -81,7 +75,7 @@ int main() {
     }
     run = false;
     #if defined(POWER_LOGS)
-    thrd.join();
+    pwLogs.stopPowerLogThread();
     #endif
     #if defined(CONF_API_MODE)
     apiServer.stopApiServer();
