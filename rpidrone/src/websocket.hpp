@@ -37,6 +37,8 @@ namespace drone
 
             void sendMessageToConnectedClient(const std::string &msg, std::promise<bool> &promise);
 
+            void removeOldestQueueMessage();
+
         public:
             Websocket(int q_size);
 

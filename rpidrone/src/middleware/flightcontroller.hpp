@@ -1,0 +1,4 @@
+#ifndef DRONE_MIDDLEWARE_FC_H
+#define DRONE_MIDDLEWARE_FC_H
+
+#endif

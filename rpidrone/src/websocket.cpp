@@ -9,7 +9,7 @@ namespace drone
     {
         if (queue_.item_count() > q_size_)
         {
-            queue_.pop();
+            removeOldestQueueMessage();
         }
         queue_.push(msg);
     }
@@ -91,6 +91,11 @@ namespace drone
                 }
             }
         );
+    }
+    
+    void Websocket::removeOldestQueueMessage() 
+    {
+        queue_.pop();
     }
 
     Websocket::Websocket(int q_size) : q_size_{q_size}
