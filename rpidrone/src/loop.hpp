@@ -19,7 +19,6 @@ namespace drone {
             void loop(Websocket &websocket, drone::Flightcontroller &fc, const structs::config::Config &config);
             
         private:
-            //std::unique_ptr<rpicomponents::Led> on_led_, status_led_;
             ClientInput last_input_;
 
             void createOutputJson(float roll_is, float pitch_is, float yaw_is, float roll_should, float pitch_should, float yaw_should,const GPSCoordinates &c, json &j);
