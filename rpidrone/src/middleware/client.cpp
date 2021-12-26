@@ -1,9 +1,10 @@
 #include "client.hpp"
+
 namespace drone
 {
     namespace middleware
     {
-        void Client::parseClientOutput(const structs::middleware::ClientOutput &outMsg) 
+        void Client::parseOutputJson(const structs::middleware::Output &outMsg) 
         {
             outputJson_ = {
                 {"sensors", {
@@ -29,16 +30,16 @@ namespace drone
             };
         }
         
-        bool Client::parseClientInput(const structs::middleware::ClientOutput &outMsg) 
+        bool Client::parseInput(const structs::middleware::Input &inMsg) 
         {
-            bool successfulParse = parseStringMessageToJson();
+            bool successfulParse = parseClientInpuStringToJson();
             if(successfulParse) {
-
+                parsers::json::InputParser::parseInputJsonToStruct(inputJson_, inMsg);
             }
             return successfulParse;
         }
         
-        bool Client::parseStringMessageToJson() 
+        bool Client::parseClientInpuStringToJson() 
         {
             bool successfulParse = false;
             try {
@@ -55,25 +56,25 @@ namespace drone
             
         }
 
-        bool Client::sendToClient(const structs::middleware::ClientOutput &outMsg) 
+        bool Client::sendToClient(const structs::middleware::Output &outMsg) 
         {
-            parseClientOutput(outMsg);
+            parseOutputJson(outMsg);
             auto success = websocket_->writeMessage(outputJson_.dump());
             return success.get();
         }
         
-        bool Client::receiveFromClient(structs::middleware::ClientInput &inMsg) 
+        bool Client::receiveFromClient(structs::middleware::Input &clientInputMsg) 
         {
             if(clientMessagesAvailable()) {
                 websocket_->getMessage(inputStringMsg_);
-
+                return parseInput(clientInputMsg);
             } 
             return false;
         }
         
         bool Client::clientConnectionAvailable() 
         {
-            
+            return websocket_->hasConnection();
         }
         
         bool Client::clientMessagesAvailable() 

@@ -1,5 +1,5 @@
-#ifndef DRONE_STRUCT_CLIENT_INPUT_H
-#define DRONE_STRUCT_CLIENT_INPUT_H
+#ifndef DRONE_STRUCT_MIDDLEWARE_CLIENT_INPUT_H
+#define DRONE_STRUCT_MIDDLEWARE_CLIENT_INPUT_H
 
 #include "../gps_coordinates.hpp"
 #include "joystick.hpp"
@@ -10,24 +10,24 @@ namespace drone
     {
         namespace middleware
         {
-            struct ClientInput
+            struct Input
             {
                 int throttle = 0;
                 Joystick joystick;
                 GPSCoordinates gps;
 
-                ClientInput()
+                Input()
                 {
                 }
 
-                ClientInput(const Joystick &j, const GPSCoordinates &gc, int throttle) : joystick(j), gps(gc)
+                Input(const Joystick &j, const GPSCoordinates &gc, int throttle) : joystick(j), gps(gc)
                 {
                     this->throttle = throttle;
                 }
 
-                ClientInput(const ClientInput &i) : joystick(i.joystick), gps(i.gps)
+                Input(const Input &clientInput) : joystick(clientInput.joystick), gps(clientInput.gps)
                 {
-                    this->throttle = i.throttle;
+                    this->throttle = clientInput.throttle;
                 }
             };
         }

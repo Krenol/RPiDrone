@@ -2,8 +2,8 @@
 #define DRONE_MIDDLEWARE_CLIENT_H
 
 #include "../websocket.hpp"
-#include "../structs/middleware/client_input.hpp"
-#include "../structs/middleware/client_output.hpp"
+#include "../structs/middleware/input.hpp"
+#include "../structs/middleware/output.hpp"
 #include <memory>
 #include <nlohmann/json.hpp>
 #include <string>
@@ -17,16 +17,16 @@ namespace drone {
                 std::unique_ptr<Websocket> websocket_;
                 json inputJson_, outputJson_;
                 std::string inputStringMsg_;
-                void parseClientOutput(const structs::middleware::ClientOutput &outMsg);
-                bool parseClientInput(const structs::middleware::ClientOutput &outMsg);
-                bool parseStringMessageToJson();
+                void parseOutputJson(const structs::middleware::Output &outMsg);
+                bool parseInput(const structs::middleware::Input &inMsg);
+                bool parseClientInpuStringToJson();
             
             public:
                 Client(std::unique_ptr<Websocket> websocket);
 
-                bool sendToClient(const structs::middleware::ClientOutput &outMsg);
+                bool sendToClient(const structs::middleware::Output &outMsg);
 
-                bool receiveFromClient(structs::middleware::ClientInput &inMsg);
+                bool receiveFromClient(structs::middleware::Input &clientInputMsg);
 
                 bool clientConnectionAvailable();
 

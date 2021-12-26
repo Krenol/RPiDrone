@@ -4,15 +4,11 @@
 #include <string>
 #include "structs/config/config.hpp"
 
-#define OUT_MSG_SIZE 90
-#define CONTROL_TOKEN "<S>"
-#define ACK_TOKEN "<A>"
-
 namespace drone
 {
-    class Flightcontroller {
+    class Arduino {
         public:
-            Flightcontroller(const std::string &serial, int baudrate);
+            Arduino(const std::string &serial, int baudrate);
 
             void init(const structs::config::Config &config);
 
@@ -24,12 +20,9 @@ namespace drone
 
             void clearReceiverBuffer();
 
+            void serialFlushBuffer();
         private:
             const int fd_ard_;
-            bool initialized_ = false;
-
-            void configureFlightcontroller(const std::string &config);
-            void awaitSuccessfulSetup();
     };
 
 } // namespace drone

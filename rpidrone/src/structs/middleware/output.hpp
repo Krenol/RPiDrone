@@ -10,20 +10,20 @@ namespace drone
     {
         namespace middleware
         {
-            struct ClientOutput
+            struct Output
             {
                 YPR isAngles, shouldAngles;
                 GPSCoordinates gps;
 
-                ClientOutput()
+                Output()
                 {
                 }
 
-                ClientOutput(const YPR &isAngles, const YPR &shouldAngles, const GPSCoordinates &gps) : gps{gps}, isAngles{isAngles}, shouldAngles{shouldAngles}
+                Output(const YPR &isAngles, const YPR &shouldAngles, const GPSCoordinates &gps) : gps{gps}, isAngles{isAngles}, shouldAngles{shouldAngles}
                 {
                 }
 
-                ClientOutput(const ClientOutput &clientOutput) : gps{clientOutput.gps}, isAngles{clientOutput.isAngles}, shouldAngles{clientOutput.shouldAngles}
+                Output(const Output &clientOutput) : gps{clientOutput.gps}, isAngles{clientOutput.isAngles}, shouldAngles{clientOutput.shouldAngles}
                 {
                 }
             };

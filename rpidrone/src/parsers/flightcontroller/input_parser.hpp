@@ -2,11 +2,8 @@
 #define DRONE_PARSERS_FLIGHTCONTROLLER_INPUT_PARSER_H
 
 #include <string>
-#include "../../structs/flightcontroller/input.hpp"
-
-#define INPUT_TOKEN "<S>"
-#define EOL "\n"
-#define DELIM_ITEM ";"
+#include "../../structs/middleware/input.hpp"
+#include "../../structs/config/config.hpp"
 
 namespace drone
 {
@@ -17,10 +14,10 @@ namespace drone
                     static void setInputToken(std::string &out);
                     static void appendDelim(std::string &out);
                     static void appendEOL(std::string &out);
-                    static void appendYPRAngles(const FlightcontrollerInput &input, std::string &out);
-                    static void appendThrottleValue(const FlightcontrollerInput &input, std::string &out);
+                    static void appendYPRAngles(const structs::middleware::Input &input, std::string &out, const structs::config::Config &config);
+                    static void appendThrottleValue(const structs::middleware::Input &input, std::string &out);
                 public: 
-                    static void parseFlightcontrollerInput(const FlightcontrollerInput &input, std::string &out);
+                    static void parseFlightcontrollerInput(const structs::middleware::Input &input, std::string &out, const structs::config::Config &config);
             };
         }
     }

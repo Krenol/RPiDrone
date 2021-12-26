@@ -3,157 +3,39 @@
 #include "logs/easylogging++.h"
 #include "parsers/flightcontroller/input_parser.hpp"
 #include "parsers/flightcontroller/output_parser.hpp"
-#include "structs/flightcontroller/output.hpp"
 #include "misc/json.hpp"
-
-#define NETWORK_LOG(LEVEL) CLOG(LEVEL, "network")  //define network log
-#if defined(EXEC_TIME_LOG)
-#define EXEC_LOG(LEVEL) CLOG(LEVEL, "exec") //define exec time log
-#endif
-#if defined(FLIGHTCONTROLLER_LOGS)
-#define FLIGHT_LOG(LEVEL) CLOG(LEVEL, "flightcontroller")
-#endif
-#if defined(RPI_LOGS)
-#define RPI_LOG(LEVEL) CLOG(LEVEL, "rpi")
-#endif
+#include "logs/log_definition.hpp"
 
 namespace drone
 {
     Loop::Loop()
     {
-        #if defined(EXEC_TIME_LOG)
-        EXEC_LOG(DEBUG) << "datetime;level;t_exec";
-        #endif
-        #if defined(FLIGHTCONTROLLER_LOGS)
-        FLIGHT_LOG(DEBUG) << "datetime;level;yaw;pitch;roll;t_exec;ax;ay;az;rf_t,;rb_t;lf_t;lb_t;throttle";
-        #endif
-        #if defined(RPI_LOGS)
-        RPI_LOG(DEBUG) << "datetime;level;yaw_vel;pitch_angle;roll_angle;throttle";
-        #endif
     }
 
-    void Loop::parseAppJson(std::string &msg, FlightcontrollerInput &userInput, const structs::config::Config &config)
+    void Loop::loop(middleware::Client &clientMw, middleware::Flightcontroller &fcMw, const structs::config::Config &config)
     {
-        json j;
-        try
+        structs::middleware::Input clientInput;
+        structs::middleware::Output clientOutput;
+        int bytesAvailable;
+        while(clientMw.clientConnectionAvailable()) 
         {
-            j = json::parse(msg);
-            #if defined(NETWORK_DEBUG_LOGS)
-            NETWORK_LOG(DEBUG) << "parsed input to json " << j;
-            #endif
-            if (misc::Json::jsonFieldExists(j, "disconnected") && j.at("disconnected") == true)
+            if(clientMw.clientMessagesAvailable()) 
             {
-                if (config.logic.motors_off_disconnect)
-                {
-                    userInput.throttle = 0;
-                }
-                else
-                {
-                    userInput.throttle = config.controls.escs.idle;
-                }
-                userInput.roll_angle = 0;
-                userInput.pitch_angle = 0;
-                userInput.yaw_vel = 0;
+                clientMw.receiveFromClient(clientInput);
+                fcMw.sendToFlightcontroller(clientInput);
             }
-            else
-            {
-                ClientInput in;
-                from_json(j, in);
-                userInput = FlightcontrollerInput(in.throttle, in.joystick.offset, in.joystick.degrees, config.controls.maxYprRates.maxRollRate, config.controls.maxYprRates.maxPitchRate, config.controls.maxYprRates.maxYawVel, in.joystick.rotation, in.gps);
-            }
-        }
-        catch (const std::exception &exc)
-        {
-            NETWORK_LOG(ERROR) << exc.what() << "read string: " << msg;
-        }
-    }
-
-    void Loop::loop(Websocket &websocket, drone::Flightcontroller &fc, const structs::config::Config &config)
-    {
-        std::string msg, buf = "";
-        char out[OUT_MSG_SIZE];
-        FlightcontrollerInput userInput;
-        FlightcontrollerOutput fc_output;
-        GPSCoordinates c;
-        json j;
-        std::future<bool> successfulSend;
-        LOG(INFO) << "starting main control loop";
-        #if defined(EXEC_TIME_LOG)
-        std::chrono::steady_clock::time_point last_call = std::chrono::steady_clock::now(), now;
-        #endif
- 
-        while(websocket.hasConnection()){
-            try
-            {
-                if (websocket.hasMessages())
-                {
-                    websocket.getMessage(msg);
-                    sendToFlightcontroller(fc, msg, userInput, config);
+            bytesAvailable = fcMw.bytesOfAvailableData();
+            if(bytesAvailable > 0) {
+                fcMw.receiveFromFlightcontroller(clientOutput);
+                auto successfulSend = clientMw.sendToClient(clientOutput);
+                if(!successfulSend) break;
+                if(bytesAvailable > config.flightcontroller.max_serial_buffer) {
+                    fcMw.clearReceiverBuffer();
                 }
-                if(fc.availableData() > config.flightcontroller.max_serial_buffer) {
-                    fc.clearReceiverBuffer();
-                }
-                fc.serialRead(out, '\n');
-                msg = out;
-                #if defined(FLIGHTCONTROLLER_LOGS)
-                FLIGHT_LOG(INFO) << msg;
-                #endif
-                parseOutputFromFlightcontroller(msg, fc_output);
-                createOutputJson(fc_output.roll_is, fc_output.pitch_is, fc_output.yaw_is, fc_output.roll_should, fc_output.pitch_should, fc_output.yaw_should, c, j);
-                msg = j.dump();
-                #if defined(NETWORK_DEBUG_LOGS)
-                NETWORK_LOG(DEBUG) << "writing " << msg;
-                #endif
-                successfulSend = websocket.writeMessage(msg);
-                if(successfulSend.get() == false) break;                
             }
-            catch (const std::exception &exc)
-            {
-                LOG(ERROR) << exc.what();
-            }
-            #if defined(EXEC_TIME_LOG)
-            now = std::chrono::steady_clock::now();
-            EXEC_LOG(INFO) << std::chrono::duration_cast<std::chrono::milliseconds>(now - last_call).count();
-            last_call = now;
-            #endif
         }
         LOG(INFO) << "Connection lost...";
-        msg = "{\"disconnected\": true}";
-        sendToFlightcontroller(fc, msg, userInput, config);
-    }
-
-    void Loop::sendToFlightcontroller(drone::Flightcontroller &fc, std::string &msg, FlightcontrollerInput &userInput, const structs::config::Config &config) {
-        parseAppJson(msg, userInput, config);
-        drone::parsers::flightcontroller::InputParser::parseFlightcontrollerInput(userInput, msg);
-        #if defined(RPI_LOGS)
-        RPI_LOG(INFO) << msg;
-        #endif
-        fc.serialSend(msg);
-    }
-
-    void Loop::createOutputJson(float roll_is, float pitch_is, float yaw_is, float roll_should, float pitch_should, float yaw_should,const GPSCoordinates &c, json &j)
-    {
-        j = {
-            {"sensors", {
-                {"barometric_height", 0}
-            }},
-            {"position", {
-                {"altitude", c.altitude},
-                {"latitude", c.latitude},
-                {"longitude", c.longitude}
-            }},
-            {"angles", {
-                {"is", {
-                    {"yaw", yaw_is},
-                    {"pitch", pitch_is},
-                    {"roll", roll_is}
-                }},
-                {"should", {
-                    {"yaw", yaw_should},
-                    {"pitch", pitch_should},
-                    {"roll", roll_should}
-                }}
-            }}
-        };
+        //TODO
+        //fcMw.sendToFlightcontroller()
     }
 }

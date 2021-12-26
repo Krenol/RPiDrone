@@ -1,5 +1,8 @@
 #include "input_parser.hpp"
 #include "misc/string.hpp"
+#include "constants/flightcontroller.hpp"
+#include "constants/client_input.hpp"
+#include <cmath>
 
 namespace drone
 {
@@ -9,37 +12,40 @@ namespace drone
         {
             void InputParser::setInputToken(std::string &out) 
             {
-                out = INPUT_TOKEN;
+                out = constants::flightcontroller::INPUT_TOKEN;
             }
             
             void InputParser::appendDelim(std::string &out) 
             {
-                out += DELIM_ITEM;
+                out += constants::flightcontroller::ITEM_DELIMITER;
             }
             
             void InputParser::appendEOL(std::string &out) 
             {
-                out += EOL;
+                out += constants::flightcontroller::EOL;
             }
             
-            void InputParser::appendYPRAngles(const FlightcontrollerInput &input, std::string &out) 
+            void InputParser::appendYPRAngles(const structs::middleware::Input &input, std::string &out, const structs::config::Config &config) 
             {
-                out += misc::StringParser<float>::roundToString(input.yaw_vel, 1);
+                float roll_angle = input.joystick.offset * cos(input.joystick.degrees * M_PI / 180.0) * config.controls.maxYprRates.maxRollRate;
+                float pitch_angle = input.joystick.offset * sin(input.joystick.degrees * M_PI / 180.0) * config.controls.maxYprRates.maxPitchRate;
+                float yaw_vel = config.controls.maxYprRates.maxYawVel * input.joystick.rotation / drone::constants::clientinput::ROTATION_UPPER_BOUND;
+                out += misc::StringParser<float>::roundToString(yaw_vel, 1);
                 appendDelim(out);
-                out += misc::StringParser<float>::roundToString(input.pitch_angle, 1);
+                out += misc::StringParser<float>::roundToString(pitch_angle, 1);
                 appendDelim(out);
-                out += misc::StringParser<float>::roundToString(input.roll_angle, 1);
+                out += misc::StringParser<float>::roundToString(roll_angle, 1);
             }
             
-            void InputParser::appendThrottleValue(const FlightcontrollerInput &input, std::string &out) 
+            void InputParser::appendThrottleValue(const structs::middleware::Input &input, std::string &out) 
             {
                 out += std::to_string(input.throttle);
             }
         
-            void InputParser::parseFlightcontrollerInput(const FlightcontrollerInput &input, std::string &out) 
+            void InputParser::parseFlightcontrollerInput(const structs::middleware::Input &input, std::string &out, const structs::config::Config &config) 
             {
                 setInputToken(out);
-                appendYPRAngles(input, out);
+                appendYPRAngles(input, out, config);
                 appendDelim(out);
                 appendThrottleValue(input, out);
                 appendEOL(out);

@@ -21,7 +21,8 @@ int main() {
     bool run = true;
     drone::structs::config::Config config;
     drone::logs::Logs log;
-    log.init(LOG_DIR, OLD_LOG_DIR, CONF_DIR, LOG_CONF);
+    log.backupOldLogFiles(LOG_DIR, OLD_LOG_DIR, CONF_DIR, LOG_CONF);
+    log.initLogFileHeaders();
     drone::Loop l;
     #if defined(CONF_API_MODE)
     LOG(INFO) << "Starting API Server....";

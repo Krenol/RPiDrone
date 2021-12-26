@@ -1,5 +1,6 @@
 #include "config_parser.hpp"
 #include "misc/string.hpp"
+#include "constants/flightcontroller.hpp"
 
 namespace drone
 {
@@ -9,27 +10,27 @@ namespace drone
         {
             void ConfigParser::setConfigToken(std::string &out) 
             {
-                out = CONFIG_TOKEN;
+                out = constants::flightcontroller::CONFIG_TOKEN;
             }
             
             void ConfigParser::appendValueDelim(std::string &out) 
             {
-                out += DELIM_VAL;
+                out += constants::flightcontroller::VALUE_DELIMITER;
             }
             
             void ConfigParser::appendItemDelim(std::string &out) 
             {
-                out += DELIM_ITEM;
+                out += constants::flightcontroller::ITEM_DELIMITER;
             }
             
             void ConfigParser::appendEOL(std::string &out) 
             {
-                out += EOL;
+                out += constants::flightcontroller::EOL;
             }
             
             void ConfigParser::appendNewCategoryToken(std::string &out) 
             {
-                out += DELIM_CAT;
+                out += constants::flightcontroller::CATEGORY_DELIMITER;
             }
             
             void ConfigParser::appendControllerConfigs(const structs::config::Config &config, std::string &out) 

@@ -4,6 +4,7 @@
 #include <string>
 #include "easylogging++.h"
 #include <ctime>
+#include "log_definition.hpp"
 
 INITIALIZE_EASYLOGGINGPP
 
@@ -14,7 +15,7 @@ namespace drone
         class Logs
         {
         public:
-            void init(const std::string &logDir, const std::string &oldLogDir, const std::string &confDir, const std::string &logConf)
+            void backupOldLogFiles(const std::string &logDir, const std::string &oldLogDir, const std::string &confDir, const std::string &logConf)
             {
                 auto t = std::to_string(std::time(0));
                 mvFile(logDir + "/flightcontroller.csv", oldLogDir + "/flightcontroller_" + t + ".csv");
@@ -27,6 +28,18 @@ namespace drone
                 el::Loggers::addFlag(el::LoggingFlag::MultiLoggerSupport);
                 // configure all loggers
                 el::Loggers::configureFromGlobal((confDir + "/" + logConf).c_str());
+            }
+
+            void initLogFileHeaders() {
+                #if defined(EXEC_TIME_LOG)
+                EXEC_LOG(DEBUG) << "datetime;level;t_exec";
+                #endif
+                #if defined(FLIGHTCONTROLLER_LOGS)
+                FLIGHT_LOG(DEBUG) << "datetime;level;yaw;pitch;roll;t_exec;ax;ay;az;rf_t,;rb_t;lf_t;lb_t;throttle";
+                #endif
+                #if defined(RPI_LOGS)
+                RPI_LOG(DEBUG) << "datetime;level;yaw_vel;pitch_angle;roll_angle;throttle";
+                #endif
             }
 
         private:
