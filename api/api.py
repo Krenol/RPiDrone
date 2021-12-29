@@ -8,8 +8,8 @@ app = FastAPI()
 
 def json_file():
     directory_path = os.getcwd()
-    folder_name = os.path.basename(directory_path)
     json_file = directory_path.replace('/api', '')
+    json_file = json_file.replace('/build', '')
     return json_file + '/conf/config.json'
 
 JSON_FILE = json_file() 
