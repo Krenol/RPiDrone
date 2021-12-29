@@ -3,7 +3,7 @@
 
 #include <nlohmann/json.hpp>
 #include <string>
-#include "../../structs/client/input.hpp"
+#include "../../structs/middleware/input.hpp"
 
 using json = nlohmann::json;
 
@@ -16,12 +16,12 @@ namespace drone
             class InputParser
             {
             private:
-                static void parseJoystickStruct(const nlohmann::json &json, Input &clientInput);
-                static void parseThrottleStruct(const nlohmann::json &json, Input &clientInput);
-                static void parseGpsStruct(const nlohmann::json &json, Input &clientInput);
+                static void parseJoystickStruct(const nlohmann::json &json, structs::middleware::Input &clientInput);
+                static void parseThrottleStruct(const nlohmann::json &json, structs::middleware::Input &clientInput);
+                static void parseGpsStruct(const nlohmann::json &json, structs::middleware::Input &clientInput);
 
             public:
-                static void parseInputJsonToStruct(const nlohmann::json &json, Input &clientInput);
+                static void parseInputJsonToStruct(const nlohmann::json &json, structs::middleware::Input &clientInput);
             };
         }
     }

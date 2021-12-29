@@ -1,7 +1,7 @@
 #include "client_input_parser.hpp"
 #include "misc/numeric.hpp"
 #include "misc/json.hpp"
-#include "constants/input.hpp"
+#include "constants/client_input.hpp"
 
 namespace drone
 {
@@ -9,7 +9,7 @@ namespace drone
     {
         namespace json
         {
-            void InputParser::parseJoystickStruct(const nlohmann::json &json, Input &clientInput)
+            void InputParser::parseJoystickStruct(const nlohmann::json &json, structs::middleware::Input &clientInput)
             {
                 if (misc::Json::jsonFieldExists(json, "joystick"))
                 {
@@ -24,11 +24,11 @@ namespace drone
                     {
                         rot = misc::Numeric<float>::bound(joystick.at("rotation"), constants::clientinput::ROTATION_LOWER_BOUND, constants::clientinput::ROTATION_UPPER_BOUND);
                     }
-                    clientInput.joystick = Joystick(degrees, offset, rot);
+                    clientInput.joystick = structs::middleware::Joystick(degrees, offset, rot);
                 }
             }
 
-            void InputParser::parseThrottleStruct(const nlohmann::json &json, Input &clientInput)
+            void InputParser::parseThrottleStruct(const nlohmann::json &json, structs::middleware::Input &clientInput)
             {
                 if (misc::Json::jsonFieldExists(json, "throttle"))
                 {
@@ -36,7 +36,7 @@ namespace drone
                 }
             }
 
-            void InputParser::parseGpsStruct(const nlohmann::json &json, Input &clientInput)
+            void InputParser::parseGpsStruct(const nlohmann::json &json, structs::middleware::Input &clientInput)
             {
                 if (misc::Json::jsonFieldExists(json, "gps"))
                 {
@@ -58,7 +58,7 @@ namespace drone
                 }
             }
             
-            void InputParser::parseInputJsonToStruct(const nlohmann::json &json, Input &clientInput) 
+            void InputParser::parseInputJsonToStruct(const nlohmann::json &json, structs::middleware::Input &clientInput) 
             {
                 parseThrottleStruct(json, clientInput);
                 parseJoystickStruct(json, clientInput);

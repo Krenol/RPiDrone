@@ -12,6 +12,10 @@ namespace drone
         {
             class OutputParser
             {
+            private:
+                static float convertStringToFloat(const std::string &value);
+                static int convertStringToInt(const std::string &value);
+
             public:
                 static void parseOutputFromFlightcontroller(std::string &out, structs::middleware::Output &output);
             };

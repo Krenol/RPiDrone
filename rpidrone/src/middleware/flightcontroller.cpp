@@ -87,9 +87,10 @@ namespace drone
             return arduino_->availableData();
         }
         
-        void Flightcontroller::clearReceiverBuffer() 
+        void Flightcontroller::clearReceiverSerialBuffer() 
         {
-            arduino_->clearReceiverBuffer();
+            if(bytesOfAvailableData() > config_.flightcontroller.max_serial_buffer)
+                arduino_->clearReceiverBuffer();
         }
     }
 }

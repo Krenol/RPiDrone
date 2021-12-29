@@ -18,7 +18,7 @@ namespace drone {
                 json inputJson_, outputJson_;
                 std::string inputStringMsg_;
                 void parseOutputJson(const structs::middleware::Output &outMsg);
-                bool parseInput(const structs::middleware::Input &inMsg);
+                bool parseInput(structs::middleware::Input &inMsg);
                 bool parseClientInpuStringToJson();
             
             public:

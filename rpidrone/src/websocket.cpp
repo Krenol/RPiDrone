@@ -97,16 +97,11 @@ namespace drone
     {
         queue_.pop();
     }
-
-    Websocket::Websocket(int q_size) : q_size_{q_size}
+    
+    Websocket::Websocket(int q_size, const std::string &context, int port) : q_size_{q_size}
     {
-    }
-
-    void Websocket::init(const std::string &path, int port)
-    {
-        server_.endpoint.clear();
         server_.config.port = port;
-        WsEndpoint &endpoint = server_.endpoint[path];
+        WsEndpoint &endpoint = server_.endpoint[context];
         setupWebsocketEndpointEvents(endpoint);
     }
 
@@ -134,6 +129,10 @@ namespace drone
 
     void Websocket::startWebsocketThread()
     {
+        if(websocketThreadIsRunning()) {
+            return;
+        }
+        activeServerThread_ = true;
         srv_thrd_ = std::thread([this]()
         {
             server_.start();
@@ -142,8 +141,16 @@ namespace drone
     
     void Websocket::stopWebsocketThread() 
     {
-        server_.stop();
-        srv_thrd_.join();
+        if(websocketThreadIsRunning()) {
+            server_.stop();
+            srv_thrd_.join();
+            activeServerThread_ = false;
+        }
+    }
+    
+    bool Websocket::websocketThreadIsRunning() 
+    {
+        return activeServerThread_;
     }
     
     void Websocket::getMessage(std::string &msg) 

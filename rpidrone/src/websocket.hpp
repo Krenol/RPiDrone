@@ -18,7 +18,7 @@ namespace drone
         private:
             WsServer server_;
             std::shared_ptr<WsServer::Connection> connection_;
-            std::atomic_bool connected_ {false};
+            std::atomic_bool connected_ {false}, activeServerThread_ {false};
             design_patterns::Queue<std::string> queue_;
             const int q_size_;
             std::thread srv_thrd_;
@@ -40,9 +40,7 @@ namespace drone
             void removeOldestQueueMessage();
 
         public:
-            Websocket(int q_size);
-
-            void init(const std::string &path, int port);
+            Websocket(int q_size, const std::string &context, int port);
 
             bool hasConnection() const;
 
@@ -51,6 +49,8 @@ namespace drone
             void startWebsocketThread();
 
             void stopWebsocketThread();
+
+            bool websocketThreadIsRunning();
 
             void disconnectConnectedClient();
 

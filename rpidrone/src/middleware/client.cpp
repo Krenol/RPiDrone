@@ -1,4 +1,5 @@
 #include "client.hpp"
+#include "parsers/json/client_input_parser.hpp"
 
 namespace drone
 {
@@ -30,7 +31,7 @@ namespace drone
             };
         }
         
-        bool Client::parseInput(const structs::middleware::Input &inMsg) 
+        bool Client::parseInput(structs::middleware::Input &inMsg) 
         {
             bool successfulParse = parseClientInpuStringToJson();
             if(successfulParse) {
@@ -53,7 +54,9 @@ namespace drone
     
         Client::Client(std::unique_ptr<Websocket> websocket) : websocket_{std::move(websocket)}
         {
-            
+            if(!websocket_->websocketThreadIsRunning()) {
+                throw std::runtime_error("received inactive websocket");
+            }
         }
 
         bool Client::sendToClient(const structs::middleware::Output &outMsg) 

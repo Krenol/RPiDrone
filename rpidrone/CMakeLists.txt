@@ -6,7 +6,7 @@ set(DESIGN_PATTERNS_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/external/CppDesignPatterns
 set(WEBSOCKET_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/external/Simple-WebSocket-Server CACHE INTERNAL "Path to include folder for websocketpp")
 
 set(RPICDRONE_PROJECT_SRCS 
-${PROJECT_SOURCE_DIR}/loop.cpp
+${PROJECT_SOURCE_DIR}/connected_client_handler.cpp
 ${PROJECT_SOURCE_DIR}/main.cpp
 ${PROJECT_SOURCE_DIR}/logs/easylogging++.cc
 ${PROJECT_SOURCE_DIR}/parsers/json/config_parser.cpp

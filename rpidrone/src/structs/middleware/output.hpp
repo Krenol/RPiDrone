@@ -3,6 +3,7 @@
 
 #include "../gps_coordinates.hpp"
 #include "../ypr.hpp"
+#include "acceleration.hpp"
 
 namespace drone
 {
@@ -14,17 +15,21 @@ namespace drone
             {
                 YPR isAngles, shouldAngles;
                 GPSCoordinates gps;
+                Acceleration acceleration;
+                int throttle;
 
                 Output()
                 {
                 }
 
-                Output(const YPR &isAngles, const YPR &shouldAngles, const GPSCoordinates &gps) : gps{gps}, isAngles{isAngles}, shouldAngles{shouldAngles}
+                Output(const YPR &isAngles, const YPR &shouldAngles, const GPSCoordinates &gps, const Acceleration &acc, int throttle) : gps{gps}, isAngles{isAngles}, shouldAngles{shouldAngles}, acceleration{acc}
                 {
+                    this->throttle = throttle;
                 }
 
-                Output(const Output &clientOutput) : gps{clientOutput.gps}, isAngles{clientOutput.isAngles}, shouldAngles{clientOutput.shouldAngles}
+                Output(const Output &output) : gps{output.gps}, isAngles{output.isAngles}, shouldAngles{output.shouldAngles}, acceleration{output.acceleration}
                 {
+                    throttle = output.throttle;
                 }
             };
         }

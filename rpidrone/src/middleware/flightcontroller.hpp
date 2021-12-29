@@ -31,7 +31,7 @@ namespace drone {
 
                 int bytesOfAvailableData();
 
-                void clearReceiverBuffer();
+                void clearReceiverSerialBuffer();
         };
     }
 }
