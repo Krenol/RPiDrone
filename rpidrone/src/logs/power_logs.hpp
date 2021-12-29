@@ -18,22 +18,8 @@ namespace drone
         {
         private:
             std::atomic_bool keepRunning_;
-            std::thread logThread_;
 
         public:
-            void stopPowerLogThread() {
-                stopPowerLogLoop();
-                logThread_.join();
-            }
-
-            void startPowerLogThread()
-            {
-                stopPowerLogThread();
-                logThread_ = std::thread([this] () {
-                    startPowerLogLoop();                    
-                });
-            }
-
             void stopPowerLogLoop() {
                 keepRunning_ = false;
             }

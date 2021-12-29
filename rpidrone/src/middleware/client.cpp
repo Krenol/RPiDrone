@@ -1,5 +1,6 @@
 #include "client.hpp"
 #include "parsers/json/client_input_parser.hpp"
+#include "logs/log_definition.hpp"
 
 namespace drone
 {
@@ -61,15 +62,19 @@ namespace drone
 
         bool Client::sendToClient(const structs::middleware::Output &outMsg) 
         {
+            std::promise<bool> promise;
             parseOutputJson(outMsg);
-            auto success = websocket_->writeMessage(outputJson_.dump());
-            return success.get();
+            auto msg = outputJson_.dump();
+            NETWORK_LOG(INFO) << "Sending " << msg;
+            websocket_->writeMessage(msg, promise);
+            return promise.get_future().get();
         }
         
         bool Client::receiveFromClient(structs::middleware::Input &clientInputMsg) 
         {
             if(clientMessagesAvailable()) {
                 websocket_->getMessage(inputStringMsg_);
+                NETWORK_LOG(INFO) << "received " << inputStringMsg_;
                 return parseInput(clientInputMsg);
             } 
             return false;
@@ -83,6 +88,11 @@ namespace drone
         bool Client::clientMessagesAvailable() 
         {
             return websocket_->hasMessages();
+        }
+        
+        void Client::disconnectConnectedClient() 
+        {
+            websocket_->disconnectConnectedClient();
         }
     }
 }

@@ -35,6 +35,8 @@ namespace drone
 
             void onMessageSendError(const SimpleWeb::error_code &ec);
 
+            void sendMessageToConnectedClient(const std::string &msg);
+
             void sendMessageToConnectedClient(const std::string &msg, std::promise<bool> &promise);
 
             void removeOldestQueueMessage();
@@ -44,7 +46,9 @@ namespace drone
 
             bool hasConnection() const;
 
-            std::future<bool> writeMessage(const std::string& msg);
+            void writeMessage(const std::string& msg);
+
+            void writeMessage(const std::string& msg, std::promise<bool> &promise);
 
             void startWebsocketThread();
 

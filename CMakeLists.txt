@@ -45,4 +45,4 @@ target_compile_definitions(rpidrone PRIVATE RPI_LOGS)
 # ENABLE SIMULATOR MODE
 target_compile_definitions(rpidrone PRIVATE SIMULATOR_MODE)
 # ENABLE CONFIG API
-target_compile_definitions(rpidrone PRIVATE CONF_API_MODE)
+# target_compile_definitions(rpidrone PRIVATE CONF_API_MODE)

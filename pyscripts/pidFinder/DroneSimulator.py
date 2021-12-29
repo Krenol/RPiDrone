@@ -53,7 +53,7 @@ class DroneSimulator():
         self.websocket.close()
             
     def startReadThread(self):
-        self.readThread = thread.MyThread(readFromDrone, self.websocket)
+        self.readThread = thread.MyThread(self.readFromDrone, self.websocket)
         self.readThread.start()
         
     def stopReadThread(self):
@@ -65,7 +65,7 @@ class DroneSimulator():
         try:
             data = websocket.recv()
             if data:
-                storeReceivedDroneData(data)
+                self.storeReceivedDroneData(data)
         except Exception:
             print("error while parsing json")
     
@@ -74,13 +74,14 @@ class DroneSimulator():
         self.droneResponses.append(j)
             
     def sendToDrone(self, droneInput: DroneInput):
-        data = createDroneControlJson(droneInput)
+        data = self.createDroneControlJson(droneInput)
         data_str = json.dumps(data)
         self.websocket.send(data_str.encode())
         
     def createDroneControlJson(self, droneInput: DroneInput):
         data = {"gps": {"altitude": 0, "latitude": 0, "longitude": 0}, "joystick": {"degrees": droneInput.joystickDegrees,
                                                                                 "offset": droneInput.joystickOffset, "rotation": droneInput.joystickRotation}, "throttle": droneInput.rotation}
+        return data
     
     def liftOffDrone(self):
         for i in range(2, 8):

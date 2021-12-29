@@ -79,6 +79,17 @@ namespace drone
             "Error: " << ec << ", error message: " << ec.message();
     }
     
+    void Websocket::sendMessageToConnectedClient(const std::string &msg) 
+    {
+        connection_->send(msg, [this](const SimpleWeb::error_code &ec)
+            {
+                if (ec) {
+                    onMessageSendError(ec);
+                }
+            }
+        );
+    }
+    
     void Websocket::sendMessageToConnectedClient(const std::string &msg, std::promise<bool> &promise) 
     {
         connection_->send(msg, [this, &promise](const SimpleWeb::error_code &ec)
@@ -110,15 +121,20 @@ namespace drone
         return connected_;
     }
 
-    std::future<bool> Websocket::writeMessage(const std::string &msg)
+    void Websocket::writeMessage(const std::string &msg)
     {
-        std::promise<bool> promise;
+        if (connected_) {
+            sendMessageToConnectedClient(msg);
+        }
+    }
+    
+    void Websocket::writeMessage(const std::string& msg, std::promise<bool> &promise) 
+    {
         if (connected_) {
             sendMessageToConnectedClient(msg, promise);
         } else {
             promise.set_value(false);
         }
-        return promise.get_future();
     }
 
     void Websocket::disconnectConnectedClient()

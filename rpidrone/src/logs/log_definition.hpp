@@ -1,6 +1,8 @@
 #ifndef DRONE_LOGS_LOG_DEFINITION_H
 #define DRONE_LOGS_LOG_DEFINITION_H
 
+#include "easylogging++.h"
+
 #define NETWORK_LOG(LEVEL) CLOG(LEVEL, "network")  //define network log
 #if defined(EXEC_TIME_LOG)
 #define EXEC_LOG(LEVEL) CLOG(LEVEL, "exec") //define exec time log

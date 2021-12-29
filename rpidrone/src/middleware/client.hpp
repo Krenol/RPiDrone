@@ -31,6 +31,8 @@ namespace drone {
                 bool clientConnectionAvailable();
 
                 bool clientMessagesAvailable();
+
+                void disconnectConnectedClient();
         };
     }
 }

@@ -1,5 +1,6 @@
 #include "output_parser.hpp"
 #include <stdlib.h>
+#include <cmath>
 #include "constants/flightcontroller.hpp"
 
 namespace drone
@@ -11,6 +12,10 @@ namespace drone
             float OutputParser::convertStringToFloat(const std::string &value) 
             {
                 return atof(value.c_str());
+            }
+
+            float OutputParser::radToDeg(float angle) {
+                return angle * 180 / M_PI;
             }
             
             int OutputParser::convertStringToInt(const std::string &value) 
@@ -28,15 +33,15 @@ namespace drone
                     token = out.substr(0, pos);
                     if (i == 0)
                     {
-                        output.isAngles.yaw = convertStringToFloat(token);
+                        output.isAngles.yaw = radToDeg(convertStringToFloat(token));
                     }
                     else if (i == 1)
                     {
-                        output.isAngles.pitch = convertStringToFloat(token);
+                        output.isAngles.pitch = radToDeg(convertStringToFloat(token));
                     }
                     else if (i == 2)
                     {
-                        output.isAngles.roll = convertStringToFloat(token);
+                        output.isAngles.roll = radToDeg(convertStringToFloat(token));
                     }
                     else if (i == 3)
                     {
@@ -81,15 +86,15 @@ namespace drone
                     }
                     else if (i == 12)
                     {
-                        output.shouldAngles.yaw = convertStringToFloat(token);
+                        output.shouldAngles.yaw = radToDeg(convertStringToFloat(token));
                     }
                     else if (i == 13)
                     {
-                        output.shouldAngles.roll = convertStringToFloat(token);
+                        output.shouldAngles.roll = radToDeg(convertStringToFloat(token));
                     }
                     else if (i == 14)
                     {
-                        output.shouldAngles.pitch = convertStringToFloat(token);
+                        output.shouldAngles.pitch = radToDeg(convertStringToFloat(token));
                     }
                     else
                     {

@@ -123,7 +123,7 @@ namespace drone
                 auto rollOutputController = parsePidControlStruct(controllersJson, "roll_output");
                 auto pitchOutputController = parsePidControlStruct(controllersJson, "pitch_output");
                 auto yawOutputController = parsePidControlStruct(controllersJson, "yaw_output");
-                structs::config::EscControllers escControllers(rollRateController, pitchRateController, rollOutputController, pitchOutputController, yawOutputController);
+                return structs::config::EscControllers(rollRateController, pitchRateController, rollOutputController, pitchOutputController, yawOutputController);
             }
             
             structs::config::PID ConfigParser::parsePidControlStruct(const nlohmann::json &controllersJson, const std::string &key) 

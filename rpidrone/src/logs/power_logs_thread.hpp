@@ -12,7 +12,6 @@ namespace drone
         class PowerLogsThread
         {
         private:
-            std::atomic_bool keepRunning_;
             std::thread logThread_;
             PowerLogs powerLogs_;
 
@@ -24,7 +23,6 @@ namespace drone
 
             void startPowerLogThread()
             {
-                stopPowerLogThread();
                 logThread_ = std::thread([this] () {
                     powerLogs_.startPowerLogLoop();                    
                 });
