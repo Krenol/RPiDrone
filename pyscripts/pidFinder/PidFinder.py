@@ -5,6 +5,7 @@ import constants
 from OffsetCalculator import OffsetCalculator
 import random
 from OffsetCalculator import OffsetCalculator
+from DroneController import DroneController
 
 class PidFinder():
     def __init__(self):
@@ -86,9 +87,10 @@ class PidFinder():
     def run(self):
         offsetCalculator = OffsetCalculator()
         self.update_config()
+        droneController = DroneController()
         while self.BEST_OFFSET['total'] > 0.5:
-            droneSim = DroneSimulator()
-            droneSim.simulationRun()
+            droneSim = DroneSimulator(droneController)
+            droneSim.hoverSimulationRun()
             droneOutput = droneSim.getDroneResponses()
             offset = offsetCalculator.calculateOffsets(droneOutput)
             if offset['total'] < self.BEST_OFFSET['total']:
