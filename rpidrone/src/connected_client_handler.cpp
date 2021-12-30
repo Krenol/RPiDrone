@@ -8,22 +8,22 @@
 
 namespace drone
 {
-    void ConnectedClientHandler::handleClientMessage(middleware::Client &clientMw, middleware::Flightcontroller &fcMw) 
+    void ConnectedClientHandler::handleClientMessage(std::unique_ptr<middleware::Client> &clientMw, std::unique_ptr<middleware::Flightcontroller> &fcMw) 
     {
-        clientMw.receiveFromClient(input_);
-        fcMw.sendToFlightcontroller(input_);
+        clientMw->receiveFromClient(input_);
+        fcMw->sendToFlightcontroller(input_);
     }
     
-    bool ConnectedClientHandler::handleFlightcontrollerMessage(middleware::Client &clientMw, middleware::Flightcontroller &fcMw) 
+    bool ConnectedClientHandler::handleFlightcontrollerMessage(std::unique_ptr<middleware::Client> &clientMw, std::unique_ptr<middleware::Flightcontroller> &fcMw) 
     {
-        fcMw.receiveFromFlightcontroller(output_);
-        return clientMw.sendToClient(output_);
+        fcMw->receiveFromFlightcontroller(output_);
+        return clientMw->sendToClient(output_);
     }
     
-    void ConnectedClientHandler::handleClientDisconnect(middleware::Flightcontroller &fcMw, const structs::config::Config &config) 
+    void ConnectedClientHandler::handleClientDisconnect(std::unique_ptr<middleware::Flightcontroller> &fcMw, const structs::config::Config &config) 
     {
         setInputValuesForDisconnect(config);
-        fcMw.sendToFlightcontroller(input_);
+        fcMw->sendToFlightcontroller(input_);
     }
     
     void ConnectedClientHandler::setInputValuesForDisconnect(const structs::config::Config &config) 
@@ -35,20 +35,20 @@ namespace drone
         input_.joystick.rotation = 0;
     }
 
-    void ConnectedClientHandler::handleConnectedClient(middleware::Client &clientMw, middleware::Flightcontroller &fcMw, const structs::config::Config &config)
+    void ConnectedClientHandler::handleConnectedClient(std::unique_ptr<middleware::Client> &clientMw, std::unique_ptr<middleware::Flightcontroller> &fcMw, const structs::config::Config &config)
     {
-        while(clientMw.clientConnectionAvailable()) 
+        while(clientMw->clientConnectionAvailable()) 
         {
-            if(clientMw.clientMessagesAvailable()) 
+            if(clientMw->clientMessagesAvailable()) 
             {
                 handleClientMessage(clientMw, fcMw);
             }
-            if(fcMw.bytesOfAvailableData() > 0) 
+            if(fcMw->bytesOfAvailableData() > 0) 
             {
                 auto successfulSend = handleFlightcontrollerMessage(clientMw, fcMw);
                 if(!successfulSend) break;
             }
-            fcMw.clearReceiverSerialBuffer();
+            fcMw->clearReceiverSerialBuffer();
         }
         LOG(INFO) << "Connection lost...";
         handleClientDisconnect(fcMw, config);

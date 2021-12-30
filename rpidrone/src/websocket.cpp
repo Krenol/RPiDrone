@@ -116,6 +116,11 @@ namespace drone
         setupWebsocketEndpointEvents(endpoint);
     }
 
+    Websocket::~Websocket() 
+    {
+        stopWebsocketThread();
+    }
+
     bool Websocket::hasConnection() const
     {
         return connected_;

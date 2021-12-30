@@ -13,6 +13,16 @@ namespace drone
         }
     }
 
+    Arduino::~Arduino() 
+    {
+        closeConnection();
+    }
+
+    void Arduino::closeConnection() 
+    {
+        serialClose(fd_ard_);
+    }
+
     void Arduino::serialSend(const std::string &msg) 
     {
         serialPuts(fd_ard_, msg.c_str());

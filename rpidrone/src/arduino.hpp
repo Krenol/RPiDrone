@@ -10,7 +10,11 @@ namespace drone
         public:
             Arduino(const std::string &serial, int baudrate);
 
+            ~Arduino();
+
             void init(const structs::config::Config &config);
+
+            void closeConnection();
 
             void serialSend(const std::string &msg);
 

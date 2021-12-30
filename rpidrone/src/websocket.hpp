@@ -44,6 +44,8 @@ namespace drone
         public:
             Websocket(int q_size, const std::string &context, int port);
 
+            ~Websocket();
+
             bool hasConnection() const;
 
             void writeMessage(const std::string& msg);

@@ -15,13 +15,13 @@ namespace drone {
         private:
             structs::middleware::Input input_;
             structs::middleware::Output output_;
-            void handleClientMessage(middleware::Client &clientMw, middleware::Flightcontroller &fcMw);
-            bool handleFlightcontrollerMessage(middleware::Client &clientMw, middleware::Flightcontroller &fcMw);
-            void handleClientDisconnect(middleware::Flightcontroller &fcMw, const structs::config::Config &config);
+            void handleClientMessage(std::unique_ptr<middleware::Client> &clientMw, std::unique_ptr<middleware::Flightcontroller> &fcMw);
+            bool handleFlightcontrollerMessage(std::unique_ptr<middleware::Client> &clientMw, std::unique_ptr<middleware::Flightcontroller> &fcMw);
+            void handleClientDisconnect(std::unique_ptr<middleware::Flightcontroller> &fcMw, const structs::config::Config &config);
             void setInputValuesForDisconnect(const structs::config::Config &config);
 
         public:
-            void handleConnectedClient(middleware::Client &clientMw, middleware::Flightcontroller &fcMw, const structs::config::Config &config);
+            void handleConnectedClient(std::unique_ptr<middleware::Client> &clientMw, std::unique_ptr<middleware::Flightcontroller> &fcMw, const structs::config::Config &config);
             
     };
 }

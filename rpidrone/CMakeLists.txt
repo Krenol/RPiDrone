@@ -7,6 +7,7 @@ set(WEBSOCKET_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/external/Simple-WebSocket-Server
 
 set(RPICDRONE_PROJECT_SRCS 
 ${PROJECT_SOURCE_DIR}/connected_client_handler.cpp
+${PROJECT_SOURCE_DIR}/coordinator.cpp
 ${PROJECT_SOURCE_DIR}/main.cpp
 ${PROJECT_SOURCE_DIR}/logs/easylogging++.cc
 ${PROJECT_SOURCE_DIR}/parsers/json/config_parser.cpp
