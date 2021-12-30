@@ -2,7 +2,6 @@
 #include "globals.hpp"
 #include <string>
 #include "api/api_server.hpp"
-#include <nlohmann/json.hpp>
 #include "coordinator.hpp"
 #if defined(POWER_LOGS)
 #include "logs/power_logs_thread.hpp"
@@ -10,8 +9,6 @@
 #if defined(CONF_API_MODE)
 #include <cstdlib>
 #endif
-
-using json = nlohmann::json;
 
 static void initLogs() {
     drone::logs::Logs log;
