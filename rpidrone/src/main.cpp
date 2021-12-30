@@ -18,7 +18,6 @@ static void initLogs() {
 
 int main() {
     initLogs();
-    bool run = true;
     #if defined(CONF_API_MODE)
     LOG(INFO) << "Starting API Server....";
     drone::api::ApiServer apiServer;
@@ -30,7 +29,6 @@ int main() {
     #endif
     drone::Coordinator coordinator(CONF_DIR + "/" + CONF_FILE);
     coordinator.coordinateDrone();
-    run = false;
     #if defined(POWER_LOGS)
     pwLogs.stopPowerLogThread();
     #endif
