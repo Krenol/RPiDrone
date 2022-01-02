@@ -33,15 +33,15 @@ namespace drone
                     token = out.substr(0, pos);
                     if (i == 0)
                     {
-                        output.isAngles.yaw = radToDeg(convertStringToFloat(token));
+                        output.isAngles.yaw = convertStringToFloat(token);
                     }
                     else if (i == 1)
                     {
-                        output.isAngles.pitch = radToDeg(convertStringToFloat(token));
+                        output.isAngles.pitch = convertStringToFloat(token);
                     }
                     else if (i == 2)
                     {
-                        output.isAngles.roll = radToDeg(convertStringToFloat(token));
+                        output.isAngles.roll = convertStringToFloat(token);
                     }
                     else if (i == 3)
                     {
@@ -86,15 +86,15 @@ namespace drone
                     }
                     else if (i == 12)
                     {
-                        output.shouldAngles.yaw = radToDeg(convertStringToFloat(token));
+                        output.shouldAngles.yaw = convertStringToFloat(token);
                     }
                     else if (i == 13)
                     {
-                        output.shouldAngles.roll = radToDeg(convertStringToFloat(token));
+                        output.shouldAngles.roll = convertStringToFloat(token);
                     }
                     else if (i == 14)
                     {
-                        output.shouldAngles.pitch = radToDeg(convertStringToFloat(token));
+                        output.shouldAngles.pitch = convertStringToFloat(token);
                     }
                     else
                     {
