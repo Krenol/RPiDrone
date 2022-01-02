@@ -37,6 +37,7 @@ namespace drone
         auto websocket = std::make_unique<Websocket>(config_.server.queue_size, config_.server.context, config_.server.port);
         websocket->startWebsocketThread();
         middlewareClient_ = std::make_unique<middleware::Client>(std::move(websocket));
+        LOG(INFO) << "Successfully started Websocket Server";
     }
 
     void Coordinator::coordinateDrone()
