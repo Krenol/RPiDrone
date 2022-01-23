@@ -45,8 +45,7 @@ namespace drone
                     }
                     else if (i == 3)
                     {
-                        //TODO
-                        //output.exec_time = convertStringToInt(token);
+                        output.metadata.fcExecutionTime = convertStringToInt(token);
                     }
                     else if (i == 4)
                     {
@@ -62,23 +61,19 @@ namespace drone
                     }
                     else if (i == 7)
                     {
-                        //TODO
-                        //output.rf_t = convertStringToInt(token);
+                        output.metadata.throttleRightFront = convertStringToInt(token);
                     }
                     else if (i == 8)
                     {
-                        //TODO
-                        //output.rb_t = convertStringToInt(token);
+                        output.metadata.throttleRightBack = convertStringToInt(token);
                     }
                     else if (i == 9)
                     {
-                        //TODO
-                        //output.lf_t = convertStringToInt(token);
+                        output.metadata.throttleLeftFront = convertStringToInt(token);
                     }
                     else if (i == 10)
                     {
-                        //TODO
-                        //output.lb_t = convertStringToInt(token);
+                        output.metadata.throttleLeftBack = convertStringToInt(token);
                     }
                     else if (i == 11)
                     {
