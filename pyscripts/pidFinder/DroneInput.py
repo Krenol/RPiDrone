@@ -1,3 +1,6 @@
+from dataclasses import dataclass
+
+@dataclass
 class DroneInput:
     joystickDegrees: float = 0.0
     joystickOffset: float = 0.0

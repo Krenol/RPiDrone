@@ -43,7 +43,7 @@ class DroneController:
 
     def createDroneControlJson(self, droneInput: DroneInput):
         data = {"gps": {"altitude": 0, "latitude": 0, "longitude": 0}, "joystick": {"degrees": droneInput.joystickDegrees,
-                                                                                    "offset": droneInput.joystickOffset, "rotation": droneInput.joystickRotation}, "throttle": droneInput.rotation}
+                                                                                    "offset": droneInput.joystickOffset, "rotation": droneInput.joystickRotation}, "throttle": droneInput.throttle}
         return data
 
     

@@ -1,6 +1,7 @@
 from DroneSimulator import DroneSimulator
 import json
 import requests
+from requests.structures import CaseInsensitiveDict
 import constants
 from OffsetCalculator import OffsetCalculator
 import random
@@ -26,8 +27,12 @@ class PidFinder():
 
 
     def update_config(self):
+        headers = CaseInsensitiveDict()
+        headers["Accept"] = "application/json"
+        headers["Content-Type"] = "application/json"
+        data = json.dumps(self.UPDATE_JSON)
         resp = requests.patch("http://" + constants.DRONE_HOSTNAME +
-                            ":" + str(constants.DRONE_API_PORT) + "/config", json=json.dumps(self.UPDATE_JSON))
+                            ":" + str(constants.DRONE_API_PORT) + "/config", headers=headers, data=data)
         if resp.status_code != 200:
             raise Exception("Couldn't patch config")
         return resp.json()
